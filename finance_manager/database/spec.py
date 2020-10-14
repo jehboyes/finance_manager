@@ -29,8 +29,6 @@ engine = create_engine("sqlite:///:memory:", echo=False)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-Base.metadata.create_all(engine)
-
 
 class directorate(Base):
     __tablename__ = "fs_directorate"
