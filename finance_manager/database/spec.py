@@ -18,16 +18,18 @@ from sqlalchemy import Column, CHAR, VARCHAR, BOOLEAN, DECIMAL, DATE, INTEGER, c
 from finance_manager.functions import periods
 
 # Standard financial decimal
-FDec = DECIMAL(precision=18, scale=2)
+_FDec = DECIMAL(precision=18, scale=2)
 
 # Define the database base class, to hold the database info
 Base = declarative_base()
 
 # Dummy in memory database for testing
-if __name__ == "__main__":
-    engine = create_engine("sqlite:///:memory:", echo=True)
-    Session = sessionmaker(bind=engine)
-    session = Session()
+
+engine = create_engine("sqlite:///:memory:", echo=False)
+Session = sessionmaker(bind=engine)
+session = Session()
+
+Base.metadata.create_all(engine)
 
 
 class directorate(Base):
@@ -37,7 +39,7 @@ class directorate(Base):
     description = Column(VARCHAR(50), nullable=False)
     director = Column(VARCHAR(50))
 
-    cost_centres = relationship("fs_cost_centre", back_populates="directorate")
+    cost_centres = relationship("cost_centre", back_populates="directorate")
 
 
 class cost_centre(Base):
@@ -51,7 +53,7 @@ class cost_centre(Base):
     supercede_by = Column(CHAR(6), nullable=True)
     password = Column(VARCHAR(50), nullable=True)
 
-    directorate = relationship("fs_directorate", back_populates="cost_centres")
+    directorate = relationship("directorate", back_populates="cost_centres")
 
 
 class f_set_cat(Base):
@@ -73,7 +75,7 @@ class f_set(Base):
         "f_set_cat.set_cat_id", ondelete="CASCADE"), nullable=False)
 
     category = relationship("f_set_cat", back_populates="f_sets")
-    finances = relationship("f_finance", back_populates="f_set")
+    finances = relationship("finance", back_populates="f_set")
 
 
 class account(Base):
@@ -85,16 +87,12 @@ class account(Base):
         "fs_summary_code.summary_code"), nullable=False)
     hide_from_users = Column(BOOLEAN(), server_default='0')
 
-    summary_code = relationship("fs_summary_code", back_populates="accounts")
-
 
 class summary_code(Base):
     __tablename__ = "fs_summary_code"
 
     summary_code = Column(CHAR(3), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
-
-    accounts = relationship("fs_account", back_populates="summary_code")
 
 
 class finance(Base):
@@ -107,7 +105,7 @@ class finance(Base):
     costc = Column(CHAR(6), ForeignKey(
         "fs_cost_centre.costc"), primary_key=True)
     period = Column(INTEGER(), primary_key=True)
-    amount = Column(FDec)
+    amount = Column(_FDec)
 
     f_set = relationship("f_set", back_populates="finances")
 
@@ -122,7 +120,7 @@ class inc_courses(Base):
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
     # Bad practice to use exec, but assigning to a dict wouldn't work
     for n in periods():
-        exec(f"p{n} = Column(FDec)")
+        exec(f"p{n} = Column(_FDec)")
 
 
 class inc_other(Base):
@@ -139,7 +137,7 @@ class inc_other_p(Base):
     inc_id = Column(INTEGER(), ForeignKey(
         "input_inc_other.inc_id"), primary_key=True, nullable=False)
     period = Column(INTEGER(), primary_key=True)
-    amount = Column(FDec, nullable=True)
+    amount = Column(_FDec, nullable=True)
 
 
 class inc_bursary(Base):
@@ -148,7 +146,7 @@ class inc_bursary(Base):
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"),
                     primary_key=True, autoincrement=False, nullable=False)
     description = Column(VARCHAR(250), primary_key=True, nullable=True)
-    amount = Column(FDec, nullable=True)
+    amount = Column(_FDec, nullable=True)
     number = Column(INTEGER(), nullable=True)
     status = Column(CHAR(1), nullable=True)
 
@@ -185,11 +183,11 @@ class pay_claim(Base):
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"))
     account = Column(CHAR(4), ForeignKey("fs_account.account"))
     description = Column(VARCHAR(50))
-    rate = Column(FDec)
+    rate = Column(_FDec)
     claim_type_id = Column(CHAR(3), ForeignKey(
         "input_pay_claim_type.claim_type_id"))
 
-    hours = relationship("input_pay_claim_p", back_populates="claim")
+    hours = relationship("pay_claim_p", back_populates="claim")
 
 
 class pay_claim_p(Base):
@@ -200,7 +198,7 @@ class pay_claim_p(Base):
     period = Column(INTEGER(), primary_key=True)
     hours = Column(DECIMAL(10, 5))
 
-    claim = relationship("input_pay_claim", back_populates="hours")
+    claim = relationship("pay_claim", back_populates="hours")
 
 
 class pay_staff(Base):
@@ -210,8 +208,8 @@ class pay_staff(Base):
         "staff_post_status.post_status_id"), nullable=True)
     post_type_id = Column(CHAR(5), ForeignKey(
         "staff_post_type.post_type_id"), nullable=True)
-    title = Column(VARCHAR(50), nullable=True),
-    name = Column(VARCHAR(50), nullable=True),
+    title = Column(VARCHAR(50), nullable=True)
+    name = Column(VARCHAR(50), nullable=True)
     staff_id = Column(VARCHAR(8), nullable=True)
     post_id = Column(VARCHAR(50), nullable=True)
     start_date = Column(DATE(), nullable=True)
@@ -220,12 +218,12 @@ class pay_staff(Base):
     current_spine = Column(INTEGER(), ForeignKey(
         "staff_spine.spine"), nullable=True)
     indicative_fte = Column(DECIMAL(precision=10, scale=5), nullable=True)
-    allowances = Column(FDec,  nullable=True)
+    allowances = Column(_FDec,  nullable=True)
     con_type_id = Column(INTEGER(), ForeignKey(
         "staff_con_type.con_type_id"), nullable=True)
     pension_id = Column(VARCHAR(3), ForeignKey(
         "staff_pension.pension_id"), nullable=True)
-    travel_scheme = Column(FDec, nullable=True)
+    travel_scheme = Column(_FDec, nullable=True)
     teaching_hours = Column(DECIMAL(precision=10, scale=5), nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
     staff_line_id = Column(INTEGER(), primary_key=True, autoincrement=True,
@@ -251,7 +249,7 @@ class spine(Base):
     __tablename__ = "staff_spine"
 
     spine = Column(INTEGER(), primary_key=True)
-    value = Column(FDec)
+    value = Column(_FDec)
 
 
 class on_type(Base):
@@ -285,7 +283,7 @@ class nonp_other_p(Base):
     nonp_id = Column(INTEGER(), ForeignKey(
         "input_nonp_other.nonp_id"), primary_key=True, nullable=False)
     period = Column(INTEGER(), primary_key=True)
-    amount = Column(FDec, nullable=True)
+    amount = Column(_FDec, nullable=True)
 
 
 class nonp_internal(Base):
@@ -295,7 +293,4 @@ class nonp_internal(Base):
                          mssql_identity_start=1000, mssql_identity_increment=1)
     description = Column(VARCHAR(50), nullable=True)
     costc = Column(CHAR(6), ForeignKey("fs_cost_centre.costc"), nullable=True)
-    amount = Column(FDec, nullable=True)
-
-
-Base.metadata.create_all(engine)
+    amount = Column(_FDec, nullable=True)
