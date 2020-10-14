@@ -25,7 +25,7 @@ class DB():
         self.verbose = verbose
         self.debug = debug
         if debug:
-            #Work in memory
+            # Work in memory
             self.engine_string = "sqlite:///:memory:"
         elif config is not None:
             self.engine_string = sa_con_string(dialect=config.read('dialect'),
