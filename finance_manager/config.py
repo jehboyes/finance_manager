@@ -50,11 +50,11 @@ class Config(object):
         if self.section not in self._cp.keys():
             self._cp[self.section] = {}
 
-    def read_section(self, section=""):
+    def read_section(self, section=None):
         """
         Return all the variables in an environment/section as a formatted string 
         """
-        if section != self.section:
+        if section is not None:
             self.set_section(section)
         items = [str(item) + "=" + self.read(item)
                  for item in self._cp[self.section]]
@@ -74,6 +74,7 @@ class Config(object):
         Update or create config variables in the current environment/section
         """
         for item, value in item_dict.items():
+            print(item, value)
             self._cp[self.section][item] = value
         self._save()
 

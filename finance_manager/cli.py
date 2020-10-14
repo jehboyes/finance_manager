@@ -45,18 +45,10 @@ def add(config, code, description):
     Add a new set code
     """
     new_code = f_set_cat(set_cat_id=code, description=description)
-    with DB(config=config) as db:
+    with DB(config=config, debug=True) as db:
         session = db.session()
         session.add(new_code)
         session.commit()
-
-
-@fm.command()
-def test():
-    """
-    Test connections and functionality
-    """
-    pass
 
 
 @fm.group()
@@ -73,8 +65,10 @@ def lst(config):
     """
     List available settings
     """
-    print(config.section)
-    print("-"*len(config.section))
+    section = config.section
+    print("Environment: ")
+    print(section)
+    print("-"*len(section))
     print(config.read_section())
 
 
@@ -95,6 +89,25 @@ def set(config, pairs, env):
         config.write(pairs)
     except:
         print("Set command failed. Check key:value argument(s) valid. ")
+
+
+@fm.group()
+@pass_config
+def test(config):
+    """
+    Test connections and functionality
+    """
+    pass
+
+
+@test.command()
+@pass_config
+def db(config):
+    """
+    Test database
+    """
+    db = DB(config=config)
+    print(db.engine_string)
 
 
 """

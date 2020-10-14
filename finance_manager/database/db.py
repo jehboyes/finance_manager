@@ -22,22 +22,28 @@ class DB():
     """
 
     def __init__(self, engine_string=None, verbose=False, config=None, debug=False):
+        self.verbose = verbose
+        self.debug = debug
         if debug:
             #Work in memory
-            engine_string = "sqlite:///:memory:"
+            self.engine_string = "sqlite:///:memory:"
         elif config is not None:
-            engine_string = sa_con_string(dialect=config.read('dialect'),
-                                          server=config.read('server'),
-                                          db=config.read('database'),
-                                          py_driver=config.read('py_driver'),
-                                          user=config.read('user'),
-                                          password=config.read('password'),
-                                          driver=config.read('driver'))
-        self._engine = create_engine(engine_string, echo=verbose)
-        self._sfactory = sessionmaker(bind=self._engine)
+            self.engine_string = sa_con_string(dialect=config.read('dialect'),
+                                               server=config.read('server'),
+                                               db=config.read('database'),
+                                               py_driver=config.read(
+                                                   'py_driver'),
+                                               user=config.read('username'),
+                                               password=config.read(
+                                                   'password'),
+                                               driver=config.read('driver'))
 
     def __enter__(self):
-        pass
+        self._engine = create_engine(self.engine_string, echo=self.verbose)
+        if self.debug:
+            Base.metadata.create_all(self._engine)
+        self._sfactory = sessionmaker(bind=self._engine)
+        return self
 
     def __exit__(self, type, value, traceback):
         self._engine.dispose()
@@ -47,5 +53,5 @@ class DB():
         """
         Returns an SQLAlchemy session object
         """
-        s = self._sfactory
+        s = self._sfactory()
         return s

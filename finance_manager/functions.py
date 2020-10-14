@@ -45,7 +45,8 @@ def sa_con_string(dialect, server, db,  py_driver=None, user=None, password='', 
         Specific driver to use when connecting  
     """
     # Configure security
-    if user is not None:
+    user = '' if user is None else user
+    if len(user) > 0:
         login = user + ':' + password
         trust = ''
     else:
