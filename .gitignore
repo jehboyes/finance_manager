@@ -1,6 +1,9 @@
 # configuration
 config.ini
 
+# alembic history
+alembic/versions
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
