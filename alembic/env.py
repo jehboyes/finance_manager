@@ -1,14 +1,22 @@
-from finance_manager.database.spec import Base
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+from finance_manager.database.db import DB
+from finance_manager.database.spec import Base
+from finance_manager.config import Config as AppConfig
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+# Define database from local config
+ac = AppConfig()
+db = DB(config=ac)
+config.set_main_option('sqlalchemy.url', db.engine_string)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
