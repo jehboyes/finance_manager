@@ -1,7 +1,7 @@
 # Finance Manager
 Managing HEI forecasting and budget setting data. 
 
-This python command-line app is desinged to be used by system admin to maintain and run a forecasting and budget setting system. End-users use a Power App to actually interface. 
+This python command-line app is designed to be used by system admin to maintain and run a forecasting and budget setting system. End-users use a Power App to actually interface. 
 
 ## Data ##
 
@@ -11,11 +11,11 @@ For versatility and to allow for more complete documentation, the app uses [SQLA
 
 ### Key objects ### 
 
-The **Set** object is unique by cost centre, type (budget, forecast etc.), and academic year. For example, There would be 1 *budget* set for cost centre *x* in academic year *y*. Changes to set's input information (via the interface) overrides the previous versions: in this sense, that set is analogous to a file. Note however that the actual finances are intentionally disconnected from this process: finances are instead created as snapshots of sets at a given point in time.
+The **Set** object is unique by cost centre, type (budget, forecast etc.), and academic year. For example, There would be 1 *budget* set for cost centre *x* in academic year *y*. Changes to a set's input information (via the interface) override previous data: in this sense, that set is analogous to a file. Note however that the actual finances are intentionally disconnected from this process: finances are instead created as snapshots of sets at a given point in time, and each snapshot is retained as an audit history. 
 
 
 
 ## Interface Access ##
 
-Users can be given permissions to access **cost centres**. Access to a cost centre allows the user to see all finances and details of that cost centre's **sets**. 
+WIthin the Power App, users can be given permissions to access **cost centres**. Access to a cost centre allows the user to see all finances and details of that cost centre's **sets**. 
 
