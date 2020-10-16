@@ -14,7 +14,8 @@ Note however that these are **not** used in the class names, for brevity. They a
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import Column, CHAR, VARCHAR, BOOLEAN, DECIMAL, DATE, INTEGER, create_engine, ForeignKey
+from sqlalchemy import Column, CHAR, VARCHAR, DECIMAL, DATE, INTEGER, create_engine, ForeignKey
+from sqlalchemy.dialects.mssql import BIT, DATETIME
 from finance_manager.functions import periods
 
 # Standard financial decimal
@@ -67,13 +68,22 @@ class f_set(Base):
 
     set_id = Column(INTEGER(), primary_key=True)
     acad_year = Column(INTEGER(), nullable=False)
-    costc = Column(CHAR(4), ForeignKey(
+    costc = Column(CHAR(6), ForeignKey(
         "fs_cost_centre.costc", ondelete="CASCADE"), nullable=False)
     set_cat_id = Column(CHAR(3), ForeignKey(
         "f_set_cat.set_cat_id", ondelete="CASCADE"), nullable=False)
-
     category = relationship("f_set_cat", back_populates="f_sets")
-    finances = relationship("finance", back_populates="f_set")
+
+
+class finance_instance(Base):
+    __tablename__ = "f_finance_instance"
+
+    instance_id = Column(INTEGER(), primary_key=True, autoincrement=True,
+                         mssql_identity_start=1000, mssql_identity_increment=1)
+    created_by = Column(VARCHAR(50), nullable=True)
+    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
+    datestamp = Column(DATETIME())
+    notes = Column(VARCHAR(500), nullable=True)
 
 
 class account(Base):
@@ -83,7 +93,16 @@ class account(Base):
     description = Column(VARCHAR(50))
     summary_code = Column(CHAR(3), ForeignKey(
         "fs_summary_code.summary_code"), nullable=False)
-    hide_from_users = Column(BOOLEAN(), server_default='0')
+    hide_from_users = Column(BIT(), server_default='0')
+    default_balance = Column(CHAR(2), ForeignKey(
+        "fs_entry_type.balance_type"), nullable=False)
+
+
+class entry_type(Base):
+    __tablename__ = "fs_entry_type"
+    balance_type = Column(CHAR(2), primary_key=True)
+    coefficient = Column(INTEGER(), nullable=False)
+    description = Column(VARCHAR(6))
 
 
 class summary_code(Base):
@@ -91,21 +110,28 @@ class summary_code(Base):
 
     summary_code = Column(CHAR(3), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
+    section_id = Column(CHAR(3), ForeignKey("fs_section.section_id"))
+    position = Column(INTEGER())
+
+
+class finance_section(Base):
+    __tablename__ = "fs_section"
+
+    section_id = Column(CHAR(3), primary_key=True)
+    description = Column(VARCHAR(50))
+    show_in_ui = Column(BIT())
+    position = Column(INTEGER())
 
 
 class finance(Base):
     __tablename__ = "f_finance"
 
-    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"),
-                    primary_key=True, nullable=False)
+    instance_id = Column(INTEGER(), ForeignKey(
+        "f_finance_instance.instance_id"), primary_key=True)
     account = Column(CHAR(4), ForeignKey(
         "fs_account.account"), primary_key=True)
-    costc = Column(CHAR(6), ForeignKey(
-        "fs_cost_centre.costc"), primary_key=True)
     period = Column(INTEGER(), primary_key=True)
     amount = Column(_FDec)
-
-    f_set = relationship("f_set", back_populates="finances")
 
 
 class inc_courses(Base):
@@ -233,6 +259,7 @@ class post_type(Base):
 
     post_type_id = Column(CHAR(5), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
+    lcc_description = Column(VARCHAR(50), nullable=False)
 
 
 class post_status(Base):
@@ -240,7 +267,7 @@ class post_status(Base):
 
     post_status_id = Column(CHAR(4), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
-    exclude_from_finance = Column(BOOLEAN(), server_default='0')
+    exclude_from_finance = Column(BIT(), server_default='0')
 
 
 class spine(Base):
@@ -250,7 +277,7 @@ class spine(Base):
     value = Column(_FDec)
 
 
-class on_type(Base):
+class con_type(Base):
     __tablename__ = "staff_con_type"
 
     con_type_id = Column(INTEGER(), primary_key=True)
@@ -292,3 +319,21 @@ class nonp_internal(Base):
     description = Column(VARCHAR(50), nullable=True)
     costc = Column(CHAR(6), ForeignKey("fs_cost_centre.costc"), nullable=True)
     amount = Column(_FDec, nullable=True)
+
+
+class permission(Base):
+    """
+    Permissions for access to cost centres via the UI
+    """
+    __tablename__ = "a_permission"
+
+    costc = Column(CHAR(6), ForeignKey(
+        "fs_cost_centre.costc"), primary_key=True)
+    login_365 = Column(VARCHAR(50), primary_key=True)
+
+
+# Map taking string names to table objects
+table_map = {}
+for model in Base._decl_class_registry.values():
+    if hasattr(model, '__tablename__'):
+        table_map[model.__tablename__] = model
