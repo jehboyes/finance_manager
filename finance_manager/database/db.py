@@ -1,4 +1,8 @@
 
+"""
+Module for the database class
+"""
+
 from finance_manager.database.spec import Base
 from finance_manager.functions import sa_con_string
 from sqlalchemy import create_engine
