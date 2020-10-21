@@ -3,10 +3,10 @@ Classes for specifying tables.
 
 If altering a table, use `alembic` to migrate to DB.
 
-Standard table prefixes are used on the database tables for easier navigation/organisation. 
+Standard table prefixes are used on the database tables for easier navigation/organisation.
 Note however that these are **not** used in the class names, for brevity. They are:
 -  **fs_** for tables that are part of the financial structure
--  **f_** for tables that hold and structure actual finance data 
+-  **f_** for tables that hold and structure actual finance data
 -  **input_** for tables that are used directly by the interface
 -  **staff_** for the various lookups used exclusively by the pay_staff table
 
@@ -31,7 +31,23 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
+def generate_period_cols(type_string="_FDec"):
+    """
+    Generate columns for all twelve periods
+
+    Bad practice to use exec to achieve this; will try and find a better way 
+    of achieving the same result when possible.
+    """
+    for n in periods():
+        exec(f"p{n} = Column(type_string, server_default='0')")
+
+
 class directorate(Base):
+    """
+    A one to one mapping with SLT
+
+    ...
+    """
     __tablename__ = "fs_directorate"
 
     directorate_id = Column(CHAR(1), primary_key=True)
@@ -42,6 +58,11 @@ class directorate(Base):
 
 
 class cost_centre(Base):
+    """
+    Standard 6-character cost centres
+
+    ...
+    """
     __tablename__ = "fs_cost_centre"
 
     costc = Column(CHAR(6), primary_key=True)
@@ -142,9 +163,8 @@ class inc_courses(Base):
     students = Column(INTEGER(), autoincrement=False, nullable=True)
     fee = Column(DECIMAL(precision=10, scale=5), nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
-    # Bad practice to use exec, but assigning to a dict wouldn't work
     for n in periods():
-        exec(f"p{n} = Column(_FDec)")
+        exec(f"p{n} = Column(DECIMAL(10,5), server_default='0')")
 
 
 class inc_other(Base):
@@ -152,16 +172,10 @@ class inc_other(Base):
     inc_id = Column(INTEGER(), primary_key=True, autoincrement=True,
                     mssql_identity_start=1000, mssql_identity_increment=1)
     account = Column(CHAR(4), nullable=True)
-    description = Column(VARCHAR(250), nullable=True)
+    description = Column(VARCHAR(1000), nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
-
-
-class inc_other_p(Base):
-    __tablename__ = "input_inc_other_p"
-    inc_id = Column(INTEGER(), ForeignKey(
-        "input_inc_other.inc_id"), primary_key=True, nullable=False)
-    period = Column(INTEGER(), primary_key=True)
-    amount = Column(_FDec, nullable=True)
+    for n in periods():
+        exec(f"p{n} = Column(_FDec, server_default='0')")
 
 
 class inc_bursary(Base):
@@ -206,23 +220,13 @@ class pay_claim(Base):
                       mssql_identity_start=1000, mssql_identity_increment=1)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"))
     account = Column(CHAR(4), ForeignKey("fs_account.account"))
-    description = Column(VARCHAR(50))
+    description = Column(VARCHAR(1000))
     rate = Column(_FDec)
     claim_type_id = Column(CHAR(3), ForeignKey(
         "input_pay_claim_type.claim_type_id"))
-
-    hours = relationship("pay_claim_p", back_populates="claim")
-
-
-class pay_claim_p(Base):
-    __tablename__ = "input_pay_claim_p"
-
-    claim_id = Column(INTEGER(), ForeignKey(
-        "input_pay_claim.claim_id"), primary_key=True)
-    period = Column(INTEGER(), primary_key=True)
-    hours = Column(DECIMAL(10, 5))
-
-    claim = relationship("pay_claim", back_populates="hours")
+    # Bad practice to use exec, but assigning to a dict wouldn't work
+    for n in periods():
+        exec(f"p{n} = Column(DECIMAL(10,5), server_default='0')")
 
 
 class pay_staff(Base):
@@ -299,16 +303,10 @@ class nonp_other(Base):
     nonp_id = Column(INTEGER(), primary_key=True, autoincrement=True,
                      mssql_identity_start=1000, mssql_identity_increment=1)
     account = Column(CHAR(4), ForeignKey("fs_account.account"), nullable=True)
-    description = Column(VARCHAR(250), nullable=True)
+    description = Column(VARCHAR(1000), nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
-
-
-class nonp_other_p(Base):
-    __tablename__ = "input_nonp_other_p"
-    nonp_id = Column(INTEGER(), ForeignKey(
-        "input_nonp_other.nonp_id"), primary_key=True, nullable=False)
-    period = Column(INTEGER(), primary_key=True)
-    amount = Column(_FDec, nullable=True)
+    for n in periods():
+        exec(f"p{n} = Column(_FDec, server_default='0')")
 
 
 class nonp_internal(Base):
