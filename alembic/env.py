@@ -8,6 +8,7 @@ from finance_manager.database.db import DB
 from finance_manager.database.spec import Base
 from finance_manager.config import Config as AppConfig
 
+from finance_manager.database.replaceable import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
