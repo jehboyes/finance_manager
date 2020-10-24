@@ -3,7 +3,6 @@
 Module for the database class
 """
 
-from finance_manager.database.spec import Base
 from finance_manager.functions import sa_con_string
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -25,13 +24,10 @@ class DB():
         Custom config class. If passed, uses the db variables to automatically generate string.  
     """
 
-    def __init__(self, engine_string=None, verbose=False, config=None, debug=False):
+    def __init__(self, verbose=False, config=None, debug=False):
         self.verbose = verbose
         self.debug = debug
-        if debug:
-            # Work in memory
-            self.engine_string = "sqlite:///:memory:"
-        elif config is not None:
+        if config is not None:
             self.engine_string = sa_con_string(dialect=config.read('dialect'),
                                                server=config.read('server'),
                                                db=config.read('database'),
@@ -44,9 +40,8 @@ class DB():
 
     def __enter__(self):
         self._engine = create_engine(self.engine_string, echo=self.verbose)
-        if self.debug:
-            Base.metadata.create_all(self._engine)
         self._sfactory = sessionmaker(bind=self._engine)
+        self.con = self._engine.connect()
         return self
 
     def __exit__(self, type, value, traceback):
