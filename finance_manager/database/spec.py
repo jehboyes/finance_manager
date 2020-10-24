@@ -25,7 +25,6 @@ _FDec = DECIMAL(precision=18, scale=2)
 Base = declarative_base()
 
 # Dummy in memory database for testing
-
 engine = create_engine("sqlite:///:memory:", echo=False)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -77,6 +76,11 @@ class cost_centre(Base):
 
 
 class f_set_cat(Base):
+    """
+    Set categories
+
+    BP1, forecast P3 etc
+    """
     __tablename__ = "f_set_cat"
     set_cat_id = Column(CHAR(3), primary_key=True)
     description = Column(VARCHAR(50))
@@ -85,8 +89,13 @@ class f_set_cat(Base):
 
 
 class f_set(Base):
-    __tablename__ = "f_set"
+    """
+    Finance sets
 
+    Integral part of data structure. Unique by acad_year, costc, category. For example,
+    there can only be 1 2020 BP3 MA1600. 
+    """
+    __tablename__ = "f_set"
     set_id = Column(INTEGER(), primary_key=True)
     acad_year = Column(INTEGER(), nullable=False)
     costc = Column(CHAR(6), ForeignKey(
@@ -94,9 +103,17 @@ class f_set(Base):
     set_cat_id = Column(CHAR(3), ForeignKey(
         "f_set_cat.set_cat_id", ondelete="CASCADE"), nullable=False)
     category = relationship("f_set_cat", back_populates="f_sets")
+    curriculum_id = Column(INTEGER())
+    curriculum_hours = Column(DECIMAL(20, 5))
 
 
 class finance_instance(Base):
+    """
+    An instance of finance records for a set
+
+    Allows for viewing the finace history of a set. 
+    """
+
     __tablename__ = "f_finance_instance"
 
     instance_id = Column(INTEGER(), primary_key=True, autoincrement=True,
@@ -161,10 +178,10 @@ class inc_courses(Base):
                         mssql_identity_start=1000, mssql_identity_increment=1)
     course_name = Column(VARCHAR(50), nullable=True)
     students = Column(INTEGER(), autoincrement=False, nullable=True)
-    fee = Column(DECIMAL(precision=10, scale=5), nullable=True)
+    fee = Column(_FDec, nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
     for n in periods():
-        exec(f"p{n} = Column(DECIMAL(10,5), server_default='0')")
+        exec(f"p{n} = Column(_FDec, server_default='0')")
 
 
 class inc_other(Base):
@@ -207,13 +224,23 @@ class pay_fracclaim(Base):
 
 
 class claim_type(Base):
+    """
+    Table for claim types
+    """
     __tablename__ = "input_pay_claim_type"
 
     claim_type_id = Column(CHAR(3), primary_key=True)
     description = Column(VARCHAR(50))
+    variable_rate = Column(BIT())
+    base_multiplier = Column(DECIMAL(10, 5))
+    holiday_multiplier = Column(DECIMAL(10, 5))
+    rate_uplift = Column(_FDec)
 
 
 class pay_claim(Base):
+    """
+    Claim lines
+    """
     __tablename__ = "input_pay_claim"
 
     claim_id = Column(INTEGER(), primary_key=True, autoincrement=True,
@@ -295,7 +322,33 @@ class pension(Base):
 
     pension_id = Column(VARCHAR(3), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
-    emp_cont_rate = Column(DECIMAL(10, 8), nullable=False)
+
+
+class pension_emp_cont(Base):
+    """
+    Employers pension contributions for each month, by year
+    """
+    __tablename__ = "staff_pension_contrib"
+
+    pension_id = Column(VARCHAR(3), ForeignKey(
+        "staff_pension.pension_id"), primary_key=True)
+    acad_year = Column(INTEGER(), primary_key=True)
+    for n in periods():
+        exec(f"p{n} = Column(DECIMAL(6,5), server_default='0')")
+
+
+class ni(Base):
+    """
+    National insurance secondary threshold 
+
+    Has one rate for year, and threshold by month
+    """
+    __tablename__ = 'staff_ni'
+
+    acad_year = Column(INTEGER(), primary_key=True)
+    rate = Column(DECIMAL(9, 8))
+    for n in periods():
+        exec(f"p{n} = Column(_FDec, server_default='0')")
 
 
 class nonp_other(Base):
