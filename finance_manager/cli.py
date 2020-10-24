@@ -56,7 +56,8 @@ def load(config, overwrite, table_name, filepath):
                         labels = [val for val in rows[i]]
                         first_row = False
                     else:
-                        values = {x[0]: x[1] for x in zip(labels, rows[i])}
+                        values = {x[0]: x[1]
+                                  for x in zip(labels, rows[i]) if len(x[1]) > 0}
                         records.append(values)
             click.echo("Committing...")
             session.bulk_insert_mappings(table, records)
@@ -101,8 +102,6 @@ def curriculum(config, costc, set_id, cat, year):
         for s in sets:
             s.curriculum_hours = hours.get((s.curriculum_id, s.costc), 0)
         session.commit()
-
-    db_cm = DB(config=config)
 
 
 @fm.group()

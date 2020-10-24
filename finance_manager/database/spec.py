@@ -263,8 +263,8 @@ class pay_staff(Base):
         "staff_post_status.post_status_id"), nullable=True)
     post_type_id = Column(CHAR(5), ForeignKey(
         "staff_post_type.post_type_id"), nullable=True)
-    title = Column(VARCHAR(50), nullable=True)
-    name = Column(VARCHAR(50), nullable=True)
+    title = Column(VARCHAR(200), nullable=True)
+    name = Column(VARCHAR(200), nullable=True)
     staff_id = Column(VARCHAR(8), nullable=True)
     post_id = Column(VARCHAR(50), nullable=True)
     start_date = Column(DATE(), nullable=True)
@@ -279,7 +279,7 @@ class pay_staff(Base):
     pension_id = Column(VARCHAR(3), ForeignKey(
         "staff_pension.pension_id"), nullable=True)
     travel_scheme = Column(_FDec, nullable=True)
-    teaching_hours = Column(DECIMAL(precision=10, scale=5), nullable=True)
+    teaching_hours = Column(DECIMAL(precision=10, scale=5), nullable=True, server_default='0')
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
     staff_line_id = Column(INTEGER(), primary_key=True, autoincrement=True,
                            mssql_identity_start=1000, mssql_identity_increment=1)
