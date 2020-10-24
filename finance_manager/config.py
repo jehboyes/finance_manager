@@ -30,7 +30,7 @@ class Config(object):
                         'database': '',
                         'server': '',
                         'dialect': '',
-                        'pydriver': '',
+                        'py_driver': '',
                         'driver': '',
                         'username': '',
                         'password': ''}
@@ -74,7 +74,7 @@ class Config(object):
         Update or create config variables in the current environment/section
         """
         for item, value in item_dict.items():
-            print(item, value)
+            print(f"{self.section}: Writing {item} as {value}")
             self._cp[self.section][item] = value
         self._save()
 
