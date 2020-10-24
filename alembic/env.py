@@ -16,6 +16,7 @@ config = context.config
 
 # Define database from local config
 ac = AppConfig()
+ac.set_env("planning")
 db = DB(config=ac)
 config.set_main_option('sqlalchemy.url', db.engine_string)
 
