@@ -9,6 +9,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        finance_manager=finance_manager.cli:fm
+        fm=finance_manager.cli:fm
     ''',
 )
