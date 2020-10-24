@@ -25,7 +25,7 @@ def sa_con_string(dialect, server, db,  py_driver=None, user=None, password='', 
     """
     Formats connection variables into SQL Alchemy string
 
-
+    ...
 
     Parameters
     ----------
@@ -43,6 +43,11 @@ def sa_con_string(dialect, server, db,  py_driver=None, user=None, password='', 
         Password for given username. Can be blank
     driver : str
         Specific driver to use when connecting  
+
+    Returns
+    -------
+    str
+        SQL Alchemy engine connection string
     """
     # Configure security
     user = '' if user is None else user
