@@ -2,18 +2,43 @@
 Classes required to implement replaceable db object migrations
 
 Creating and updating views or stored procedures can be achieved in alembic migrations
-by using the classes here. Note that migrations are manual: they will not be reflected in autogenerate. 
+by using the classes here. Note that migrations are manual: they will not be reflected in autogenerate.
 
 https://alembic.sqlalchemy.org/en/latest/cookbook.html#replaceable-objects
 
+Also adds a stamp to show that the view was created externally and shouldn't be directly modified in the database
 """
 
 from alembic.operations import Operations, MigrateOperation
+from datetime import datetime
+from getpass import getuser
+import pkg_resources  # part of setuptools
+version = pkg_resources.require("finance_manager")[0].version
+
+stamp = f"""
+-- ===================================================
+--              FINANCE MANAGER OBJECT
+--
+-- N.B. Do not alter directly: alterations made 
+--      may be overwritten by future migrations.
+--
+-- Last updated:  {datetime.today()}
+-- FM version:    {version} 
+-- Update run by: {getuser()}
+-- ===================================================
+"""
 
 
 class ReplaceableObject(object):
     """
     A database object which can be updated via `DROP` & `CREATE`
+
+    Parameters
+    ----------
+    name: str
+        Name of the object
+    sqltext: str
+        SQL definition of object
     """
 
     def __init__(self, name, sqltext):
@@ -72,25 +97,26 @@ class DropViewOp(ReversibleOp):
         return CreateViewOp(self.target)
 
 
-@Operations.register_operation("create_sp", "invoke_for_target")
-@Operations.register_operation("replace_sp", "replace")
-class CreateSPOp(ReversibleOp):
+@Operations.register_operation("create_function", "invoke_for_target")
+@Operations.register_operation("replace_function", "replace")
+class CreatefunctionOp(ReversibleOp):
     def reverse(self):
-        return DropSPOp(self.target)
+        return DropfunctionOp(self.target)
 
 
-@Operations.register_operation("drop_sp", "invoke_for_target")
-class DropSPOp(ReversibleOp):
+@Operations.register_operation("drop_function", "invoke_for_target")
+class DropfunctionOp(ReversibleOp):
     def reverse(self):
-        return CreateSPOp(self.target)
+        return CreatefunctionOp(self.target)
 
 
 @Operations.implementation_for(CreateViewOp)
 def create_view(operations, operation):
     operations.execute("DROP VIEW IF EXISTS %s" % (
         operation.target.name))
-    operations.execute("CREATE VIEW %s AS %s" % (
+    operations.execute("CREATE VIEW %s AS\r %s \r %s" % (
         operation.target.name,
+        stamp,
         operation.target.sqltext
     ))
 
@@ -100,15 +126,18 @@ def drop_view(operations, operation):
     operations.execute("DROP VIEW %s" % operation.target.name)
 
 
-@Operations.implementation_for(CreateSPOp)
-def create_sp(operations, operation):
+@Operations.implementation_for(CreatefunctionOp)
+def create_function(operations, operation):
+    operations.execute("DROP FUNCTION IF EXISTS %s" % operation.target.name)
     operations.execute(
-        "CREATE FUNCTION %s %s" % (
-            operation.target.name, operation.target.sqltext
+        "CREATE FUNCTION %s \n %s \n %s" % (
+            operation.target.name,
+            stamp,
+            operation.target.sqltext
         )
     )
 
 
-@Operations.implementation_for(DropSPOp)
-def drop_sp(operations, operation):
+@Operations.implementation_for(DropfunctionOp)
+def drop_function(operations, operation):
     operations.execute("DROP FUNCTION %s" % operation.target.name)
