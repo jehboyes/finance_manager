@@ -105,6 +105,7 @@ class f_set(Base):
     category = relationship("f_set_cat", back_populates="f_sets")
     curriculum_id = Column(INTEGER())
     curriculum_hours = Column(DECIMAL(20, 5))
+    student_number_usage_id = Column(VARCHAR(100))
 
 
 class finance_instance(Base):
@@ -279,7 +280,8 @@ class pay_staff(Base):
     pension_id = Column(VARCHAR(3), ForeignKey(
         "staff_pension.pension_id"), nullable=True)
     travel_scheme = Column(_FDec, nullable=True)
-    teaching_hours = Column(DECIMAL(precision=10, scale=5), nullable=True, server_default='0')
+    teaching_hours = Column(DECIMAL(precision=10, scale=5),
+                            nullable=True, server_default='0')
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
     staff_line_id = Column(INTEGER(), primary_key=True, autoincrement=True,
                            mssql_identity_start=1000, mssql_identity_increment=1)
