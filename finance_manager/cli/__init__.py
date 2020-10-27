@@ -1,6 +1,6 @@
 # pylint: disable=no-member
 import click
-from .edit import edit
+from .database import database
 from .load import load
 from .permissions import permissions
 from .settings import settings
@@ -23,6 +23,6 @@ def fm(config):
     config.obj.set_section("planning")
 
 
-commands = [edit, load, permissions, settings]
+commands = [database, load, permissions, settings]
 for _ in commands:
     fm.add_command(_)

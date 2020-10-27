@@ -5,14 +5,14 @@ from .oncost import oncost
 
 @click.group()
 @click.pass_obj
-def edit(config):
+def database(config):
     """
     Edit data in the main database. 
     """
     pass
 
 
-edit.add_command(oncost)
+database.add_command(oncost)
 
 
 # commands = [payclaim, curriculum, csv]
