@@ -69,8 +69,8 @@ class cost_centre(Base):
     directorate_id = Column(CHAR(1), ForeignKey(
         "fs_directorate.directorate_id", ondelete="CASCADE"), nullable=False)
     owner = Column(VARCHAR(50), nullable=False)
-    supercede_by = Column(CHAR(6), nullable=True)
-    password = Column(VARCHAR(50), nullable=True)
+    supercede_by = Column(CHAR(6), nullable=True, comment="Use to indicate where a cost centre subsumes this one going forward")
+    password = Column(VARCHAR(50), nullable=True, comment="Legacy vegan password from excel era")
 
     directorate = relationship("directorate", back_populates="cost_centres")
 
@@ -102,11 +102,12 @@ class f_set(Base):
         "fs_cost_centre.costc", ondelete="CASCADE"), nullable=False)
     set_cat_id = Column(CHAR(3), ForeignKey(
         "f_set_cat.set_cat_id", ondelete="CASCADE"), nullable=False)
-    category = relationship("f_set_cat", back_populates="f_sets")
-    curriculum_id = Column(INTEGER())
-    curriculum_hours = Column(DECIMAL(20, 5))
-    student_number_usage_id = Column(VARCHAR(100))
+    curriculum_id = Column(INTEGER(), comment = "Foreign key to CM Database")
+    curriculum_hours = Column(DECIMAL(20, 5), comment="From CM; updated manually to reflect Luminate ownership philosophy.")
+    student_number_usage_id = Column(VARCHAR(100), comment="Foreign key for CM Database") 
+    allow_student_number_change = Column(BIT(), server_default="0", comment="Allow users to input different student numbers") 
 
+    category = relationship("f_set_cat", back_populates="f_sets") 
 
 class finance_instance(Base):
     """
@@ -132,7 +133,7 @@ class account(Base):
     description = Column(VARCHAR(50))
     summary_code = Column(CHAR(3), ForeignKey(
         "fs_summary_code.summary_code"), nullable=False)
-    hide_from_users = Column(BIT(), server_default='0')
+    hide_from_users = Column(BIT(), server_default='0', comment="Control ability to use in the app's 'Other' screens")
     default_balance = Column(CHAR(2), ForeignKey(
         "fs_entry_type.balance_type"), nullable=False)
 
@@ -199,8 +200,9 @@ class inc_other(Base):
 class inc_bursary(Base):
     __tablename__ = 'input_inc_bursary'
 
-    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"),
-                    primary_key=True, autoincrement=False, nullable=False)
+    bursary_id = Column(INTEGER(),autoincrement=True,
+                    mssql_identity_start=1000, mssql_identity_increment=1)
+    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"))
     description = Column(VARCHAR(250), primary_key=True, nullable=True)
     amount = Column(_FDec, nullable=True)
     number = Column(INTEGER(), nullable=True)
