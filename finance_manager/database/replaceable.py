@@ -23,7 +23,7 @@ stamp = f"""
 --      may be overwritten by future migrations.
 --
 -- Last updated:  {datetime.today()}
--- FM version:    {version} 
+-- FM version:    [{version}] 
 -- Update run by: {getuser()}
 -- ===================================================
 """
