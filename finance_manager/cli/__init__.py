@@ -19,10 +19,13 @@ def fm(config):
     This application was designed to be a single point of reference 
     for administration tasks relating to the finance manager tool.
     """
+    # Define config object to be passed to subcommands via click.pass_obj
     config.obj = Config()
+    # Force the default configuration database to be planning
     config.obj.set_section("planning")
 
 
+# Attach the rest of the click commands
 commands = [database, load, permissions, settings]
 for _ in commands:
     fm.add_command(_)
