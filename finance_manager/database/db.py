@@ -37,6 +37,8 @@ class DB():
                                                password=config.read(
                                                    'password'),
                                                driver=config.read('driver'))
+        if self.debug:
+            print(self.engine_string)
 
     def __enter__(self):
         self._engine = create_engine(self.engine_string, echo=self.verbose)
