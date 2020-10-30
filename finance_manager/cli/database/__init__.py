@@ -2,6 +2,7 @@ import click
 
 from .oncost import oncost
 from .preview import preview
+from .newset import newset
 
 
 @click.group()
@@ -13,9 +14,6 @@ def database(config):
     pass
 
 
-database.add_command(oncost)
-database.add_command(preview)
-
-# commands = [payclaim, curriculum, csv]
-# for command in commands:
-#     load.add_command(command)
+commands = [oncost, preview, newset]
+for command in commands:
+    database.add_command(command)
