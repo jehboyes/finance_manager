@@ -1,11 +1,12 @@
-class periods:
+class periods():
     """
     Iterator for periods
 
     Exists for brevity/clarity in actual code
     """
 
-    def __init__(self):
+    def __init__(self, end=12):
+        self.end = end
         pass
 
     def __iter__(self):
@@ -13,12 +14,36 @@ class periods:
         return self
 
     def __next__(self):
-        if self.a <= 12:
+        if self.a <= self.end:
             x = self.a
             self.a += 1
             return x
         else:
             raise StopIteration
+
+
+def period_to_month(period, acad_year):
+    """
+    Financial month and year to calendar month and year.    
+
+    Converts a period and academic year into the actual month number and calendar year.
+
+    Parameters
+    ----------
+    period : int
+        Accounting period
+    acad_year : int
+        Academic year (calendar year commencing)
+    """
+    # Because August is P1
+    period += 7
+    # Increment calendar year if new period is in next year (i.e. >12)
+    acad_year += (period-1)//12
+    # Bring period back to legitimate month number, and correct for 0
+    period = period % 12
+    if period == 0:
+        period = 12
+    return period, acad_year
 
 
 def sa_con_string(dialect, server, db,  py_driver=None, user=None, password='', driver=None):
@@ -63,7 +88,7 @@ def sa_con_string(dialect, server, db,  py_driver=None, user=None, password='', 
         dialect = '+'.join([dialect, py_driver])
 
     # configure additional dialect
-    if driver is not None:
+    if driver is not None and len(driver) > 0:
         driver = '&driver='+driver.replace(" ", "+")
 
     con = f"{dialect}://{login}@{server}/{db}{trust}{driver}"
