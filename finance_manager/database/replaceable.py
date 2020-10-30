@@ -6,7 +6,7 @@ by using the classes here. Note that migrations are manual: they will not be ref
 
 https://alembic.sqlalchemy.org/en/latest/cookbook.html#replaceable-objects
 
-Also adds a stamp to show that the view was created externally and shouldn't be directly modified in the database
+Also adds a stamp to show that the object was created externally and shouldn't be directly modified in the database
 """
 
 from alembic.operations import Operations, MigrateOperation
