@@ -22,12 +22,12 @@ headers = ''
 
 # work out a line's monthly FTE
 staff_month_sal = ", \n".join(
-    [f"dbo.udfGetMonthProp(f_set.acad_year, {n}, s.start_date, s.end_date)*vFTE.FTE*(ss.value+s.allowances)/12 as p{n}"
+    [f"dbo.udfGetMonthProp(f_set.acad_year, {n}, s.start_date, s.end_date)*vFTE.FTE*(ss.value+ISNULL(s.allowances,0))/12 as p{n}"
      for n in periods()])
 staff_month_sal_total = ", \n".join(
     [f"SUM(m.p{n}) as p{n}" for n in periods()])
 staff_month_ni = ", \n".join(
-    [f"dbo.udfNI(mt.p{n}, ni.p{n}, ni.rate)*m.p{n}/NULLIF(ISNULL(NULLIF(mt.p{n},0),m.p{n}),0) as ni_p{n}" for n in periods()])
+    [f"ISNULL(dbo.udfNI(mt.p{n}, ni.p{n}, ni.rate)*m.p{n}/NULLIF(ISNULL(NULLIF(mt.p{n},0),m.p{n}),0),0) as ni_p{n}" for n in periods()])
 staff_month_pension = ", \n".join(
     [f"m.p{n}*ISNULL(pension.p{n},0) as pension_p{n}" for n in periods()])
 staff_travel_months = 9
@@ -36,6 +36,19 @@ staff_travel_allowance = ", \n ".join(
 staff_total_pay = "+".join([f"a.p{n}" for n in periods()])
 staff_total_ni = "+".join([f"a.ni_p{n}" for n in periods()])
 staff_total_pension = "+".join([f"a.pension_p{n}" for n in periods()])
+
+# Unpivot view strings
+ucase_p_list = ", ".join([f"P{n}" for n in periods()])
+staff_unpivot_ni = ", ".join([f"ni_p{n} as P{n}" for n in periods()])
+staff_unpivot_pension = ", ".join([f"pension_p{n} as P{n}" for n in periods()])
+staff_unpivot_core = """
+SELECT staff_line_id, period, {col_header}
+FROM 
+    (SELECT staff_line_id, {periods}
+        FROM v_calc_staff_monthly_all) p
+UNPIVOT 
+    ({col_header} for period in ("""+ucase_p_list + """)) as unp
+"""
 
 views = [o("v_input_pay_fracclaim", f"""
 SELECT fs.set_id, ISNULL(fc.hours, 0) as hours, p.period 
@@ -172,7 +185,17 @@ INNER JOIN input_pay_staff s ON s.staff_line_id = m.staff_line_id
 LEFT OUTER JOIN staff_pension_contrib pension ON pension.pension_id = s.pension_id AND pension.acad_year = m.acad_year
 INNER JOIN staff_ni ni ON ni.acad_year = m.acad_year 
 """),
-    o("v_input_pay_staff", f"""
+    o("v_calc_staff_tabulated", f"""
+SELECT sal.*, ni.ni, pen.pension 
+FROM 
+(""" + staff_unpivot_core.format(col_header="salary", periods=ucase_p_list) + """) as sal
+INNER JOIN 
+(""" + staff_unpivot_core.format(col_header="ni", periods=staff_unpivot_ni) + """) as ni 
+    ON ni.period = sal.period AND ni.staff_line_id = sal.staff_line_id
+INNER JOIN 
+(""" + staff_unpivot_core.format(col_header="pension", periods=staff_unpivot_pension) + """) as pen 
+    ON pen.period = sal.period AND pen.staff_line_id = sal.staff_line_id"""
+      ), o("v_input_pay_staff", f"""
 SELECT s.*, 
 {staff_total_pay} as pay_total,
 {staff_total_ni} as ni_total,
