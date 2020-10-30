@@ -2,7 +2,7 @@
 import click
 import os
 import progressbar
-
+import csv as csv_
 from finance_manager.database.db import DB
 from finance_manager.database.spec import table_map
 
@@ -29,7 +29,7 @@ def csv(config, overwrite, table_name, filepath):
                 click.echo("Deleting existing records")
                 session.query(table).delete()
             with open(filepath, newline='') as f:
-                rdr = csv.reader(f)
+                rdr = csv_.reader(f)
                 # Load into memory, to get count of rows
                 rows = [row for row in rdr]
                 click.echo(f"{len(rows)} rows found in file")
