@@ -16,7 +16,7 @@ def payclaim(config, target_cat, acad_year, period):
     """
     Import claimed hours from payclaim.
 
-    Creates pay claim 'actual' lines using the hours claimed in Pay Claim.
+    Creates pay claim 'actual' lines using the hours claimed in PayClaim.
     Adds lines to TARGET_CAT sets in ACAD_YEAR up to and including the given PERIOD.
     Uses TARGET_CAT and ACAD_YEAR to find cost centre -> set_id mappings.
 
@@ -58,14 +58,14 @@ def payclaim(config, target_cat, acad_year, period):
             """
 
     sql = f"""SELECT SUM(avg_hourly_rate*claimed_hours)/SUM(claimed_hours) as rate, 
-                CONCAT(SUM(claim_count), ' claims submitted') as description, short_type as claim_type_id, costc, 
+                CONCAT(SUM(claim_count), ' claims submitted in PayClaim') as description, short_type as claim_type_id, costc, 
                 {pivot_periods} 
                 FROM ({inner_sql}) as x 
                 WHERE period in ({period_filter})
                 GROUP BY short_type, costc"""
     # Convert to SQL Alchemy statement
     sql = text(sql)
-    # Setup config to use payclaim credentials
+    # Setup config to use payclaim credentials, connect and execute
     config.set_section("payclaim")
     with DB(config=config) as db:
         click.echo(f"Reading from Payclaim database... ", nl=False)
@@ -74,19 +74,30 @@ def payclaim(config, target_cat, acad_year, period):
         values = execution.fetchall()
         click.echo("Complete.")
     claim_data = [{k: v for k, v in zip(keys, row)} for row in values]
+    # setup config to use planning credentials
     config.set_section("planning")
     with DB(config=config) as db:
         session = db.session()
-        # Query of f_sets relevant
-        f_set_ids = session.query(f_set.set_id, f_set.costc).filter(and_(f_set.acad_year == acad_year,
-                                                                         f_set.set_cat_id == target_cat)).all()
-        costc_dict = {c: s for s, c in f_set_ids}
+        # Query of f_sets relevant, use for getting ids for both inserts *and* update
+        f_set_query = session.query(f_set.set_id, f_set.costc).filter(and_(f_set.acad_year == acad_year,
+                                                                           f_set.set_cat_id == target_cat))
+        costc_dict = {c: s for s, c in f_set_query.all()}
+        # Join to pay claims for setting early periods to 0
+        update_records = []
+        for line in f_set_query.join(pay_claim).all():
+            update = {f"p{n}": 0 for n in periods(period)}
+            update["claim_id"] = line.claim_id
+            update_records.append(update)
+        session.bulk_update_mappings(pay_claim, update_records)
         insert_records = []
+        # Replace costc with set id and add to bulk insert
         for row in claim_data:
             row["set_id"] = costc_dict[row["costc"]]
             row.pop("costc")
             insert_records.append(row)
-        click.echo("Committing... ", nl=False)
         session.bulk_insert_mappings(pay_claim, insert_records)
-        session.commit()
-        click.echo("Complete.")
+        if click.confirm(f"Update {len(update_records)} records and insert {len(insert_records)} records in {payclaim.__tablename__}?"):
+            session.commit()
+            click.echo("Complete.")
+        else:
+            click.echo("Cancelled.")
