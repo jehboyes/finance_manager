@@ -2,7 +2,7 @@
 import click
 import progressbar
 from sqlalchemy import text, and_
-from finance_manager.database.db import DB
+from finance_manager.database import DB
 from finance_manager.database.spec import f_set, pay_claim
 from finance_manager.functions import period_to_month, periods
 

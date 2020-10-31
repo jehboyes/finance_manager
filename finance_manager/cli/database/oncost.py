@@ -2,7 +2,7 @@
 
 import click
 
-from finance_manager.database.db import DB
+from finance_manager.database import DB
 from finance_manager.database.spec import ni as ni_table, pension_emp_cont
 from finance_manager.functions import periods
 

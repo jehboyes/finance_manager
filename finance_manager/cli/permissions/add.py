@@ -3,7 +3,7 @@ import click
 import sqlalchemy
 from sqlalchemy import and_
 from finance_manager.database.spec import permission, cost_centre, directorate
-from finance_manager.database.db import DB
+from finance_manager.database import DB
 
 
 @click.command()

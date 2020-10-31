@@ -3,7 +3,7 @@ import click
 import os
 import progressbar
 import csv as csv_
-from finance_manager.database.db import DB
+from finance_manager.database import DB
 from finance_manager.database.spec import table_map
 
 

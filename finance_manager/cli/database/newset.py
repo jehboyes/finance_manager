@@ -1,7 +1,7 @@
 # pylint: disable=no-member
 import click
 
-from finance_manager.database.db import DB
+from finance_manager.database import DB
 from finance_manager.database.spec import f_set, cost_centre
 
 

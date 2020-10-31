@@ -4,7 +4,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from finance_manager.database.db import DB
+from finance_manager.database import DB
 from finance_manager.database.spec import Base
 from finance_manager.config import Config as AppConfig
 

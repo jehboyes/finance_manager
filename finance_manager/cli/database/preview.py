@@ -1,6 +1,6 @@
 import click
 
-from finance_manager.database.db import DB
+from finance_manager.database import DB
 from sqlalchemy import text
 from tabulate import tabulate
 

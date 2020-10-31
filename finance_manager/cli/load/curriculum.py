@@ -1,7 +1,7 @@
 # pylint: disable=no-member
 
 import click
-from finance_manager.database.db import DB
+from finance_manager.database import DB
 from finance_manager.database.spec import f_set
 
 
@@ -16,12 +16,14 @@ def curriculum(config, costc, set_id, cat, year):
 
     Use the options to restrict which sets are updated
     """
-    config.set_section("cm")  # Get connection variables for curriculum database
+    config.set_section(
+        "cm")  # Get connection variables for curriculum database
     with DB(config=config) as db:  # Connect to curriculum db to get total hours
         hours = db.con.execute(
             "SELECT curriculum_id, costc, hours FROM vCurriculumEnrolsForAppTotal").fetchall()
     hours = {(x[0], x[1]): x[2] for x in hours}
-    config.set_section("planning")  # Connection variables for planning database
+    # Connection variables for planning database
+    config.set_section("planning")
     with DB(config=config) as db:  # Connect to planning DB
         session = db.session()
         set_list = session.query(f_set)
