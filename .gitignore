@@ -4,6 +4,9 @@ config.ini
 # alembic history
 alembic/versions
 
+# vscode settings
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
