@@ -1,3 +1,7 @@
+import functools
+import click
+
+
 class periods():
     """
     Iterator for periods
@@ -94,3 +98,20 @@ def sa_con_string(dialect, server, db,  py_driver=None, user=None, password='', 
     con = f"{dialect}://{login}@{server}/{db}{trust}{driver}"
 
     return con
+
+
+def slow_line(func, before_text, after_text, show=True):
+    """
+    Prints text before and after a line has executed
+    """
+    @functools.wraps(func)
+    def wrapper_decorator(*args, **kwargs):
+        if show and before_text is not None:
+            click.echo(before_text, nl=False)
+        value = func(*args, **kwargs)
+        if show and after_text is not None:
+            click.echo(after_text)
+        elif show:  # Carriage return
+            click.echo()
+        return value
+    return wrapper_decorator
