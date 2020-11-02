@@ -20,6 +20,8 @@ def payclaim(config, target_cat, acad_year, period):
     Adds lines to TARGET_CAT sets in ACAD_YEAR up to and including the given PERIOD.
     Uses TARGET_CAT and ACAD_YEAR to find cost centre -> set_id mappings.
 
+    \f
+
     Parameters
     ----------
     config
@@ -68,7 +70,7 @@ def payclaim(config, target_cat, acad_year, period):
     # Setup config to use payclaim credentials, connect and execute
     config.set_section("payclaim")
     with DB(config=config) as db:
-        click.echo(f"Reading from Payclaim database... ", nl=False)
+        click.echo(f"Reading from PayClaim database... ", nl=False)
         execution = db.con.execute(sql)
         keys = execution.keys()
         values = execution.fetchall()
@@ -83,8 +85,10 @@ def payclaim(config, target_cat, acad_year, period):
                                                                            f_set.set_cat_id == target_cat))
         costc_dict = {c: s for s, c in f_set_query.all()}
         # Join to pay claims for setting early periods to 0
+        claim_query = session.query(pay_claim).join(f_set).filter(and_(f_set.acad_year == acad_year,
+                                                                       f_set.set_cat_id == target_cat))
         update_records = []
-        for line in f_set_query.join(pay_claim).all():
+        for line in claim_query.all():
             update = {f"p{n}": 0 for n in periods(period)}
             update["claim_id"] = line.claim_id
             update_records.append(update)
@@ -93,10 +97,11 @@ def payclaim(config, target_cat, acad_year, period):
         # Replace costc with set id and add to bulk insert
         for row in claim_data:
             row["set_id"] = costc_dict[row["costc"]]
+            row["account"] = 2102
             row.pop("costc")
             insert_records.append(row)
         session.bulk_insert_mappings(pay_claim, insert_records)
-        if click.confirm(f"Update {len(update_records)} records and insert {len(insert_records)} records in {payclaim.__tablename__}?"):
+        if click.confirm(f"Update {len(update_records)} records and insert {len(insert_records)} records in {pay_claim.__tablename__}?"):
             session.commit()
             click.echo("Complete.")
         else:
