@@ -174,7 +174,7 @@ class finance(Base):
     __tablename__ = "f_finance"
 
     instance_id = Column(INTEGER(), ForeignKey(
-        "f_finance_instance.instance_id"), primary_key=True)
+        "f_finance_instance.instance_id", ondelete="CASCADE"), primary_key=True)
     account = Column(CHAR(4), ForeignKey(
         "fs_account.account"), primary_key=True)
     period = Column(INTEGER(), primary_key=True)
@@ -208,12 +208,22 @@ class inc_bursary(Base):
     __tablename__ = 'input_inc_bursary'
 
     bursary_id = Column(INTEGER(), autoincrement=True,
-                        mssql_identity_start=1000, mssql_identity_increment=1)
+                        mssql_identity_start=1000, mssql_identity_increment=1, primary_key=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"))
-    description = Column(VARCHAR(250), primary_key=True, nullable=True)
+    description = Column(VARCHAR(250), nullable=True)
     amount = Column(_FDec, nullable=True)
     number = Column(INTEGER(), nullable=True)
     status = Column(CHAR(1), nullable=True)
+
+
+class inc_grant(Base):
+    """
+    OfS Grant
+    """
+    __tablename__ = 'input_inc_grant'
+
+    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), primary_key=True)
+    amount = Column(_FDec, comment="Amount of OfS Grant to be recieved")
 
 
 class inc_feeloss(Base):
@@ -303,6 +313,9 @@ class post_type(Base):
     post_type_id = Column(CHAR(5), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
     lcc_description = Column(VARCHAR(50), nullable=False)
+    salary_account = Column(CHAR(4), ForeignKey("fs_account.account"))
+    ni_account = Column(CHAR(4), ForeignKey("fs_account.account"))
+    pension_account = Column(CHAR(4), ForeignKey("fs_account.account"))
 
 
 class post_status(Base):

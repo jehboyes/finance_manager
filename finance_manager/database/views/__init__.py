@@ -2,6 +2,8 @@
 Contains defintions for the more complex views, i.e. those which explicitly reference multiple period columns
 
 Handy strings are at the top, then actual views are defined as replacable objects (in `views` list).
+
+TODO Split this file into grouped versions
 """
 from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.functions import periods
@@ -98,13 +100,7 @@ SELECT set_id, acad_year, costc, 'Summary' as sec,'Total' as summary_code, MAX(s
 	MAX(line_order)+1, finance_summary, format = 'total', SUM(amount*coefficient)*-1 as amount 
 FROM v_mri_finance
 GROUP BY set_id, acad_year, costc, finance_summary
-    """), o("v_ui_finance", f"""
-SELECT costc, sec, summary_code, sec_order, line_order, format, [2020 BP3] as a
-FROM (SELECT costc, sec, summary_code, sec_order, line_order, finance_summary, format, SUM(amount) as amount 
-FROM [v_mri_finance_grouped_subtotal] GROUP BY costc, sec, summary_code, sec_order, line_order, finance_summary, format) p 
-PIVOT
-(SUM(amount) FOR finance_summary in ([2020 BP3])) as pvt    
-    """), o("v_input_inc_courses", f"""
+    """),  o("v_input_inc_courses", f"""
 SELECT *, {p_sum_string} as total 
 FROM input_inc_courses
     """),
