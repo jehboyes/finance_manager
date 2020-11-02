@@ -32,7 +32,7 @@ INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id 
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 UNION ALL
 --HE FEE WITHDRAWAL
-SELECT s.set_id, 1900 as account, p.period, -income/12*loss.rate as value FROM 
+SELECT s.set_id, 1900 as account, p.period, -income/12.0*loss.rate as value FROM 
 curriculummodel.dbo.vfeeincomeinputcostc f 
 INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
 INNER JOIN v_input_inc_feeloss loss ON s.set_id = loss.set_id AND f.[Fee Status] = loss.status
