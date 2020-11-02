@@ -11,8 +11,9 @@ from finance_manager.database.spec import Base, f_set
 @click.argument("toacadyear", type=int)
 @click.argument("fromsetcat")
 @click.argument("fromacadyear", type=int)
+@click.option("--omit", "-o", multiple=True, help="A table to omit (can be used multiple times).")
 @click.pass_obj
-def rollforward(config, tosetcat, toacadyear, fromsetcat, fromacadyear):
+def rollforward(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit):
     """
     Copy forward input table contents to those with TOSETCAT in TOACADYEAR from FROMSETCAT FROMACADYEAR.
 
@@ -36,7 +37,9 @@ def rollforward(config, tosetcat, toacadyear, fromsetcat, fromacadyear):
     for model in Base._decl_class_registry.values():
         if hasattr(model, '__tablename__'):
             # Automatically add any tables that begin with 'input' as per naming convention
-            if model.__tablename__[:5] == 'input':
+            if model.__tablename__[:5] == 'input' \
+                    and model.__tablename__[-4:] != 'type' \
+                    and not (model.__tablename__ in omit):
                 tables.append(model)
 
     with DB(config=config) as db:
@@ -52,15 +55,28 @@ def rollforward(config, tosetcat, toacadyear, fromsetcat, fromacadyear):
         for old, new in set_map_query.all():
             set_map[old] = new
         # For each input table, reinsert from old_id with new set_id
-        for table in tables:
-            records = []
-            table_query = s.query(table).join(f_set).filter(and_(f_set.acad_year == fromacadyear,
-                                                                 f_set.set_cat_id == fromsetcat))
-            # For each row old id, change id and add to bulk insert
-            for row in table_query.all():
-                record = row.__dict__
-                record["set_id"] = set_map[row.set_id]
-                records.append(record)
-            s.bulk_insert_mappings(table, records)
+        with click.progressbar(tables, label="Iterating through tables...") as bar:
+            for table in bar:
+                try:
+                    records = []
+                    table_query = s.query(table).join(f_set).filter(and_(f_set.acad_year == fromacadyear,
+                                                                         f_set.set_cat_id == fromsetcat))
+                    if len(table_query.all()) > 0:  # if anything to rollforward
+                        # Get primary keys, as these will need to be removed
+                        pk = []
+                        for col in table.__table__.columns:
+                            if col.primary_key and col.key != 'set_id' and col.key != 'period':
+                                pk.append(col.key)
+                        # For each row old id, change id and add to bulk insert
+                        for row in table_query.all():
+                            record = row.__dict__
+                            for col in pk:
+                                record.pop(col)
+                            record["set_id"] = set_map[row.set_id]
+                            records.append(record)
+                        s.bulk_insert_mappings(table, records)
+                except:
+                    raise RuntimeError(f"Failed on {table.__tablename__}")
         if click.confirm("Confirm rollforward?"):
             s.commit()
+            click.echo("Complete!")
