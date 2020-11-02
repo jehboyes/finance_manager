@@ -3,6 +3,7 @@ import click
 from .oncost import oncost
 from .preview import preview
 from .newset import newset
+from .rollforward import rollforward
 
 
 @click.group()
@@ -14,6 +15,6 @@ def database(config):
     pass
 
 
-commands = [oncost, preview, newset]
+commands = [oncost, preview, newset, rollforward]
 for command in commands:
     database.add_command(command)
