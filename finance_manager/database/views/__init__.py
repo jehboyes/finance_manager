@@ -60,10 +60,10 @@ CROSS JOIN
 	(VALUES {values_clause}) AS X(period)) as p
 LEFT OUTER JOIN input_pay_fracclaim fc ON fc.set_id = fs.set_id AND fc.period = p.period
 """), o("v_mri_finance", f"""
-SELECT f.account, ISNULL(f.amount,0) as amount, e.coefficient,f.period, s.costc, s.acad_year, 
+SELECT a.account, ISNULL(f.amount,0) as amount, e.coefficient,f.period, s.costc, s.acad_year, 
 	scode.description as summary_code, sec.description as sec, sec.position as sec_order, 
 	scode.position as line_order, 
-	sc.description, fi.instance_id, s.set_id, 
+	sc.description, fi.instance_id, s.set_id, a.hide_from_users, a.description as account_description, 
 	cast(s.acad_year as varchar) + ' ' + sc.set_cat_id as finance_summary 
 FROM f_finance_instance fi 
 CROSS JOIN fs_account a
@@ -77,6 +77,11 @@ INNER JOIN
 	(SELECT max(instance_id) as instance_id, set_id FROM f_finance_instance GROUP BY set_id)
 	as most_recent on most_recent.instance_id = fi.instance_id
 """),
+    o("v_ui_finance_breakdown", f"""
+SELECT set_id, summary_code, account, account_description, sum(amount) as amount FROM v_mri_finance
+WHERE hide_from_users <> 1
+GROUP BY set_id, summary_code, account, account_description 
+    """),
     o("v_mri_finance_grouped_subtotal", f"""
 SELECT set_id, acad_year, costc, sec, summary_code, sec_order, line_order, finance_summary, format = 'body',
 	SUM(amount) as amount 
