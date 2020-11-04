@@ -3,11 +3,11 @@ Module for the finance view.
 """
 from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.functions import periods
-jstr = ", \n"
+jstr = ", "
 cj_periods = jstr.join([f"({n})" for n in periods()])
 ptext_as_n = jstr.join([f"p{n} as [{n}]" for n in periods()])
 square_list = jstr.join([f"[{n}]" for n in periods()])
-ni_bit = jstr.join(
+ni_bit = ", \n".join(
     [f"c.p{n}*r.rate*x.a+(c.p{n}*r.rate-n.p{n})*n.rate*x.b as [{n}]" for n in periods()])
 
 
@@ -31,6 +31,16 @@ curriculummodel.dbo.vfeeincomeinputcostc f
 INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 UNION ALL
+--OfS HIGH COST AND CAPITAL GRANT 
+SELECT s.set_id, 1100 as account, p.period, f.students/t.students*(g.capital_grant+g.high_cost_funding)/12 as value FROM 
+curriculummodel.dbo.vfeeincomeinputcostc f 
+INNER JOIN (SELECT year, usage_id, SUM(Students) as students 
+			FROM curriculummodel.dbo.vfeeincomeinputcostc 
+			GROUP BY year, usage_id) as t ON f.usage_id = t.usage_id AND t.year = f.Year
+INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
+INNER JOIN input_inc_grant g ON s.acad_year = g.acad_year AND s.set_cat_id = g.set_cat_id
+CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
+UNION ALL 
 --HE FEE WITHDRAWAL
 SELECT s.set_id, 1900 as account, p.period, -income/12.0*loss.rate as value FROM 
 curriculummodel.dbo.vfeeincomeinputcostc f 
@@ -38,9 +48,21 @@ INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id 
 INNER JOIN v_input_inc_feeloss loss ON s.set_id = loss.set_id AND f.[Fee Status] = loss.status
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 UNION ALL 
+--HIGHER FEE BURSARY
+SELECT CASE a.account WHEN 4370 THEN s.set_id ELSE app.set_id END as set_id, 
+a.account as account, p.period, income/12.0*(1-loss.rate)*b.hfi_prop*b.bursary_prop as value 
+FROM curriculummodel.dbo.vfeeincomeinputcostc f 
+INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
+INNER JOIN v_input_inc_feeloss loss ON s.set_id = loss.set_id AND f.[Fee Status] = loss.status
+INNER JOIN conf_hfi_bursary b ON b.acad_year = s.acad_year AND b.set_cat_id = s.set_cat_id
+INNER JOIN f_set app ON app.acad_year = s.acad_year AND app.set_cat_id = s.set_cat_id AND app.costc = 'MA1420'
+CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
+CROSS JOIN (SELECT * FROM (VALUES (4370), (4360), (4790)) as X(account)) a
+WHERE s.costc <> 'MC1610'
+UNION ALL
 --OTHER INCOME
 SELECT set_id, account, period, value FROM 
-(SELECT set_id, account, {ptext_as_n} FROM v_input_inc_other WHERE account is null) p 
+(SELECT set_id, account, {ptext_as_n} FROM v_input_inc_other WHERE account is NOT NULL) p 
 UNPIVOT (value for period in ({square_list})) unp
 UNION ALL 
 --INTERNAL NON PAY 
@@ -81,7 +103,7 @@ INNER JOIN (SELECT s.set_id, s.post_type_id, SUM(salary) as salary, SUM(NI) as n
 			GROUP BY s.set_id, s.post_type_id) AS v ON v.set_id = f.set_id 
 INNER JOIN staff_post_type pt ON pt.post_type_id = v.post_type_id
 CROSS JOIN (SELECT * FROM (VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12)) as x(period)) p
-CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3)) as x(n)) x
+CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3)) as x(n)) x --This is correct: split each fracclaim period
 WHERE f.hours > 0
 UNION ALL
 --STAFFING
