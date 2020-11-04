@@ -9,12 +9,13 @@ Note however that these are **not** used in the class names, for brevity. They a
 -  **f_** for tables that hold and structure actual finance data
 -  **input_** for tables that are used directly by the interface
 -  **staff_** for the various lookups used exclusively by the pay_staff table
+-  **conf_** for confguration values, intended to be static
 
 """
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import Column, CHAR, VARCHAR, DECIMAL, DATE, INTEGER, create_engine, ForeignKey
+from sqlalchemy import Column, CHAR, VARCHAR, DECIMAL, DATE, INTEGER, create_engine, ForeignKey, UniqueConstraint, Index
 from sqlalchemy.dialects.mssql import BIT, DATETIME
 from finance_manager.functions import periods
 
@@ -30,15 +31,10 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-def generate_period_cols(type_string="_FDec"):
-    """
-    Generate columns for all twelve periods
-
-    Bad practice to use exec to achieve this; will try and find a better way 
-    of achieving the same result when possible.
-    """
-    for n in periods():
-        exec(f"p{n} = Column(type_string, server_default='0')")
+# Lists of period columns, for adding to tables witout having to write out 12 cols
+def period_cols(datatype):
+    return [Column(f'p{n}', datatype, server_default='0')
+            for n in periods()]
 
 
 class directorate(Base):
@@ -95,7 +91,7 @@ class f_set(Base):
     Finance sets
 
     Integral part of data structure. Unique by acad_year, costc, category. For example,
-    there can only be 1 2020 BP3 MA1600. 
+    there can only be 1 2020 BP3 MA1600.
     """
     __tablename__ = "f_set"
     set_id = Column(INTEGER(), primary_key=True)
@@ -104,22 +100,39 @@ class f_set(Base):
         "fs_cost_centre.costc", ondelete="CASCADE"), nullable=False)
     set_cat_id = Column(CHAR(3), ForeignKey(
         "f_set_cat.set_cat_id", ondelete="CASCADE"), nullable=False)
-    curriculum_id = Column(INTEGER(), comment="Foreign key to CM Database")
+    curriculum_id = Column(
+        INTEGER(), comment="Foreign key to CM Database's curriculum ID")
     curriculum_hours = Column(DECIMAL(
         20, 5), comment="From CM; updated manually to reflect Luminate ownership philosophy.")
     student_number_usage_id = Column(
-        VARCHAR(100), comment="Foreign key for CM Database")
+        VARCHAR(100), comment="Foreign key for CM Database's student number usage")
     allow_student_number_change = Column(
         BIT(), server_default="0", comment="Allow users to input different student numbers")
-
+    # Add unique constraint on year, cost centre and set code
+    __table_args__ = (Index('IX_f_set',
+                            'costc', 'acad_year', 'set_cat_id', mssql_clustered=True),)
     category = relationship("f_set_cat", back_populates="f_sets")
+
+
+class hfi_bursary(Base):
+    """
+    Table holding data on calculating Higher Fee Bursary
+    """
+    __tablename__ = "conf_hfi_bursary"
+    acad_year = Column(INTEGER(), primary_key=True)
+    set_cat_id = Column(CHAR(3), ForeignKey(
+        "f_set_cat.set_cat_id"), primary_key=True)
+    hfi_prop = Column(
+        DECIMAL(9, 8), comment="Higher Fee Proportion, for calculating bursary")
+    bursary_prop = Column(
+        DECIMAL(9, 8), comment="Proportion of HFI paid as bursaries")
 
 
 class finance_instance(Base):
     """
     An instance of finance records for a set
 
-    Allows for viewing the finace history of a set. 
+    Allows for viewing the finace history of a set.
     """
 
     __tablename__ = "f_finance_instance"
@@ -189,8 +202,8 @@ class inc_courses(Base):
     students = Column(INTEGER(), autoincrement=False, nullable=True)
     fee = Column(_FDec, nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
-    for n in periods():
-        exec(f"p{n} = Column(_FDec, server_default='0')")
+    # Add period cols
+    __table_args__ = (*period_cols(_FDec),)
 
 
 class inc_other(Base):
@@ -200,8 +213,8 @@ class inc_other(Base):
     account = Column(CHAR(4), nullable=True)
     description = Column(VARCHAR(1000), nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
-    for n in periods():
-        exec(f"p{n} = Column(_FDec, server_default='0')")
+    # Add period cols
+    __table_args__ = (*period_cols(_FDec),)
 
 
 class inc_bursary(Base):
@@ -218,12 +231,19 @@ class inc_bursary(Base):
 
 class inc_grant(Base):
     """
-    OfS Grant
+    Grant income
     """
     __tablename__ = 'input_inc_grant'
 
-    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), primary_key=True)
-    amount = Column(_FDec, comment="Amount of OfS Grant to be recieved")
+    acad_year = Column(INTEGER(), primary_key=True)
+    set_cat_id = Column(CHAR(3), ForeignKey(
+        "f_set_cat.set_cat_id"), primary_key=True)
+    high_cost_funding = Column(
+        _FDec, comment="Funding for high-cost courses.", server_default='0')
+    access_funding = Column(
+        _FDec, comment="Funding for student access and success.", server_default='0')
+    capital_grant = Column(
+        _FDec, comment="Total amount of OfS Grant to be recieved.", server_default='0')
 
 
 class inc_feeloss(Base):
@@ -271,9 +291,8 @@ class pay_claim(Base):
     rate = Column(_FDec)
     claim_type_id = Column(CHAR(3), ForeignKey(
         "input_pay_claim_type.claim_type_id"))
-    # Bad practice to use exec, but assigning to a dict wouldn't work
-    for n in periods():
-        exec(f"p{n} = Column(DECIMAL(10,5), server_default='0')")
+    # Add period cols
+    __table_args__ = (*period_cols(DECIMAL(10, 5)),)
 
 
 class pay_staff(Base):
@@ -358,13 +377,13 @@ class pension_emp_cont(Base):
     pension_id = Column(VARCHAR(3), ForeignKey(
         "staff_pension.pension_id"), primary_key=True)
     acad_year = Column(INTEGER(), primary_key=True)
-    for n in periods():
-        exec(f"p{n} = Column(DECIMAL(6,5), server_default='0')")
+    # Add period cols
+    __table_args__ = (*period_cols(DECIMAL(6, 5)),)
 
 
 class ni(Base):
     """
-    National insurance secondary threshold 
+    National insurance secondary threshold
 
     Has one rate for year, and threshold by month
     """
@@ -372,8 +391,8 @@ class ni(Base):
 
     acad_year = Column(INTEGER(), primary_key=True)
     rate = Column(DECIMAL(9, 8))
-    for n in periods():
-        exec(f"p{n} = Column(_FDec, server_default='0')")
+    # Add period cols
+    __table_args__ = (*period_cols(_FDec),)
 
 
 class nonp_other(Base):
@@ -383,8 +402,8 @@ class nonp_other(Base):
     account = Column(CHAR(4), ForeignKey("fs_account.account"), nullable=True)
     description = Column(VARCHAR(1000), nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
-    for n in periods():
-        exec(f"p{n} = Column(_FDec, server_default='0')")
+    # Add period cols
+    __table_args__ = (*period_cols(_FDec),)
 
 
 class nonp_internal(Base):
