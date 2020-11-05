@@ -115,3 +115,99 @@ def slow_line(func, before_text, after_text, show=True):
             click.echo()
         return value
     return wrapper_decorator
+
+
+def level_to_session(level):
+    """
+    Converts study level to a year of study 
+
+    Intended for use with the level descriptions that come out of the 
+    HE In Year Cohort web report, but applicable to other instances 
+
+    Parameters
+    ----------
+    level : str
+        The text version of a level. Should begin with the word 'level'.
+
+    Returns
+    -------
+    int
+        The year of study that the level (typically) corresponds to.
+    """
+
+    session = "X"
+    if level[:5].upper() == "LEVEL":
+        session = int(level[-1]) - 3
+    else:
+        session = 1
+    return session
+
+
+def name_to_aos(name):
+    """
+    Converts a verbose course name to its aos_code
+
+    Essentially a fuzzy matching function, intended for use with reverse engineering web reports
+
+    Parameters
+    ----------
+    name : str
+        The course description. Can include year. 
+
+    Returns
+    -------
+    str
+        The 6-character aos_code.
+    int
+        The session. If no numeric characters in `name`, this will default to -1
+    """
+    aos_abbr = [["Business", "BU", ""],
+                ["Classical", "CM", "C"],
+                ["Film", "FM"],
+                ["Folk", "FO", "F"],
+                ["Jazz", "JA", "J"],
+                ["Production", "PR", "M"],
+                ["Popular", "PM", "P"],
+                ["Songwriting", "SW"],
+                ["Acting", "ACT"],
+                ["Actor Musician", "AMU"],
+                ["Musical Theatre", "MTH"]]
+    aos_code = ""
+    if name[:2] == "BA":
+        aos_code = "HBA"
+        if "with" in name:
+            # i.e. is combined
+            aos_code += "C"
+            withpos = name.index("with")
+            for p in aos_abbr:
+                if p[0] in name[:withpos]:
+                    aos_code += p[2]
+            for p in aos_abbr:
+                if p[0] in name[withpos:]:
+                    aos_code += p[2]
+        else:  # Music and Acting/MT
+            if " Music (" in name:
+                aos_code += "M"
+            for p in aos_abbr:
+                if p[0] in name:
+                    aos_code += p[1]
+                    break
+    elif "Foundation Degree" in name or "FD" in name:
+        aos_code = "HFD"
+        if "Electronic" in name or "EMP" in name:
+            aos_code += "EMP"
+        else:
+            aos_code += "MPM"
+    elif "Creative" in name or "MMus" in name:
+        aos_code = "HMMCRM"
+    if len(aos_code) != 6:
+        raise ValueError(
+            f"Unable to recognise {name}. Got as far as '{aos_code}''.")
+    # And then the numeric bit
+    num = -1
+    for char in name:
+        if char.isdigit():
+            num = int(char)
+            break
+
+    return aos_code, num
