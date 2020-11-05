@@ -6,14 +6,15 @@ from finance_manager.database import DB
 from finance_manager.database.spec import finance_instance, f_set
 
 
-def view():
+def make_view():
     """
-    Return UI view. 
+    Return UI view.
 
-    Complex view, which requires a dynamic pivot. 
+    Complex view, which requires a dynamic pivot.
     """
     c = Config()
     c.set_section("planning")
+
     with DB(config=c) as db:
         session = db.session()
         col_list = []
@@ -23,10 +24,13 @@ def view():
     pvt_list = ", ".join(f"[{n}]" for n in col_list)
     sql = f"""
     SELECT costc, sec, summary_code, sec_order, line_order, format, {pvt_list}
-    FROM (SELECT costc, sec, summary_code, sec_order, line_order, finance_summary, format, SUM(amount) as amount 
-    FROM [v_mri_finance_grouped_subtotal] GROUP BY costc, sec, summary_code, sec_order, line_order, finance_summary, format) p 
+    FROM (SELECT costc, sec, summary_code, sec_order, line_order, finance_summary, format, SUM(amount) as amount
+    FROM [v_mri_finance_grouped_subtotal] GROUP BY costc, sec, summary_code, sec_order, line_order, finance_summary, format) p
     PIVOT
-    (SUM(amount) FOR finance_summary in ({pvt_list})) as pvt    
+    (SUM(amount) FOR finance_summary in ({pvt_list})) as pvt
         """
     view = o("v_ui_finance", sql)
     return view
+
+
+view = make_view()
