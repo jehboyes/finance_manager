@@ -2,6 +2,7 @@ import click
 from .payclaim import payclaim
 from .curriculum import curriculum
 from .csv import csv
+from .actuals import actuals
 
 
 @click.group()
@@ -13,6 +14,6 @@ def load(config):
     pass
 
 
-commands = [payclaim, curriculum, csv]
+commands = [payclaim, curriculum, actuals, csv]
 for command in commands:
     load.add_command(command)
