@@ -15,7 +15,8 @@ class Config(object):
     """
 
     def __init__(self):
-        self.file_name = 'config.ini'
+        self.file_name = os.path.join(os.path.dirname(
+            os.path.dirname(__file__)), 'config.ini')
         self._cp = ConfigParser()
         self.default_string = "DEFAULT"
         self.env_string = 'env'
