@@ -275,6 +275,8 @@ class claim_type(Base):
     base_multiplier = Column(DECIMAL(10, 5))
     holiday_multiplier = Column(DECIMAL(10, 5))
     rate_uplift = Column(_FDec)
+    apply_ni = Column(BIT())
+    apply_pension = Column(BIT())
 
 
 class pay_claim(Base):
