@@ -62,7 +62,7 @@ def generate_p_string(str_format, join_with=None, restrict=None):
 p = path.dirname(__file__)
 files = listdir(p)
 modules = [importlib.import_module(
-    ".."+f[:-3], "finance_manager.database.views.") for f in files if f[:2] == "v_"]
+    ".."+f[:-3], "finance_manager.database.views.") for f in files if f[:2] == "v_" and f != 'v_ui_finance.py']
 view_list = [module.view for module in modules]
 
 # work out a line's monthly FTE

@@ -15,8 +15,10 @@ The system encompasses two distinct applications:
    :maxdepth: 2
    :caption: Contents:
 
+   powerapp_guide
    cli_setup
-
+   cli_auto
+   glossary
 
 Indices and tables
 ==================

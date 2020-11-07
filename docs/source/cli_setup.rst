@@ -22,13 +22,13 @@ Setting up
    The shell commands are written for PCs, and some will differ for Macs 
 
 
-1. Create a folder that will house the application's code
-1. In a shell, navigate to that folder with `cd [filepath]`
-1. Clone the github repository to that folder
-1. Create a virtual environment by typing `py venv venv`
-1. Activate that virtual environment by typing `venv\scripts\activate`. `(venv)` should appear at the start of your shell. 
-1. Type `pip install -r requirements.txt`, which will install the required libraries in the virtual environment. 
-1. Type `pip install . --editable`, which will install the package. 
+1.  Create a folder that will house the application's code
+2.  In a shell, navigate to that folder with `cd [filepath]`
+3.  Clone the github repository to that folder
+4.  Create a virtual environment by typing `py venv venv`
+5.  Activate that virtual environment by typing `venv\scripts\activate`. `(venv)` should appear at the start of your shell. 
+6.  Type `pip install -r requirements.txt`, which will install the required libraries in the virtual environment. 
+7.  Type `pip install . --editable`, which will install the package. 
 
 You're ready to go! 
 
