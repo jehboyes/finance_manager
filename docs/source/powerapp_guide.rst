@@ -1,7 +1,8 @@
 Using the Finance Manager PowerApp
 ==================================
 
-The App was based on the 20/21 Business Planning 3 workbook, with each sheet in the workbook corresponding to a tab in the App. 
+The App was based on the 20/21 Business Planning 3 workbook, with each sheet in the workbook corresponding to a tab in the App. Use the 
+navigation on the left to navigate to skip to a specific part of the app. 
 
 .. warning::
     When editing data in the PowerApp, please be aware that data is edited in real time, and that the App may take a few seconds to write your changes. This can mean that if you change something 
@@ -10,6 +11,7 @@ The App was based on the 20/21 Business Planning 3 workbook, with each sheet in 
 .. note::
     Several screens allow the user to detail income or expenditure by period (financial month). Though it is not mandatory to do so for the purposes of overall financial monitoring, 
     users are strongly encouraged to do so, to make future monitoring and forecasting more straightforward, and to help forecast cashflow. 
+
 
 Selecting a set
 ---------------
@@ -21,7 +23,7 @@ is used to select which set will be viewed/edited in the rest of the App.
 The first dropdown determines the cost centre used. The second determines the academic year and category. Once you've selected both, press **Load Selected** to bring the specified set to the App.
 
 .. figure:: images/selection.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Selection screenshot
     :figclass: align-center
@@ -40,7 +42,7 @@ Luminate Education Group (the parent company of Leeds COnservatoire, where this 
     This will be fixed in the future. 
 
 .. figure:: images/selection.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Selection screenshot
     :figclass: align-center
@@ -85,7 +87,7 @@ Specify if there are any fee bursaries that will be awarded to students (not inc
 Bursaries entered wil reduce the fee income amount of the relevant fee status. 
 
 .. figure:: images/heincome.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Selection screenshot
     :figclass: align-center
@@ -104,7 +106,7 @@ The period columns should contain the total income for the given course in that 
 All income from this section is recorded under account 1250, income from other courses. 
 
 .. figure:: images/othercourses.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Other courses screenshot
     :figclass: align-center
@@ -121,7 +123,7 @@ The account field gives a general indication of the source of the income, but th
 As far as possible, income should be entered in the period(s) that it is most likely to materialise.
 
 .. figure:: images/otherincome.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Other income screenshot
     :figclass: align-center
@@ -169,7 +171,7 @@ On the right of the screen is the form used to edit posts.
 
 
 .. figure:: images/staffing.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Staffing screenshot
     :figclass: align-center
@@ -192,7 +194,7 @@ whilst those grade 7 or above will not be submitting claims unless they have a f
 *  **Scenario Adjustment** will apply the verbatim rate, with no adjustment at all. Users should avoid using this type, as it only exists to integrate 'scenario planning' information inhereted from ancestor sets.  
 
 .. figure:: images/claims.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Claims screenshot
     :figclass: align-center
@@ -208,7 +210,7 @@ Using the curriculum delivery - as specified and updated by academic management 
 proportion of the cost that the current cost centre is liable for, given the balance of student numbers. 
 
 .. figure:: images/curriculum.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Curriculum screenshot
     :figclass: align-center
@@ -225,7 +227,7 @@ This is useful to courses that do not put all of the teaching and assessing 'on 
 For example, the below screenshot shows that instead of putting all teaching and assessment on contracts, 130 hours will be done on claim in each of January (P6) and May (P10). 
 
 .. figure:: images/fracclaims.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Fractional claims screenshot
     :figclass: align-center
@@ -242,7 +244,7 @@ The account field gives a general indication of type of the expenditure, but thi
 As far as possible, expenditure should be entered in the period(s) that it is most likely to materialise.
 
 .. figure:: images/nonpay.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Non-pay screenshot
     :figclass: align-center
@@ -263,7 +265,7 @@ A detailed description should be given for all types of transaction. For interna
 inverse of the amount detailed in order for the internal transaction to be included in the finances. 
 
 .. figure:: images/internal.png
-    :width: 200px
+    :width: 600px
     :align: center
     :alt: Internal transactions screenshot
     :figclass: align-center
