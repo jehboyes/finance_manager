@@ -6,7 +6,7 @@ from finance_manager.database import DB
 from finance_manager.database.spec import finance_instance, f_set
 
 
-def make_view():
+def _view():
     """
     Return UI view.
 
@@ -31,6 +31,3 @@ def make_view():
         """
     view = o("v_ui_finance", sql)
     return view
-
-
-view = make_view()
