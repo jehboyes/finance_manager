@@ -5,7 +5,7 @@ from sqlalchemy import and_, text
 from getpass import getuser
 from finance_manager.database import DB
 from finance_manager.database.spec import f_set, finance, finance_instance
-from finance_manager.database.views.v_calc_finances import view
+from finance_manager.database.views.v_calc_finances import _view
 
 
 @click.command()
@@ -30,7 +30,7 @@ def save(config, acad_year, setcat):
                 session.add(i)
                 session.flush()
                 sql = f"""INSERT INTO {finance.__tablename__} (instance_id, account, period, amount) 
-                        SELECT {i.instance_id}, account, period, value FROM {view.name} WHERE set_id = {s.set_id}"""
+                        SELECT {i.instance_id}, account, period, value FROM {_view().name} WHERE set_id = {s.set_id}"""
                 session.execute(sql)
         click.echo("Committing...", nl=False)
         session.commit()

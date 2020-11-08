@@ -1,6 +1,6 @@
 # pylint: disable=no-member
 import click
-from finance_manager.database.views import view_list
+from finance_manager.database.views import get_views
 from finance_manager.database import DB
 from datetime import datetime
 from getpass import getuser
@@ -32,7 +32,8 @@ def syncviews(config, test, restrict):
     Pushes view definitions from this application's database views.  
     """
     with DB(config=config) as db:
-        with click.progressbar(view_list, label="Updating views") as bar:
+        views = get_views()
+        with click.progressbar(views, label="Updating views") as bar:
             for v in bar:
                 if restrict is None or v.name == restrict:
                     sql = f"\nDROP VIEW IF EXISTS {v.name}"
@@ -40,6 +41,6 @@ def syncviews(config, test, restrict):
                     sql = f"CREATE VIEW {v.name} AS {stamp}\n{v.sqltext}"
                     db.con.execute(sql)
         if test:
-            with click.progressbar(view_list, label="Testing views") as bar:
+            with click.progressbar(views, label="Testing views") as bar:
                 for v in bar:
                     _ = db.con.execute("SELECT * FROM " + v.name).fetchall()

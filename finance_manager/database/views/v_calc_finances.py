@@ -1,6 +1,3 @@
-"""
-Module for the finance view.
-"""
 from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.database.views import _generate_p_string
 from finance_manager.functions import periods
