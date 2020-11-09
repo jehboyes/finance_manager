@@ -1,5 +1,3 @@
-.. _setupcli:
-
 Setting up the CLI
 ==================
 

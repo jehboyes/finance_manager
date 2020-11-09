@@ -106,13 +106,23 @@ CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3)) as x(n)) x --This is correct: s
 WHERE f.hours > 0
 """, f"""
 --STAFFING
-SELECT s.set_id, case WHEN x.n = 1 then p.salary_account WHEN x.n = 2 THEN p.ni_account ELSE p.pension_account END as account,
+SELECT s.set_id, 
+case 
+WHEN x.n = 1 then p.salary_account 
+WHEN x.n = 2 THEN p.ni_account 
+WHEN x.n = 3 THEN p.pension_account 
+ELSE 2301 END as account,
 SUBSTRING(t.period, 2,2) as period ,
-case WHEN x.n=1 then t.salary WHEN x.n=2 then t.ni ELSE t.pension END AS value
+case 
+WHEN x.n=1 then t.salary 
+WHEN x.n=2 then t.ni 
+WHEN x.n=3 then t.pension 
+ELSE t.travel END AS value
 FROM v_calc_staff_tabulated t
 INNER JOIN input_pay_staff s ON s.staff_line_id = t.staff_line_id
 INNER JOIN staff_post_type p ON p.post_type_id = s.post_type_id
-CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3)) as x(n)) x
+CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3), (4)) as x(n)) x
+
 """])
 
 
