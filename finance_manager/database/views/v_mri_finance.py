@@ -1,7 +1,7 @@
 from finance_manager.database.replaceable import ReplaceableObject as o
 
 
-view = o("v_mri_finance", f"""
+sql = f"""
 SELECT a.account, ISNULL(f.amount,0) as amount, e.coefficient,f.period, s.costc, s.acad_year, 
     scode.summary_code as sc_id, cc.directorate_id, 
 	scode.description as summary_code, sec.description as sec, sec.position as sec_order, 
@@ -20,4 +20,8 @@ INNER JOIN fs_cost_centre cc ON cc.costc = s.costc
 INNER JOIN 
 	(SELECT max(instance_id) as instance_id, set_id FROM f_finance_instance GROUP BY set_id)
 	as most_recent on most_recent.instance_id = fi.instance_id
-""")
+"""
+
+
+def _view():
+    return o("v_mri_finance", sql)

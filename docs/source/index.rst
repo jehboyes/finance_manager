@@ -7,8 +7,8 @@ The system is under active development. The ultimate aim of the project is to pr
 monitoring finance data, reactively adjusting forecasts, and building empirical budgets. 
 
 The system encompasses two distinct applications: 
-1. A web app for end users to interact with financial planning data 
-1. A command line interface for administrative users to manage financial planning data
+* A web app for end users to interact with financial planning data 
+* A command line interface for planning staff to manage financial planning data
 
 
 .. toctree::

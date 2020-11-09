@@ -2,16 +2,16 @@
 Module for the finance view.
 """
 from finance_manager.database.replaceable import ReplaceableObject as o
-from finance_manager.database.views import generate_p_string
+from finance_manager.database.views import _generate_p_string
 from finance_manager.functions import periods
 jstr = ", "
 # comma joined list of periods
-cj_periods = generate_p_string("({p})", jstr)
+cj_periods = _generate_p_string("({p})", jstr)
 # mapping period column to number for pivot
-ptext_as_n = generate_p_string("p{p} as [{p}]", jstr)
-square_list = generate_p_string("[{p}]", jstr)
+ptext_as_n = _generate_p_string("p{p} as [{p}]", jstr)
+square_list = _generate_p_string("[{p}]", jstr)
 
-claim_case = generate_p_string(
+claim_case = _generate_p_string(
     "CASE x.n WHEN 1 THEN p{p}*adjusted_rate WHEN 2 THEN ni_p{p} ELSE pension_p{p} END as [{p}]", ",\n")
 
 union_parts = "\nUNION ALL\n".join([f"""
@@ -115,11 +115,11 @@ INNER JOIN staff_post_type p ON p.post_type_id = s.post_type_id
 CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3)) as x(n)) x
 """])
 
-view = o("v_calc_finances", f"""
-SELECT set_id, account, period, ROUND(SUM(value),2) as value FROM ({union_parts}) as x
-WHERE value <> 0 AND account is not NULL
-GROUP BY set_id, account, period
-""")
 
-if __name__ == "__main__":
-    print(view.sqltext)
+def _view():
+    view = o("v_calc_finances", f"""
+	SELECT set_id, account, period, ROUND(SUM(value),2) as value FROM ({union_parts}) as x
+	WHERE value <> 0 AND account is not NULL
+	GROUP BY set_id, account, period
+	""")
+    return view

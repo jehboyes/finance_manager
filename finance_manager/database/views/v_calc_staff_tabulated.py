@@ -14,8 +14,7 @@ UNPIVOT
     ({col_header} for period in ("""+ucase_p_list + """)) as unp
 """
 
-
-view = o("v_calc_staff_tabulated", f"""
+sql = f"""
 SELECT sal.*, ni.ni, pen.pension 
 FROM 
 (""" + staff_unpivot_core.format(col_header="salary", periods=ucase_p_list) + """) as sal
@@ -25,4 +24,7 @@ INNER JOIN
 INNER JOIN 
 (""" + staff_unpivot_core.format(col_header="pension", periods=staff_unpivot_pension) + """) as pen 
     ON pen.period = sal.period AND pen.staff_line_id = sal.staff_line_id"""
-         )
+
+
+def _view():
+    return o("v_calc_staff_tabulated", sql)

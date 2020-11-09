@@ -8,7 +8,8 @@ On-costs
 ^^^^^^^^
 
 On-costs are the costs of employment beyond basic salary. Typically, in addition to paying an employee's hourly rate for the number of hours worked, 
-the institution will also pay **National Insurance** contributions and **Pension** contributions (which are seperate to the employ\ **ee's** contributions, paid *from* the employee's salary along with income tax).
+the institution will also pay **National Insurance** contributions and **Pension** contributions (which are distinct from the employ\ **ee**\ 's NI and Pension contributions, 
+paid from the employee's salary along with income tax).
 
 In the cases of Fractional posts and Casual posts, there is also a 'holiday accrual' on-cost: this is an increase to the hourly rate derived from the amount of holiday pay 
 that an employee would have recieved, had the work been contracted. This is often a source of confusion and mis-perception of hourly rate of Fractional staff, which is often stated as the amount *before* 
@@ -20,7 +21,7 @@ Teaching Uplift
 An employee's hourly rate is increased when they are teaching, on the premise that on average, each hour of teaching incurs 19 minutes and 17 seconds minutes of preparation time. 
 Therefore, an employee's hourly rate is increased by 32.14% when they are teaching (but not assessing). 
 
-The 19 minutes and 17 seconds is usually referred to as 20 minutes in discussion, but this is only a shorthand: the 32.14% uplift is what is actually applied. 
+The 19 minutes and 17 seconds is usually rounded to 20 minutes in communications, but this is only a shorthand: the 32.14% uplift is what is actually applied. 
 
 Fractional Academic
 ^^^^^^^^^^^^^^^^^^^

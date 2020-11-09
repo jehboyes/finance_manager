@@ -17,6 +17,9 @@ System Requirements
 Setting up
 ----------
 
+Initial setup
+^^^^^^^^^^^^^
+
 .. note::
    
    The shell commands are written for PCs, and some will differ for Macs 
@@ -30,6 +33,11 @@ Setting up
 6.  Type `pip install -r requirements.txt`, which will install the required libraries in the virtual environment. 
 7.  Type `pip install . --editable`, which will install the package. 
 
-You're ready to go! 
 
+Local configuration
+^^^^^^^^^^^^^^^^^^^
 
+The CLI relies on a local config.ini file to provide credentials for accessing the various databases referenced within the CLI. 
+A blank config.ini will be generted the first time the application is run. 
+
+Users can either open and edit the file in 
