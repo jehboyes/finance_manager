@@ -9,8 +9,8 @@ class Config(object):
     """
     Configuration object used for variable management
 
-    Uses ConfigParser and local `config.ini` to read/write local variables. 
-    The `env` variable is a bit meta: it holds the name of the section to use when the config 
+    Uses ConfigParser and local ``config.ini`` to read/write local variables. 
+    The ``env`` variable is a bit meta: it holds the name of the section to use when the config 
     is initialised.   
     """
 

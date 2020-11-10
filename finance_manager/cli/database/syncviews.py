@@ -31,6 +31,7 @@ def syncviews(config, test, restrict):
 
     Pushes view definitions from this application's database views.  
     """
+    view_list = get_views()
     with DB(config=config) as db:
         views = get_views()
         with click.progressbar(views, label="Updating views") as bar:
@@ -43,4 +44,5 @@ def syncviews(config, test, restrict):
         if test:
             with click.progressbar(views, label="Testing views") as bar:
                 for v in bar:
-                    _ = db.con.execute("SELECT * FROM " + v.name).fetchall()
+                    if restrict is None or v.name == restrict:
+                        _ = db.con.execute("SELECT * FROM " + v.name).fetchall()

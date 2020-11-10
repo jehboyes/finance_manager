@@ -1,15 +1,26 @@
+"""
+These are a collection of generic functions, classes and iterators intended for use in various parts of the App, 
+and will probably be of use to future development. 
+"""
 import functools
 import click
 
 
 class periods():
     """
-    Iterator for periods
+    Iterator for financial periods.
 
-    Exists for brevity/clarity in actual code
+    Exists for brevity/clarity in actual code. Outputs the numbers 1 to 12, 
+    unless restricted by passing the ``end`` parameter on construction. 
     """
 
     def __init__(self, end=12):
+        """
+        Parameters
+        ----------
+        end : int, optional
+            The final month to output, useful for dynamic in-year processing, but by default 12. 
+        """
         self.end = end
         pass
 
@@ -38,6 +49,23 @@ def period_to_month(period, acad_year):
         Accounting period
     acad_year : int
         Academic year (calendar year commencing)
+
+    Returns
+    -------
+    tuple
+        Month, Calendar year
+
+    Examples
+    --------
+    Period 1 (August) in the 2020 financial year:
+
+    >>> period_to_month(1,2020)
+    (8, 2020)
+
+    Period 6 (January) in the 1984 financial year: 
+
+    >>> period_to_month(6, 1984)
+    (1, 1985)
     """
     # Because August is P1
     period += 7
@@ -52,9 +80,10 @@ def period_to_month(period, acad_year):
 
 def sa_con_string(dialect, server, db,  py_driver=None, user=None, password='', driver=None):
     """
-    Formats connection variables into SQL Alchemy string
+    Formats connection variables into SQL Alchemy string.
 
-    ...
+    Intended for brevity elsewhere in the App. For more detail, 
+    see the `SQLAlchemy Engine Configuration <https://docs.sqlalchemy.org/en/13/core/engines.html>`_ page. 
 
     Parameters
     ----------
@@ -69,14 +98,14 @@ def sa_con_string(dialect, server, db,  py_driver=None, user=None, password='', 
     user : str
         Username, if used. If ommitted, connection uses windows credentials (via trusted connection)
     password : str
-        Password for given username. Can be blank
+        Password for given username. Can be blank. 
     driver : str
-        Specific driver to use when connecting  
+        Specific driver to use when connecting.
 
     Returns
     -------
     str
-        SQL Alchemy engine connection string
+        SQL Alchemy engine connection string.
     """
     # Configure security
     user = '' if user is None else user
@@ -119,10 +148,10 @@ def slow_line(func, before_text, after_text, show=True):
 
 def level_to_session(level):
     """
-    Converts study level to a year of study 
+    Converts study level to a year of study. 
 
     Intended for use with the level descriptions that come out of the 
-    HE In Year Cohort web report, but applicable to other instances 
+    HE In Year Cohort web report, but applicable to other instances. 
 
     Parameters
     ----------
@@ -157,9 +186,20 @@ def name_to_aos(name):
     Returns
     -------
     str
-        The 6-character aos_code.
+        The 6-character aos_code. 
     int
-        The session. If no numeric characters in `name`, this will default to -1
+        Session, i.e. year of study. If no numeric characters were 
+        in the ``name``, this will default to -1.
+
+    Examples
+    --------
+    >>> name_to_aos('Jazz Year 1')
+    ('HBAMJA', 1)
+
+    When no numeric year information appears
+
+    >>> name_to_aos('Jazz Year Two')
+    ('HBAMJA', -1)
     """
     aos_abbr = [["Business", "BU", ""],
                 ["Classical", "CM", "C"],

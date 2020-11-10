@@ -5,6 +5,7 @@ from finance_manager.functions import periods
 ucase_p_list = ", ".join([f"P{n}" for n in periods()])
 staff_unpivot_ni = ", ".join([f"ni_p{n} as P{n}" for n in periods()])
 staff_unpivot_pension = ", ".join([f"pension_p{n} as P{n}" for n in periods()])
+staff_unpivot_travel = ", ".join([f"travel_p{n} as P{n}" for n in periods()])
 staff_unpivot_core = """
 SELECT staff_line_id, period, {col_header}
 FROM 
@@ -15,7 +16,7 @@ UNPIVOT
 """
 
 sql = f"""
-SELECT sal.*, ni.ni, pen.pension 
+SELECT sal.*, ni.ni, pen.pension, travel.travel 
 FROM 
 (""" + staff_unpivot_core.format(col_header="salary", periods=ucase_p_list) + """) as sal
 INNER JOIN 
@@ -23,7 +24,10 @@ INNER JOIN
     ON ni.period = sal.period AND ni.staff_line_id = sal.staff_line_id
 INNER JOIN 
 (""" + staff_unpivot_core.format(col_header="pension", periods=staff_unpivot_pension) + """) as pen 
-    ON pen.period = sal.period AND pen.staff_line_id = sal.staff_line_id"""
+    ON pen.period = sal.period AND pen.staff_line_id = sal.staff_line_id
+INNER JOIN 
+(""" + staff_unpivot_core.format(col_header="travel", periods=staff_unpivot_travel) + """) as travel
+    ON travel.period = sal.period AND travel.staff_line_id = sal.staff_line_id"""
 
 
 def _view():

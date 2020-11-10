@@ -33,8 +33,7 @@ The first dropdown determines the cost centre used. The second determines the ac
 Viewing Finances
 ----------------
 
-The **Finances** tab summarises the finances for all existing sets in the selected cost centre, using the finance categories mandated by the 
-Luminate Education Group (the parent company of Leeds COnservatoire, where this application was developed). 
+The **Finances** tab summarises the finances for all existing sets in the selected cost centre. 
 
 .. warning::
     Currently, the finances shown here are not 'live': they are updated manually by an administrator, as PowerApps is unable to run a full update due to authentication restrictions. 
@@ -105,7 +104,7 @@ The period columns should contain the total income for the given course in that 
 
 All income from this section is recorded under account 1250, income from other courses. 
 
-.. figure:: images/othercourses.png
+.. figure:: images/other_course.png
     :width: 600px
     :align: center
     :alt: Other courses screenshot
@@ -122,7 +121,7 @@ The account field gives a general indication of the source of the income, but th
 
 As far as possible, income should be entered in the period(s) that it is most likely to materialise.
 
-.. figure:: images/otherincome.png
+.. figure:: images/other_income.png
     :width: 600px
     :align: center
     :alt: Other income screenshot
@@ -187,11 +186,12 @@ This section is used to view and edit pay claims.
 The description field should include a brief explanation of the work that will be claimed for, and an appropriate account selected from the drop down. 
 
 The rate should be the base hourly rate of the spine point of the staff expected to completed the work (or an average, if appropriate). This will be automatically increased/adjusted depending on the claim type selected:
-*  **Casual** will override the rate entered with the standard casual staff hourly rate plus statutory holiday accrual, and will add NI to the cost displayed. 
-*  **Teaching** will increase the rate entered by applying the teaching modifier and holiday accrual, and will add NI and pension to the cost displayed.
-*  **Other** will increase the rate entered by applying holiday accrual *on a sliding scale, dependent on the salary*. This is to acknowledge that staff below grade 7 will probably be business support and thus not eligible for holiday accrual, 
+
+* **Casual** will override the rate entered with the standard casual staff hourly rate plus statutory holiday accrual, and will add NI to the cost displayed. 
+* **Teaching** will increase the rate entered by applying the teaching modifier and holiday accrual, and will add NI and pension to the cost displayed.
+* **Other** will increase the rate entered by applying holiday accrual *on a sliding scale, dependent on the salary*. This is to acknowledge that staff below grade 7 will probably be business support and thus not eligible for holiday accrual, 
 whilst those grade 7 or above will not be submitting claims unless they have a fractional contract or on the 'old' contract.    
-*  **Scenario Adjustment** will apply the verbatim rate, with no adjustment at all. Users should avoid using this type, as it only exists to integrate 'scenario planning' information inhereted from ancestor sets.  
+* **Scenario Adjustment** will apply the verbatim rate, with no adjustment at all. Users should avoid using this type, as it only exists to integrate 'scenario planning' information inhereted from ancestor sets.  
 
 .. figure:: images/claims.png
     :width: 600px
@@ -226,7 +226,7 @@ This is useful to courses that do not put all of the teaching and assessing 'on 
 
 For example, the below screenshot shows that instead of putting all teaching and assessment on contracts, 130 hours will be done on claim in each of January (P6) and May (P10). 
 
-.. figure:: images/fracclaims.png
+.. figure:: images/fracclaim.png
     :width: 600px
     :align: center
     :alt: Fractional claims screenshot

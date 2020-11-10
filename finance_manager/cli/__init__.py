@@ -15,10 +15,14 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
 @click.pass_context
 def fm(config):
     """
-    Finance Manager application.
+    Entry point for the CLI. 
 
-    This application was designed to be a single point of reference 
-    for administration tasks relating to the finance manager tool.
+    Just calling ``fm`` can't actually do anything, besides bringing up a help message. Programmatically, 
+    ``fm`` creates the instance of the configuration object nad defaults it to use the 'planning' section. 
+    This is the point at which a config.ini file is referenced/created in the parent directory, which is documented 
+    in the config section     
+
+
     """
     # Define config object to be passed to subcommands via click.pass_obj
     config.obj = Config()
