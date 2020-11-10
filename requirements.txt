@@ -14,7 +14,6 @@ docutils==0.16
 hyperlink==20.0.1
 idna==2.10
 imagesize==1.2.0
-incremental==17.5.0
 isort==5.6.3
 Jinja2==2.11.2
 lazy-object-proxy==1.4.3
