@@ -14,8 +14,8 @@ def director(config, login, dirid):
     """
     Set director. 
 
-    Set LOGIN as the director for the directorate with ID 'DIRID'
-
+    Set ``LOGIN`` as the director for the directorate with ID ``DIRID``
+    \f
     Parameters
     ----------
     config : Config

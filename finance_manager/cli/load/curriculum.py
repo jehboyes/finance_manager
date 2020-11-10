@@ -12,9 +12,10 @@ from finance_manager.database.spec import f_set
 @click.option("--year", type=int, help="Limit to an academic year")
 @click.pass_obj
 def curriculum(config, costc, set_id, cat, year):
-    """Update the curriculum hours for all sets.
+    """
+    Update the curriculum hours for all sets.
 
-    Use the options to restrict which sets are updated
+    Use the options to restrict which sets are updated.
     """
     config.set_section(
         "cm")  # Get connection variables for curriculum database

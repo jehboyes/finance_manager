@@ -14,7 +14,10 @@ from finance_manager.database.spec import table_map
 @click.pass_obj
 def csv(config, overwrite, table_name, filepath):
     """
-    Load records into a table 
+    Load records into a table. 
+
+    Appends all the records from ``FILEPATH`` to ``TABLE_NAME``. The column headings in the file 
+    are required to match those in the table (though not all need to be present).  
     """
     if table_name not in table_map.keys():
         raise ValueError("Invalid table")

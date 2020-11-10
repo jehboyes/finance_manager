@@ -24,7 +24,7 @@ The system encompasses two distinct applications:
    glossary
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: Reference:
 
    database_spec

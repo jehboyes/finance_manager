@@ -6,7 +6,7 @@ from .save import save
 @click.pass_obj
 def finance(config):
     """
-    Handle finance-related operations.
+    **Group** of finance-related commands.
     """
     pass
 

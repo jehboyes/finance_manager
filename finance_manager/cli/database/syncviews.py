@@ -45,4 +45,5 @@ def syncviews(config, test, restrict):
             with click.progressbar(views, label="Testing views") as bar:
                 for v in bar:
                     if restrict is None or v.name == restrict:
-                        _ = db.con.execute("SELECT * FROM " + v.name).fetchall()
+                        _ = db.con.execute(
+                            "SELECT * FROM " + v.name).fetchall()

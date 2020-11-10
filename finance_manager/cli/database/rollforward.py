@@ -15,9 +15,9 @@ from finance_manager.database.spec import Base, f_set
 @click.pass_obj
 def rollforward(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit):
     """
-    Copy forward input table contents to those with TOSETCAT in TOACADYEAR from FROMSETCAT FROMACADYEAR.
+    Copy forward input table contents to those with ``TOSETCAT`` in ``TOACADYEAR`` from ``FROMSETCAT`` in ``FROMACADYEAR``.
 
-    \b
+    \f
     Parameters
     ----------
     config : Config

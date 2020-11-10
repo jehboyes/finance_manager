@@ -8,7 +8,7 @@ import click
 @click.pass_obj
 def configure(config, pairs, env):
     """
-    Takes key:value pairs and adds/updates as neccesary.
+    Takes key:value ``PAIRS`` and adds/updates as neccesary.
     """
     # change env if passed
     if env is not None:

@@ -19,7 +19,7 @@ def oncost(config, ni, year, pension, preapril, postapril, overwrite):
     """    
     Set NI or employer's pension contributions in a given year. 
 
-    Creates one record in the relevant table (determined by flagging NI or setting PENSION)
+    Creates one record in the relevant table (determined by flagging ``NI`` or setting ``PENSION``).
     \f
     \b
     Parameters

@@ -16,23 +16,9 @@ def newset(config, acad_year, setcode, curriculum, sn_usage, change_sn):
     """
     Create new finance sets.
 
-    Create a new set for each un-superceded cost centre, in ACAD_YEAR 
-    with SETCODE, using the id of the CURRICULUM, and student number usage from 
+    Create a new set for each un-superceded cost centre, in ``ACAD_YEAR`` 
+    with ``SETCODE``, using the id of the ``CURRICULUM``, and student number usage from 
     SN_USAGE. 
-
-    \b
-    Parameters
-    ----------
-    config : Config
-        Custom config object.
-    acad_year : int
-        Academic year (calendar year commencing).
-    setcode : str
-        3 character set code ID.
-    curriculum : int
-        Curriculum ID (from Curriculum Model). 
-    sn_usage : str
-        Student Number Usage ID (from Curriculum Model). 
     """
     with DB(config=config) as db:
         s = db.session()

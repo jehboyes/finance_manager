@@ -7,7 +7,7 @@ from .display import display
 @click.pass_obj
 def settings(config):
     """ 
-    Adjust local settings
+    **Group** of commands for adjusting local settings.
     """
     pass
 

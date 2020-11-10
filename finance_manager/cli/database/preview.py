@@ -13,6 +13,8 @@ from tabulate import tabulate
 def preview(config, dbobject, rows, database):
     """
     Show a preview of a table or view. 
+
+    Will select everything in the given ``DBOBJECT``.
     """
     # Pick database
     if database is None:

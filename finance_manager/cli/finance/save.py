@@ -16,7 +16,7 @@ def save(config, acad_year, setcat):
     """
     Save all matching sets.
 
-    Create a finance instance for each set with the given ACAD_YEAR and SETCAT.  
+    Create a finance instance for each set with the given ``ACAD_YEAR`` and ``SETCAT``.  
     """
     with DB(config=config) as db:
         session = db.session()

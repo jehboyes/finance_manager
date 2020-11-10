@@ -9,7 +9,7 @@ from .actuals import actuals
 @click.pass_obj
 def load(config):
     """
-    Import data from other systems and sources
+    **Group** of commands for importing data from other sources. 
     """
     pass
 
