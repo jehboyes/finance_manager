@@ -9,5 +9,4 @@ This exists so that:
 2. The system becomes more easily portable, as the Alembic package can be used to migrate the specified data structures to a new database. 
 
 
-.. automodule:: finance_manager.database.spec
-    :members:
+
