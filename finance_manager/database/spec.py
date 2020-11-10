@@ -1,6 +1,6 @@
 """
-Database Table Specification
-----------------------------
+Tables
+------
 
 Below are definitions of the tables required in the application's database. They are built using the 
 `SQLAlchemy Object Relational Mapper <https://docs.sqlalchemy.org/en/14/orm/index.html>`_.  
@@ -395,6 +395,8 @@ class inc_courses(Base):
         Individual fee. 
     set_id : int
         ID of the set to which this row belongs. 
+    P1_to_P12 : float
+        Field for each of the twelve periods. 
     """
     __tablename__ = 'input_inc_courses'
     courses_id = Column(INTEGER(), primary_key=True, autoincrement=True,
@@ -603,6 +605,8 @@ class pay_claim(Base):
         Base hourly rate for the claim. 
     claim_type_id : str
         ID for the claim type. Will affect the rate. 
+    P1_to_P12 : float
+        Field for each of the twelve periods. 
     """
     __tablename__ = "input_pay_claim"
 
@@ -807,7 +811,7 @@ class pension(Base):
     pension_id : str
         ID of the pension scheme. 
     description : str
-        Calendar year in which the academic year commences."""
+        Diplay name of the pension scheme."""
     __tablename__ = "staff_pension"
 
     pension_id = Column(VARCHAR(3), primary_key=True)
@@ -816,7 +820,18 @@ class pension(Base):
 
 class pension_emp_cont(Base):
     """
-    Employers pension contributions for each month, by year
+    Employers pension contributions. 
+
+    Exists for each month, for each pension scheme, for each year. 
+    
+    Attributes
+    ----------
+    pension_id : str
+        ID of the pension scheme.
+    acad_year : int
+        Calendar year in which the current academic period commences. 
+    P1_to_P12 : float
+        Field for each of the twelve periods. 
     """
     __tablename__ = "staff_pension_contrib"
 
@@ -829,9 +844,22 @@ class pension_emp_cont(Base):
 
 class ni(Base):
     """
-    National insurance secondary threshold
+    National Insurance secondary threshold and rate. 
 
-    Has one rate for year, and threshold by month
+    Has one rate for year, and threshold by month.
+    
+    .. note::
+        The rate also includes the apprenticeship levy. 
+
+    Attributes
+    ----------
+    acad_year : int 
+        Calendar year in which the academic periods commences. 
+    rate : float
+        Proportion of salary (above the threshold) to be paid as employer's contributions. 
+    P1_to_P12 : float
+        Threshold for each of the twelve periods. 
+
     """
     __tablename__ = 'staff_ni'
 
@@ -842,6 +870,23 @@ class ni(Base):
 
 
 class nonp_other(Base):
+    """
+    Non-pay expenditure. 
+
+    This is any expenditure that is not employment. More detail (i.e. more lines and better descriptions) is encouraged where possible, for 
+    transparency.  
+
+    Attributes
+    ----------
+    nonp_id : int
+        Database generated ID for the line. 
+    account : str 
+        Nominal account.
+    description : str 
+        Description of the expenditure. 
+    P1_to_P12 : float
+        Field for each of the twelve periods. 
+    """
     __tablename__ = 'input_nonp_other'
     nonp_id = Column(INTEGER(), primary_key=True, autoincrement=True,
                      mssql_identity_start=1000, mssql_identity_increment=1)
@@ -853,6 +898,27 @@ class nonp_other(Base):
 
 
 class nonp_internal(Base):
+    """
+    Internal non-pay expenditue. 
+
+    Records money moving within the institution, or within the group. 
+    Each instance should be balanced by another instance in the contra cost centre.  
+
+    Attributes
+    ----------
+    internal_id : int
+        Database-generated ID for the internal income row. 
+    description : str
+        Description of the transaction. 
+    costc : str, optional
+        If the transaction is internal, then the cost centre. 
+    account : str
+        Determines type of transaction. On the interface, this is restricted to the four combinations of I & E and Group & Internal. 
+    amount : float
+        Value of the transaction. 
+    set_id : int
+        ID of the set to which this line belongs. 
+    """
     __tablename__ = "input_nonp_internal"
 
     internal_id = Column(INTEGER(), primary_key=True, autoincrement=True,
@@ -866,7 +932,20 @@ class nonp_internal(Base):
 
 class permission(Base):
     """
-    Permissions for access to cost centres via the UI
+    Custom access permissions. 
+    
+    Entry onthis table gives access to a cost centres via the UI. 
+
+    .. note::
+        
+        Budget Holders and Directors are given access by virtue of their ownership statuses, and so do not need to be added to this list. 
+
+    Attributes
+    ----------
+    costc : str
+        Cost centre to be given access to. 
+    login_365 : str
+        Login name of the user to be given access. 
     """
     __tablename__ = "a_permission"
 
