@@ -39,7 +39,6 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-#
 def _period_cols(datatype):
     """Returns a list of period columns, 
 
