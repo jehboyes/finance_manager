@@ -281,7 +281,8 @@ class account(Base):
 
 
 class entry_type(Base):
-    """Debit or Credit entry.
+    """
+    Debit or Credit entry.
 
     Details how to adjust amount depending on whether they are a debit or credit. 
 
@@ -302,7 +303,8 @@ class entry_type(Base):
 
 
 class summary_code(Base):
-    """Summary Code 
+    """
+    Summary Code 
 
     A higher level of account, aggregates several accounts to the level prescribed
     by Luminate. 
@@ -527,7 +529,8 @@ class inc_feeloss(Base):
 
 
 class pay_fracclaim(Base):
-    """Fractional Claim Amount. 
+    """
+    Fractional Claim Amount. 
 
     Number of hours, by period, to move from fractional costs and into claim costs. 
 
@@ -824,7 +827,7 @@ class pension_emp_cont(Base):
     Employers pension contributions. 
 
     Exists for each month, for each pension scheme, for each year. 
-    
+
     Attributes
     ----------
     pension_id : str
@@ -848,7 +851,7 @@ class ni(Base):
     National Insurance secondary threshold and rate. 
 
     Has one rate for year, and threshold by month.
-    
+
     .. note::
         The rate also includes the apprenticeship levy. 
 
@@ -934,11 +937,11 @@ class nonp_internal(Base):
 class permission(Base):
     """
     Custom access permissions. 
-    
+
     Entry onthis table gives access to a cost centres via the UI. 
 
     .. note::
-        
+
         Budget Holders and Directors are given access by virtue of their ownership statuses, and so do not need to be added to this list. 
 
     Attributes
@@ -960,3 +963,5 @@ table_map = {}
 for model in Base._decl_class_registry.values():
     if hasattr(model, '__tablename__'):
         table_map[model.__tablename__] = model
+        additional_str = f"Actual table name: ``{model.__tablename__}``\r \r"
+        model.__doc__ = additional_str + model.__doc__
