@@ -8,6 +8,7 @@ Below are definitions of the tables required in the application's database. They
 Standard table prefixes are used on the database tables for easier navigation/organisation.
 Note however that these are **not** used in the class names, for brevity. The prefixes are:
 
+
 *  **fs_** for tables that are part of the financial structure
 *  **f_** for tables that hold and structure actual finance data
 *  **input_** for tables that are used directly by the interface
@@ -15,6 +16,7 @@ Note however that these are **not** used in the class names, for brevity. The pr
 *  **conf_** for confguration values, intended to be static
 
 .. note::
+
     If altering a table, use the `alembic <https://alembic.sqlalchemy.org/en/latest/>`_ module to migrate to the database.
 
 """
