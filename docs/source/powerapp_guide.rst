@@ -189,8 +189,7 @@ The rate should be the base hourly rate of the spine point of the staff expected
 
 * **Casual** will override the rate entered with the standard casual staff hourly rate plus statutory holiday accrual, and will add NI to the cost displayed. 
 * **Teaching** will increase the rate entered by applying the teaching modifier and holiday accrual, and will add NI and pension to the cost displayed.
-* **Other** will increase the rate entered by applying holiday accrual *on a sliding scale, dependent on the salary*. This is to acknowledge that staff below grade 7 will probably be business support and thus not eligible for holiday accrual, 
-whilst those grade 7 or above will not be submitting claims unless they have a fractional contract or on the 'old' contract.    
+* **Other** will increase the rate entered by applying holiday accrual *on a sliding scale, dependent on the salary*. This is to acknowledge that staff below grade 7 will probably be business support and thus not eligible for holiday accrual, whilst those grade 7 or above will not be submitting claims unless they have a fractional contract or on the 'old' contract.    
 * **Scenario Adjustment** will apply the verbatim rate, with no adjustment at all. Users should avoid using this type, as it only exists to integrate 'scenario planning' information inhereted from ancestor sets.  
 
 .. figure:: images/claims.png
