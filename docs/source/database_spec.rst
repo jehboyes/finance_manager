@@ -12,5 +12,3 @@ This exists so that:
 .. automodule:: finance_manager.database.spec
     :members:
 
-Test
-----

@@ -39,7 +39,7 @@ BEGIN
 		WHEN @start > @pend THEN 0 --Start after month; By this point, must start or end in month 
 		WHEN DATEDIFF(DAY, @start, @end) < @pdays THEN CAST(DATEDIFF(DAY, @start, @end) AS FLOAT) / @pdays --Start and end in month 
 		WHEN @start >= @pstart THEN (CAST(DATEDIFF(DAY,@start, @pend) as float)+1)/@pdays -- start in month 
-		ELSE CAST(DATEDIFF(DAY, @end, @pend) as float)/@pdays -- end in month 
+		ELSE CAST(DATEDIFF(DAY, @pstart, @end) as float)/@pdays -- end in month 
 		END 
 	-- Return the result of the function
 	RETURN @result

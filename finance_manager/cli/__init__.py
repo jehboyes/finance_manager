@@ -5,6 +5,7 @@ from .load import load
 from .permissions import permissions
 from .settings import settings
 from .finance import finance
+from .export import export 
 
 from finance_manager.config import Config
 
@@ -31,6 +32,6 @@ def fm(config):
 
 
 # Attach the rest of the click commands
-commands = [database, load, permissions, settings, finance]
+commands = [database, load, permissions, settings, finance, export]
 for _ in commands:
     fm.add_command(_)

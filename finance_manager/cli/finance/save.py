@@ -32,6 +32,4 @@ def save(config, acad_year, setcat):
                 sql = f"""INSERT INTO {finance.__tablename__} (instance_id, account, period, amount) 
                         SELECT {i.instance_id}, account, period, value FROM {_view().name} WHERE set_id = {s.set_id}"""
                 session.execute(sql)
-        click.echo("Committing...", nl=False)
-        session.commit()
-        click.echo(" Complete.")
+                session.commit()

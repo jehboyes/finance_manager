@@ -1,16 +1,14 @@
 import click
-from .add import add as a
-from .director import director as d
+from .claims import claims
 
 
 @click.group()
 @click.pass_obj
-def permissions(config):
+def export(config):
     """
-    **Group** of commands for managing access to cost centres in the UI.
+    **Group** of commands for managing exports.
     """
     pass
 
 
-permissions.add_command(a)
-permissions.add_command(d)
+export.add_command(claims)
