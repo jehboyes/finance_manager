@@ -5,7 +5,7 @@ from .load import load
 from .permissions import permissions
 from .settings import settings
 from .finance import finance
-from .export import export 
+from .export import export
 
 from finance_manager.config import Config
 
