@@ -15,7 +15,9 @@ ni_periods = ",\n".join(
 
 
 def _spine(sp):
-    """Return spine point value (SQL)
+    """Return spine point value (SQL). 
+
+    Takes the full salary value, divides it by 365, multiplies by 7, divides by 37.
 
     Parameters
     ----------
