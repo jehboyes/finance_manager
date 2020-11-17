@@ -1,6 +1,6 @@
 import click
 from .save import save
-
+from .export import export
 
 @click.group()
 @click.pass_obj
@@ -11,6 +11,6 @@ def finance(config):
     pass
 
 
-commands = [save]
+commands = [save, export]
 for command in commands:
     finance.add_command(command)
