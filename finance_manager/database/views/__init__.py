@@ -1,16 +1,19 @@
+# pylint: disable=no-member
 """
 Contains defintions for the more complex views, i.e. those which explicitly reference multiple period columns
 
 Handy strings are at the top, then actual views are imported from the namesake files in this directory. 
 Slowly moving all views to their own files, which each contain one view: files are read by importing them using importlib. 
 
-TODO Split this file into grouped versions
+Views under construction/not ready for deployment have their files prefixed with an underscore.  
 """
 import importlib
 from os import listdir, path
 
 from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.functions import periods
+from finance_manager.database import DB
+from finance_manager.database.spec import f_set, finance_instance
 
 # List of named periods
 p = [f'p{n}' for n in periods()]
@@ -20,7 +23,8 @@ p_sum_string = "+".join(p)
 p_list_string = ", ".join(p)
 # Shorthand, as needs to be standardised
 account_description = "a.account + ' ' + a.description as account_description"
-
+# Shorthand for finance summary (set summary) description
+finance_summary = "cast(s.acad_year as varchar) + ' ' + s.set_cat_id as finance_summary"
 # work out a line's monthly FTE
 staff_month_sal = ", \n".join(
     [f"dbo.udfGetMonthProp(f_set.acad_year, {n}, s.start_date, s.end_date)*vFTE.FTE*(ISNULL(ss.value,0)+ISNULL(s.allowances,0))/12 as p{n}"
@@ -75,6 +79,23 @@ def _generate_p_string(str_format, join_with=None, restrict=None):
     if join_with is not None:
         lst = join_with.join(lst)
     return lst
+
+
+def _get_set_cols(config, auto_format=True):
+    """
+    Return finance_summary strings 
+    """
+    with DB(config=config) as db:
+        session = db.session()
+        col_list = []
+        for year, cat in session.query(f_set.acad_year, f_set.set_cat_id).join(finance_instance).distinct():
+            name = ' '.join([str(year), cat])
+            col_list.append(name)
+    pvt_list = ", ".join(f"[{n}]" for n in col_list)
+    if auto_format:
+        return pvt_list
+    else:
+        return col_list
 
 
 def get_views():
