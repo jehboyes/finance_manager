@@ -4,6 +4,7 @@ from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.config import Config
 from finance_manager.database import DB
 from finance_manager.database.spec import finance_instance, f_set
+from finance_manager.database.views import _get_set_cols
 
 
 def _view():
@@ -14,14 +15,7 @@ def _view():
     """
     c = Config()
     c.set_section("planning")
-
-    with DB(config=c) as db:
-        session = db.session()
-        col_list = []
-        for year, cat in session.query(f_set.acad_year, f_set.set_cat_id).join(finance_instance).distinct():
-            name = ' '.join([str(year), cat])
-            col_list.append(name)
-    pvt_list = ", ".join(f"[{n}]" for n in col_list)
+    pvt_list = _get_set_cols(c)
     sql = f"""
     SELECT costc, sec, summary_code, sec_order, line_order, format, {pvt_list}
     FROM (SELECT costc, sec, summary_code, sec_order, line_order, finance_summary, format, SUM(amount) as amount
