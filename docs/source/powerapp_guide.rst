@@ -6,7 +6,7 @@ navigation on the left to navigate to skip to a specific part of the app.
 
 .. warning::
     When editing data in the PowerApp, please be aware that data is edited in real time, and that the App may take a few seconds to write your changes. This can mean that if you change something 
-    and do not wiat for the PowerApp 'pips' at the top of the screen to end, then subsequent changes on the same screen may be lost.    
+    and do not wait for the PowerApp 'pips' at the top of the screen to end, then subsequent changes on the same screen may be lost.    
 
 .. note::
     Several screens allow the user to detail income or expenditure by period (financial month). Though it is not mandatory to do so for the purposes of overall financial monitoring, 
@@ -40,7 +40,7 @@ The **Finances** tab summarises the finances for all existing sets in the select
 
     This will be fixed in the future. 
 
-.. figure:: images/selection.png
+.. figure:: images/finance.png
     :width: 600px
     :align: center
     :alt: Selection screenshot
@@ -73,7 +73,8 @@ This defaults to 3.7% for both Home and Overseas students, which is based on the
 
 The product of the given proportion and the student numbers does **not** need to be a whole number. This is to reflect that Fee Loss is defined as a probabilistic figure, rather than an actual quantity.   
 
-The resultant amount of expected fee loss is attributed to account 1900 as negative income (i.e. a negative credit, and therefore a debit).   
+The resultant amount of expected fee loss is attributed to accounts 1900 and 1901 for Home and Overseas fees respectively 
+as negative income (i.e. a negative credit, and therefore a debit).   
 
 .. warning::
     'Fee Loss' is **not** synonymous with 'Withdrawal Rate' used historically, which is typically significantly different.  
@@ -254,6 +255,7 @@ Internal Transactions
 ---------------------
 
 This screen is used to view and update: 
+
 *  income & expenditure within the institution, and
 *  income & expenditure between the institution and the parent company. 
 
