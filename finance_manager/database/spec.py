@@ -48,7 +48,7 @@ def _period_cols(datatype):
     This exists to save writing out 12 columns in the several tables that need a column for each period, 
     which is both time and error-saving. Resultant columns are named p1, ..., p12, and have the provided datatype. 
 
-    Parameters
+    Attributes
     ----------
     datatype : datatype
         An SQLAlchemy datatype.  
@@ -169,8 +169,11 @@ class f_set(Base):
         ID for the student number usage. See the ``student_number_usage`` table of the 
         curriculum model database.  
     allow_student_number_change : bit
-        Boolean that designates whehter or not users can alter changes within the Powerapp. 
+        Boolean that designates whether or not users can alter changes within the Powerapp. 
         Typically, this will be '0' for actuals, and '1' for Business Planning. 
+    closed : bit
+        Boolean that indicates whether or not this set is closed for further edits. CHanges can be made, but 
+        they will not be reflected in the finances.   
     """
     __tablename__ = "f_set"
     set_id = Column(INTEGER(), primary_key=True)
@@ -180,13 +183,11 @@ class f_set(Base):
     set_cat_id = Column(CHAR(3), ForeignKey(
         "f_set_cat.set_cat_id", ondelete="CASCADE"), nullable=False)
     curriculum_id = Column(
-        INTEGER(), comment="Foreign key to CM Database's curriculum ID")
-    curriculum_hours = Column(DECIMAL(
-        20, 5), comment="From CM; updated manually to reflect Luminate ownership philosophy.")
-    student_number_usage_id = Column(
-        VARCHAR(100), comment="Foreign key for CM Database's student number usage")
-    allow_student_number_change = Column(
-        BIT(), server_default="0", comment="Allow users to input different student numbers")
+        INTEGER())
+    curriculum_hours = Column(DECIMAL(20, 5))
+    student_number_usage_id = Column(VARCHAR(100))
+    allow_student_number_change = Column(BIT(), server_default="0")
+    closed = Column(BIT(), server_default="0")
     # Add unique constraint on year, cost centre and set code
     __table_args__ = (Index('IX_f_set',
                             'costc', 'acad_year', 'set_cat_id', mssql_clustered=True),)
@@ -218,6 +219,31 @@ class hfi_bursary(Base):
         DECIMAL(9, 8), comment="Higher Fee Proportion, for calculating bursary")
     bursary_prop = Column(
         DECIMAL(9, 8), comment="Proportion of HFI paid as bursaries")
+
+
+class fee_loss(Base):
+    """
+    Default fee loss.
+
+    Sets the proportion of HE fees that will be lost to withdrawal and suspension.
+
+    Attributes
+    ----------
+    acad_year : int
+        See :term:`Academic Year`.
+    set_cat_id : str
+        Set category ID to apply the proportions to. 
+    status : str {H,O}
+        Fee status. 
+    rate : float
+        Proportion of gross fee income that will be lost. 
+    """
+    __tablename__ = "conf_fee_loss"
+    acad_year = Column(INTEGER(), primary_key=True)
+    set_cat_id = Column(CHAR(3), ForeignKey(
+        "f_set_cat.set_cat_id"), primary_key=True)
+    status = Column(CHAR(1), primary_key=True)
+    rate = Column(DECIMAL(9, 8))
 
 
 class finance_instance(Base):
@@ -939,7 +965,7 @@ class permission(Base):
     """
     Custom access permissions. 
 
-    Entry onthis table gives access to a cost centres via the UI. 
+    Entry on this table gives access to a cost centres via the UI. 
 
     .. note::
 
@@ -964,5 +990,16 @@ table_map = {}
 for model in Base._decl_class_registry.values():
     if hasattr(model, '__tablename__'):
         table_map[model.__tablename__] = model
+        # Add the table name to the docstring
         additional_str = f"Actual table name: ``{model.__tablename__}``\r \r"
         model.__doc__ = additional_str + model.__doc__
+        # Mark Primary key columns in the docstring
+        for col in model.__table__.columns:
+            if col.primary_key:
+                attributepos = model.__doc__.find(
+                    col.key, model.__doc__.find("Attribute"))
+                splitpoint = model.__doc__.find(
+                    '\n', attributepos)
+                pre, post = model.__doc__[:splitpoint], \
+                    model.__doc__[splitpoint:]
+                model.__doc__ = pre + ' [**PK**]' + post
