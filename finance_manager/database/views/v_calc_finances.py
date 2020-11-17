@@ -42,7 +42,7 @@ INNER JOIN input_inc_grant g ON s.acad_year = g.acad_year AND s.set_cat_id = g.s
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 """, f"""
 --HE FEE WITHDRAWAL
-SELECT s.set_id, 1900 as account, p.period, -income/12.0*loss.rate as value FROM
+SELECT s.set_id, CASE loss.status WHEN 'H' THEN 1900 ELSE 1901 END as account, p.period, -income/12.0*loss.rate as value FROM
 curriculummodel.dbo.vfeeincomeinputcostc f
 INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
 INNER JOIN v_input_inc_feeloss loss ON s.set_id = loss.set_id AND f.[Fee Status] = loss.status
@@ -66,7 +66,7 @@ SELECT set_id, account, period, value FROM
 UNPIVOT (value for period in ({square_list})) unp
 """, f"""
 --INTERNAL NON PAY
-SELECT set_id, account, period, amount/12 as value
+SELECT set_id, account, period, CASE net WHEN 0 THEN amount/12 ELSE 0 END as value
 FROM v_input_nonp_internal
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as x(period)) p
 """, f"""
