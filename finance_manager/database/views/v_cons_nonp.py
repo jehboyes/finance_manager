@@ -7,6 +7,7 @@ v.description as [Description], v.amount AS Amount
 FROM v_input_nonp_other v
 INNER JOIN f_set s ON v.set_id = s.set_id
 INNER JOIN fs_cost_centre cc ON cc.costc = s.costc
+WHERE amount <> 0
 """
 
 
