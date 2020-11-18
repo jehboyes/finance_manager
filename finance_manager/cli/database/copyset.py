@@ -15,7 +15,7 @@ from finance_manager.database.spec import Base, f_set
 @click.option("--close", "-c", is_flag=True, help="Close the sets being copied from.")
 @click.option("--gen", is_flag=True, help="Copy forward the generic tables only (the ones that are shared by all sets).")
 @click.pass_obj
-def copy(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close, gen):
+def copyset(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close, gen):
     """
     Copy forward input table contents to those with ``TOSETCAT`` in ``TOACADYEAR`` from ``FROMSETCAT`` in ``FROMACADYEAR``.
 
