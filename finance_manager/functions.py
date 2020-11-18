@@ -2,6 +2,9 @@
 These are a collection of generic functions, classes and iterators intended for use in various parts of the App, 
 and will probably be of use to future development. 
 """
+from importlib import import_module as imp
+from os import listdir, path
+import sys
 import functools
 import click
 
@@ -251,3 +254,15 @@ def name_to_aos(name):
             break
 
     return aos_code, num
+
+
+def _add_subcommands(parent, file, package):
+    p = path.dirname(file)
+    files = listdir(p)
+    this_package = sys.modules[package].__name__
+    modules = [imp(this_package+"."+f.replace(".py", ""), )
+               for f in files if f[0] != "_"]
+    commands = [getattr(module, module.__name__[module.__name__.rfind(".")+1:])
+                for module in modules]
+    for _ in commands:
+        parent.add_command(_)

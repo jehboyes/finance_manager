@@ -2,7 +2,7 @@ import click
 
 
 @click.pass_obj
-def _reconcilefee(config):
+def reconciliation(config):
     """
     Reconcile HE income in sets to QL. 
 

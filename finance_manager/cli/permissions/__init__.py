@@ -1,6 +1,6 @@
+
+from finance_manager.functions import _add_subcommands
 import click
-from .add import add as a
-from .director import director as d
 
 
 @click.group()
@@ -12,5 +12,4 @@ def permissions(config):
     pass
 
 
-permissions.add_command(a)
-permissions.add_command(d)
+_add_subcommands(permissions, __file__, __package__)

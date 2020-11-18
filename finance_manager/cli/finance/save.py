@@ -10,9 +10,10 @@ from finance_manager.database.views.v_calc_finances import _view
 
 @click.command()
 @click.argument("acad_year", type=int)
-@click.argument("setcat")
+@click.argument("setcat", type=str)
+@click.option("--restrict", type=str, help="Only save 1 cost centre (passed to this option).")
 @click.pass_obj
-def save(config, acad_year, setcat):
+def save(config, acad_year, setcat, restrict=None):
     """
     Save all matching sets.
 
@@ -21,7 +22,11 @@ def save(config, acad_year, setcat):
     with DB(config=config) as db:
         session = db.session()
         sets = session.query(f_set).filter(and_(f_set.acad_year == acad_year,
-                                                f_set.set_cat_id == setcat)).all()
+                                                f_set.set_cat_id == setcat))
+        if restrict != None:  # add costc filter if passed
+            click.echo(f"Restricting to {restrict}")
+            sets = sets.filter(f_set.costc == restrict)
+        sets = sets.all()
         with click.progressbar(sets, label="Working through sets") as bar:
             for s in bar:
                 # Make it a finance set

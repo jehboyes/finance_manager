@@ -12,7 +12,7 @@ from finance_manager.functions import period_to_month, periods
 @click.argument("acad_year", type=int)
 @click.argument("period", type=int)
 @click.pass_obj
-def payclaim(config, target_cat, acad_year, period):
+def load(config, target_cat, acad_year, period):
     """
     Import claimed hours from payclaim.
 

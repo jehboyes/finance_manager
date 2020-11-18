@@ -11,7 +11,7 @@ from finance_manager.database import DB
 @click.option("--seperate", is_flag=True, help="Output each cost centre to a seperate file.")
 @click.argument("costc", nargs=-1, type=str)
 @click.pass_obj
-def claims(config, costc, seperate, path):
+def export(config, costc, seperate, path):
     """
     Returns all the claims in the year thus far from payclaim.
 

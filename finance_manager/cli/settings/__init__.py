@@ -1,6 +1,6 @@
+
+from finance_manager.functions import _add_subcommands
 import click
-from .configure import configure
-from .display import display
 
 
 @click.group()
@@ -12,5 +12,4 @@ def settings(config):
     pass
 
 
-settings.add_command(configure)
-settings.add_command(display)
+_add_subcommands(settings, __file__, __package__)

@@ -12,7 +12,7 @@ from finance_manager.database.spec import table_map
 @click.argument("table_name")
 @click.argument("filepath")
 @click.pass_obj
-def csv(config, overwrite, table_name, filepath):
+def loadcsv(config, overwrite, table_name, filepath):
     """
     Load records into a table. 
 

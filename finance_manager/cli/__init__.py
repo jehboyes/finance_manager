@@ -1,11 +1,8 @@
 # pylint: disable=no-member
+
+from finance_manager.functions import _add_subcommands
 import click
-from .database import database
-from .load import load
-from .permissions import permissions
-from .settings import settings
-from .finance import finance
-from .export import export
+
 
 from finance_manager.config import Config
 
@@ -31,7 +28,4 @@ def fm(config):
     config.obj.set_section("planning")
 
 
-# Attach the rest of the click commands
-commands = [database, load, permissions, settings, finance, export]
-for _ in commands:
-    fm.add_command(_)
+_add_subcommands(fm, __file__, __package__)
