@@ -816,6 +816,10 @@ class con_type(Base):
     ----------
     con_type_id : int
         ID for the contract type. 
+    set_cat_id : str
+        3 character ID for the set category. 
+    acad_year : int 
+        See :term:`Academic Year`
     description : str
         Description of the contract. 
     work_hours : float 
@@ -826,6 +830,8 @@ class con_type(Base):
     __tablename__ = "staff_con_type"
 
     con_type_id = Column(INTEGER(), primary_key=True)
+    acad_year = Column(INTEGER(),  primary_key=True)
+    set_cat_id = Column(CHAR(3),  primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
     work_hours = Column(DECIMAL(10, 5), nullable=False)
     hol_hours = Column(DECIMAL(10, 5), nullable=False)
