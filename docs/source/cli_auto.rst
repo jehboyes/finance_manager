@@ -7,6 +7,7 @@ Overview
 --------
 
 The command line interface is a set of nested commands, with ``fm`` as the entry point. 
+Use the navigation pane on the left to navigate the list.  
 
 All commands include a ``--help`` option, which will print the relevant part of the below 
 documentations to the command line. 
