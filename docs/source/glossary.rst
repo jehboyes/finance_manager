@@ -116,10 +116,10 @@ Glossary
 
         .. math::
 
-            \text{Salary} &= \frac{\frac{100\beta}{\gamma} + \delta}{100} \times d \times \frac{\gamma}{b + c} \\
+            \text{Salary} &= \frac{\theta}{100} \times d \times \frac{\gamma}{b + c} \\
             &= \frac{(\frac{100(1+\frac{c}{b})a}{\gamma} + \delta)d\gamma}{100(b+c)}  \\
             &= \left(\frac{a(b+c)}{b(b+c)}+\frac{\delta \gamma}{100(b+c)}\right) d \\
-            &= \left(\frac{a(b+c)}{b(b+c)}+\frac{1110\delta(1+\frac{c}{b})}{193140}\right) d
+            &= \left(\frac{a}{b}+\frac{1110\delta(1+\frac{c}{b})}{193140}\right) d
 
         We can then define the fixed part of the error term explicitly to give a simpler representation of the salary calculation, and calculate the actual 
         terms for each type of contract:
@@ -127,19 +127,15 @@ Glossary
         .. math::
 
             \epsilon &= \frac{1110\delta}{193140} \\
-                     &= 0.002873557  \\
+                     &= 0.002873557 \text{(exactly)}  \\
             \\
             \text{Salary} &= \left(\frac{a}{b} + \left(1+\frac{c}{b}\right)\epsilon\right)\delta \\
-            &= \frac{a+(b+c)\epsilon}{b}d
+            &= \frac{a+(b+c)\epsilon}{b}d \\
             &= \begin{cases}
             (\frac{a}{b}+0.0035)d,  &  \text{Old contract} \\
             (\frac{a}{b}+0.0034)d,  &  \text{New contract} 
             \end{cases}
             
-        This shows that a fractional FTE is the number of hours worked as a proportion of the maximum number of hours workable (the :math:`\frac{a}{b}` term), 
+        This result is intuitively correct: it shows that a fractional FTE is the number of hours worked as a proportion of the maximum number of hours workable (the :math:`\frac{a}{b}` term), 
         plus a small extra from the error term, which is equivalent to about :math:`5\frac{1}{2}` hours additional work. In financial terms, this translates to 
         an absolute increase in salary of between £100 and £200 per member of fractional staff. 
-        
-        
-         
-
