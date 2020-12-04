@@ -1,9 +1,4 @@
 """
-Tables
-------
-
-Below are definitions of the tables required in the application's database. They are built using the 
-`SQLAlchemy Object Relational Mapper <https://docs.sqlalchemy.org/en/14/orm/index.html>`_.  
 
 Standard table prefixes are used on the database tables for easier navigation/organisation.
 Note however that these are **not** used in the class names, for brevity. 
