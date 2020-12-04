@@ -27,7 +27,7 @@ The system encompasses two distinct applications:
    :maxdepth: 3
    :caption: Reference:
 
-   database_spec
+   database
    supporting_objects
    
 
