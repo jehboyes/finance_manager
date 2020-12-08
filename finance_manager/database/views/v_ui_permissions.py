@@ -5,7 +5,7 @@ def _view():
     sql = """
     SELECT DISTINCT c.costc, c.description as costc_name, c.costc+' '+c.description as long_name, 
 s.set_id, s.acad_year, s.curriculum_id, CAST(s.acad_year as varchar) + ' ' + sc.description as code, lower(core.login_365) as login_365, 
-	CAST(s.acad_year as varchar) + ' ' + sc.description as year_code, s.closed
+	CAST(s.acad_year as varchar) + ' ' + sc.description as year_code, s.closed, s.set_cat_id
 FROM 
 	(SELECT costc, owner as login_365 FROM fs_cost_centre
 	 UNION ALL 
