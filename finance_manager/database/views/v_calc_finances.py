@@ -89,7 +89,7 @@ SELECT
 fs.set_id,
 CASE WHEN p.period = 0 THEN 2102 WHEN x.n = 1 THEN pt.salary_account WHEN x.n = 2 then pt.ni_account ELSE pt.pension_account END as account,
 CASE WHEN p.period = 0 THEN f.period ELSE p.period END as period,
-CASE WHEN p.period = 0 THEN 1 ELSE -1/12.0 END * f.hours/fs.curriculum_hours*CASE WHEN x.n = 1 THEN v.salary WHEN x.n = 2 then v.ni ELSE v.pension END as value
+CASE WHEN p.period = 0 THEN 1 ELSE -1/12.0 END * CASE fs.curriculum_hours WHEN 0 then 0 ELSE f.hours/fs.curriculum_hours END*CASE WHEN x.n = 1 THEN v.salary WHEN x.n = 2 then v.ni ELSE v.pension END as value
 FROM input_pay_fracclaim f
 INNER JOIN f_set fs ON fs.set_id = f.set_id
 INNER JOIN (SELECT s.set_id, s.post_type_id, SUM(salary) as salary, SUM(NI) as ni, SUM(pension) as pension
