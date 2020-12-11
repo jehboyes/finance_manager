@@ -185,7 +185,7 @@ class f_set(Base):
     closed = Column(BIT(), server_default="0")
     # Add unique constraint on year, cost centre and set code
     __table_args__ = (Index('IX_f_set',
-                            'costc', 'acad_year', 'set_cat_id', mssql_clustered=True),)
+                            'costc', 'acad_year', 'set_cat_id', unique=True),)
     category = relationship("f_set_cat", back_populates="f_sets")
 
 
@@ -716,7 +716,7 @@ class pay_staff(Base):
     indicative_fte = Column(DECIMAL(precision=10, scale=5), nullable=True)
     allowances = Column(_FDec,  nullable=True)
     con_type_id = Column(INTEGER(), ForeignKey(
-        "staff_con_type.con_type_id"), nullable=True)
+        "staff_con_type.con_type_id"), nullable=True, server_default="2")
     pension_id = Column(VARCHAR(3), ForeignKey(
         "staff_pension.pension_id"), nullable=True)
     travel_scheme = Column(_FDec, nullable=True)
@@ -984,6 +984,55 @@ class permission(Base):
     costc = Column(CHAR(6), ForeignKey(
         "fs_cost_centre.costc"), primary_key=True)
     login_365 = Column(VARCHAR(50), primary_key=True)
+
+
+class dt_cat(Base):
+    """
+    Categories of key dates. 
+
+    Parameters
+    ----------
+    dt_cat_id : str
+        4 character ID for the date category.
+    description : str
+        Description of the category.
+    important : bit
+        Flag as important. 
+    """
+    __tablename__ = "a_dt_cat"
+
+    dt_cat_id = Column(CHAR(4), primary_key=True)
+    description = Column(VARCHAR(50))
+    important = Column(BIT(), server_default="0")
+
+
+class dt(Base):
+    """
+    Key dates to display in the app. 
+
+    Just intended as a reference, and not mandatory. 
+
+    Parameters
+    ----------
+    set_cat_id : str
+        Set category ID. 
+    acad_year : int
+        See :term:`Academic Year`.
+    dt : datetime
+        Actual date and time of the key date. 
+    description : str
+        Description of what's happening on this date. 
+    dt_cat_id : str
+        Category of the date. 
+    """
+    __tablename__ = "a_dt"
+
+    set_cat_id = Column(CHAR(3), ForeignKey(
+        "f_set_cat.set_cat_id"), primary_key=True)
+    acad_year = Column(INTEGER(), primary_key=True)
+    dt = Column(DATETIME(), primary_key=True)
+    description = Column(VARCHAR(50))
+    dt_cat_id = Column(CHAR(4), ForeignKey("a_dt_cat.dt_cat_id"))
 
 
 # Map taking string names to table objects
