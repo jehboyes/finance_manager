@@ -50,7 +50,7 @@ CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 """, f"""
 --HIGHER FEE BURSARY
 SELECT CASE a.account WHEN 4370 THEN s.set_id ELSE app.set_id END as set_id,
-a.account as account, p.period, income/12.0*(1-loss.rate)*b.hfi_prop*b.bursary_prop as value
+a.account as account, p.period, ROUND(income/12.0*(1-loss.rate)*b.hfi_prop*b.bursary_prop,2) as value
 FROM curriculummodel.dbo.vfeeincomeinputcostc f
 INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
 INNER JOIN v_input_inc_feeloss loss ON s.set_id = loss.set_id AND f.[Fee Status] = loss.status
@@ -81,7 +81,7 @@ SELECT set_id, account, period, value FROM
 		CASE x.n WHEN 1 THEN c.account WHEN 2 THEN 2418 ELSE 2518 END as account, 
 		{claim_case}  
 	FROM v_calc_claim c
-	CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3)) as x(n)) x) as p
+	CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3)) as x(n)) x) as p --Used to split pension
 UNPIVOT (value FOR period IN ({square_list})) unp
 """, f"""
 --Moving frac contracts to frac claims
