@@ -13,25 +13,9 @@ i_periods_summed = _generate_p_string("i.p{p}", "+")
 ni_periods = ",\n".join(
     ["("+_sql_bound("MAX", f"{rate_calculation}-ni.p{n}/37", "0")+f")*i.p{n}*ni.rate*t.apply_ni as ni_p{n}" for n in periods()])
 
-
-def _spine(sp):
-    """Return spine point value (SQL). 
-
-    Takes the full salary value, divides it by 365, multiplies by 7, divides by 37.
-
-    Parameters
-    ----------
-    sp : int
-        Spine point
-    """
-    return f"(SELECT value/365*7/37 FROM staff_spine WHERE spine = {sp})"
-
-
-# estimating pension by period - none for casual, then a sliding scale fomr 0% to 100% of possible contribution,
-# up to grade 7.
-pension_periods = ",\n".join(
-    ["("+_sql_bound("MIN", "1", f"({rate_calculation}-{_spine(4)})/({_spine(33)}-{_spine(4)})") +
-        f")*i.p{n}*{rate_calculation}*t.apply_pension*pen.p{n} as pension_p{n}" for n in periods()])
+# Heavily simplified pension calculation - applied to anything not casual
+pension_periods = _generate_p_string(
+    "i.p{p}*" + rate_calculation + "*t.apply_pension*pen.p{p} as pension_p{p}", ",\n")
 
 sql = f"""
 SELECT i.set_id, i.claim_id, i.account, i.description,
