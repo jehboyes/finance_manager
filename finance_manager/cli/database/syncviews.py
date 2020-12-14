@@ -25,7 +25,7 @@ stamp = f"""
 
 @click.command()
 @click.option("--test", is_flag=True, help="Attempt to run views after creation.")
-@click.option("--restrict", type=str, help="Restrict to a named view.")
+@click.option("-r", "--restrict", type=str, help="Restrict to a named view.")
 @click.pass_obj
 def syncviews(config, test, restrict):
     """
