@@ -1,3 +1,9 @@
+"""
+Defines a view that combines all of the input tables to produce a candidate finance set. 
+
+NB- the curriculum database is referenced, and so to execute the view a user must have SELECT permission
+on any referenced objects. 
+"""
 from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.database.views import _generate_p_string
 from finance_manager.functions import periods
@@ -12,7 +18,7 @@ claim_case = _generate_p_string(
     "CASE x.n WHEN 1 THEN p{p}*adjusted_rate WHEN 2 THEN ni_p{p} ELSE pension_p{p} END as [{p}]", ",\n")
 
 union_parts = "\nUNION ALL\n".join([f"""
---BURSARIES
+--FEE BURSARIES (not the higher fee proportional one)
 SELECT v.set_id, CASE WHEN v.status = 'H' THEN 1240 ELSE 1246 END as account, p.period, SUM(-amount * number)/12 as value
 FROM v_input_inc_bursary v
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as x(period)) as p
@@ -25,13 +31,13 @@ FROM (SELECT set_id, {ptext_as_n}
 UNPIVOT
 (value for period in ({square_list})) as unp
 """, f"""
---HE FEE
+--HE FEE (partially from the curriculummodel database)
 SELECT s.set_id, case WHEN [fee status] = 'H' THEN 1240 ELSE 1246 END as account, p.period, income/12 as value FROM
 curriculummodel.dbo.vfeeincomeinputcostc f
 INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 """, f"""
---OfS HIGH COST AND CAPITAL GRANT
+--OfS HIGH COST AND CAPITAL GRANT 
 SELECT s.set_id, 1100 as account, p.period, f.students/t.students*(g.capital_grant+g.high_cost_funding)/12 as value FROM
 curriculummodel.dbo.vfeeincomeinputcostc f
 INNER JOIN (SELECT year, usage_id, SUM(Students) as students
@@ -48,7 +54,7 @@ INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id 
 INNER JOIN v_input_inc_feeloss loss ON s.set_id = loss.set_id AND f.[Fee Status] = loss.status
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 """, f"""
---HIGHER FEE BURSARY
+--HIGHER FEE BURSARY (moving a proportion of student income to Access & Participation)
 SELECT CASE a.account WHEN 4370 THEN s.set_id ELSE app.set_id END as set_id,
 a.account as account, p.period, ROUND(income/12.0*(1-loss.rate)*b.hfi_prop*b.bursary_prop,2) as value
 FROM curriculummodel.dbo.vfeeincomeinputcostc f
