@@ -8,7 +8,7 @@ SELECT s.staff_line_id, s.post_status_id, s.set_id, f_set.acad_year, f_set.set_c
 {staff_month_sal}
 FROM input_pay_staff s
 INNER JOIN f_set ON f_set.set_id = s.set_id
-LEFT OUTER JOIN staff_spine ss on ss.spine = s.current_spine
+LEFT OUTER JOIN staff_spine ss on ss.spine = s.current_spine AND s.acad_year = ss.sacad_year AND s.set_cat_id = ss.set_cat_id
 INNER JOIN v_calc_staff_fte vFTE on vFTE.staff_line_id = s.staff_line_id
 """)
     return v
