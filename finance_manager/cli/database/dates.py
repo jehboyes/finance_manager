@@ -10,11 +10,11 @@ from finance_manager.database.spec import dt
 @click.option("-d", "--delete", is_flag=True, help="Delete set cat's dates.")
 @click.argument("acad_year", type=int)
 @click.argument("set_cat", type=str)
-@click.argument("date", type=click.DateTime)
+@click.argument("date", type=click.DateTime())
 @click.argument("date_cat", type=str)
 @click.argument("description", type=str)
 @click.pass_obj
-def preview(config, delete, acad_year, set_cat=None, date=None, date_cat=None, description=None):
+def dates(config, delete, acad_year, set_cat=None, date=None, date_cat=None, description=None):
     """
     Add or remove dates. 
 
