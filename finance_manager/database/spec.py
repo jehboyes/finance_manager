@@ -796,7 +796,8 @@ class spine(Base):
         Annual salary of the spine point. 
     """
     __tablename__ = "staff_spine"
-
+    acad_year = Column(INTEGER(),  primary_key=True)
+    set_cat_id = Column(CHAR(3),  primary_key=True)
     spine = Column(INTEGER(), primary_key=True)
     value = Column(_FDec)
 
