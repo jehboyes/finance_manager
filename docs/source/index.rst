@@ -29,7 +29,13 @@ The system encompasses two distinct applications:
 
    database
    supporting_objects
-   
+
+
+Changes
+=======
+
+.. git_changelog::
+
 
 Indices and tables
 ==================
