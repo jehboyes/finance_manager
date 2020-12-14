@@ -26,7 +26,11 @@ stamp = f"""
 @click.command()
 @click.option("-t", "--test", is_flag=True, help="Attempt to run views after creation.")
 @click.option("-r", "--restrict", type=str, help="Restrict to a named view.")
+<<<<<<< HEAD
 @click.option("-o", "--output", is_flag=True, help="Outputs SQL instead of writing to DB.")
+=======
+@click.option("--output", is_flag=True, help="Outputs SQL instead of writing to DB.")
+>>>>>>> 8b76ca59c35fe209ed14eaa5bc188190ae66e063
 @click.pass_obj
 def syncviews(config, test, restrict, output):
     """
