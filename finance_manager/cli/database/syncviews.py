@@ -26,8 +26,9 @@ stamp = f"""
 @click.command()
 @click.option("--test", is_flag=True, help="Attempt to run views after creation.")
 @click.option("-r", "--restrict", type=str, help="Restrict to a named view.")
+@click.option("--output", is_flag=True, help="Outputs SQL instead of writing to DB.")
 @click.pass_obj
-def syncviews(config, test, restrict):
+def syncviews(config, test, restrict, output):
     """
     Update database views.
 
@@ -61,15 +62,23 @@ def syncviews(config, test, restrict):
             warnings.warn(
                 f"Ordering **unfinished** after {lim} attempts. Indicative of circular reference in views.", RuntimeWarning)
         views = [views[i] for i in ordering]
-        pb_label = "Updating views"
-        if test:
-            pb_label += " and testing in database"
+        if output:
+            pb_label = "View SQL:"
+        elif test:
+            pb_label = "Updating and testing in DB"
+        else:
+            pb_label = "Updating views"
+
         with click.progressbar(views, label=pb_label) as bar:
             for v in bar:
                 if restrict is None or v.name == restrict:
-                    sql = f"\nDROP VIEW IF EXISTS {v.name}"
-                    db.con.execute(sql)
-                    sql = f"CREATE VIEW {v.name} AS {stamp}\n{v.sqltext}"
-                    db.con.execute(sql)
-                    if test:
-                        _ = db.con.execute(f"SELECT * FROM {v.name}").fetchall()
+                    if output:
+                        click.echo(v.sqltext)
+                    else:
+                        sql = f"\nDROP VIEW IF EXISTS {v.name}"
+                        db.con.execute(sql)
+                        sql = f"CREATE VIEW {v.name} AS {stamp}\n{v.sqltext}"
+                        db.con.execute(sql)
+                        if test:
+                            _ = db.con.execute(
+                                f"SELECT * FROM {v.name}").fetchall()
