@@ -7,7 +7,7 @@ from finance_manager.cli import fm
 
 
 class TestCLI(unittest.TestCase):
-    def test_table_map(self):
+    def test_fm(self):
         """
         Check the CLI runs without error. This will fail if any of the subcommands do not compile right.   
         """
