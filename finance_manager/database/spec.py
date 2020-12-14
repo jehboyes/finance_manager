@@ -245,7 +245,7 @@ class finance_instance(Base):
     """
     An instance of finance records for a set. 
 
-    Allows for viewing the finace history of a set.
+    Allows for viewing the finance history of a set.
 
     Attributes
     ----------
