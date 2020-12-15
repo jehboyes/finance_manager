@@ -790,6 +790,10 @@ class spine(Base):
 
     Attributes
     ----------
+    acad_year : int
+        See :term:`Academic Year`.
+    set_cat_id : str
+        3 character ID for the set category. 
     spine : int
         Spine point number. 
     value : float
