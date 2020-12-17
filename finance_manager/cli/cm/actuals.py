@@ -24,14 +24,15 @@ def actuals(config, acad_year, filepath):
         read = False
         for row in rows:
             # If a valid row to read from
-            if read:
-                entries.append((level_to_session(row[0]),
-                                row[2][0],
-                                name_to_aos(row[3])[0],
-                                int(row[9] or "0"))
-                               )
-            if row[0] == "LevelOfStudy":
-                read = True
+            if len(row) > 0:
+                if read:
+                    entries.append((level_to_session(row[0]),
+                                    row[2][0],
+                                    name_to_aos(row[3])[0],
+                                    int(row[9] or "0"))
+                                   )
+                if row[0] == "LevelOfStudy":
+                    read = True
     n = 0
     if len(entries) != 0:
         config.set_section("cm")
