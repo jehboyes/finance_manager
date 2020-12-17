@@ -691,12 +691,16 @@ class pay_staff(Base):
         Amount of academic travel scheme to be paid to the postholder over the year.
     teaching_hours : float 
         Number of 'fractional' hours taught by non-fractional academics. 
+    assessing_hours : float 
+        Number of 'fractional' hours assessed by non-fractional academics. 
+    coordination_hours : float 
+        Number of 'fractional' hours coordinated by non-fractional academics. 
     set_id : int
         ID of the set to which the post belongs. 
     staff_line_id : int
         ID for the staff line. 
     notes : str
-        Open text ntoes for the post. 
+        Open text notes for the post. 
     """
     __tablename__ = "input_pay_staff"
 
@@ -722,6 +726,10 @@ class pay_staff(Base):
     travel_scheme = Column(_FDec, nullable=True)
     teaching_hours = Column(DECIMAL(precision=10, scale=5),
                             nullable=True, server_default='0')
+    assessing_hours = Column(DECIMAL(precision=10, scale=5),
+                             nullable=True, server_default='0')
+    coordination_hours = Column(DECIMAL(precision=10, scale=5),
+                                nullable=True, server_default='0')
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
     staff_line_id = Column(INTEGER(), primary_key=True, autoincrement=True,
                            mssql_identity_start=1000, mssql_identity_increment=1)
@@ -802,8 +810,25 @@ class spine(Base):
     __tablename__ = "staff_spine"
     acad_year = Column(INTEGER(),  primary_key=True)
     set_cat_id = Column(CHAR(3),  primary_key=True)
-    spine = Column(INTEGER(), primary_key=True)
+    spine = Column(INTEGER(), ForeignKey(
+        "staff_spine_grade.spine"), primary_key=True)
     value = Column(_FDec)
+
+
+class grade(Base):
+    """
+    Spine point grades
+
+    Attributes
+    ----------
+    spine : int
+        Spine point number
+    grade : int 
+        Grade number
+    """
+    __tablename__ = "staff_spine_grade"
+    spine = Column(INTEGER(), primary_key=True)
+    grade = Column(INTEGER())
 
 
 class con_type(Base):
