@@ -38,7 +38,6 @@ pyinstaller==4.0
 pyinstaller-hooks-contrib==2020.10
 pylint==2.6.0
 PyMySQL==0.10.1
-pyodbc==4.0.30
 pyparsing==2.4.7
 python-dateutil==2.8.1
 python-editor==1.0.4
