@@ -12,7 +12,6 @@ colorama==0.4.3
 cryptography==3.2.1
 docutils==0.16
 -e git+https://github.com/jehboyes/finance_manager@46984b9bf565addb1ddda85a01a394268deb9656#egg=finance_manager
-FinanceManager==0.1
 Flask==1.1.2
 future==0.18.2
 gitdb==4.0.5
