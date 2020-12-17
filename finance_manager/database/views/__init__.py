@@ -25,19 +25,6 @@ p_list_string = ", ".join(p)
 account_description = "a.account + ' ' + a.description as account_description"
 # Shorthand for finance summary (set summary) description
 finance_summary = "cast(s.acad_year as varchar) + ' ' + s.set_cat_id as finance_summary"
-# work out a line's monthly FTE
-staff_month_sal = ", \n".join(
-    [f"dbo.udfGetMonthProp(f_set.acad_year, {n}, s.start_date, s.end_date)*vFTE.FTE*(ISNULL(ss.value,0)+ISNULL(s.allowances,0))/12 as p{n}"
-     for n in periods()])
-staff_month_sal_total = ", \n".join(
-    [f"SUM(m.p{n}) as p{n}" for n in periods()])
-staff_month_ni = ", \n".join(
-    [f"ISNULL(dbo.udfNI(mt.p{n}, ni.p{n}, ni.rate)*m.p{n}/NULLIF(ISNULL(NULLIF(mt.p{n},0),m.p{n}),0),0) as ni_p{n}" for n in periods()])
-staff_month_pension = ", \n".join(
-    [f"m.p{n}*ISNULL(pension.p{n},0) as pension_p{n}" for n in periods()])
-staff_travel_months = 12
-staff_travel_allowance = ", \n ".join(
-    [f"ISNULL(s.travel_scheme,0)/{staff_travel_months} as travel_p{n}" for n in periods()])
 
 
 def _sql_bound(max_or_min, *fields):

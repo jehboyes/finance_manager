@@ -1,5 +1,9 @@
 from finance_manager.database.replaceable import ReplaceableObject as o
-from finance_manager.database.views import staff_month_sal_total
+from finance_manager.functions import periods
+
+
+staff_month_sal_total = ", \n".join(
+    [f"SUM(m.p{n}) as p{n}" for n in periods()])
 
 
 def _view():
