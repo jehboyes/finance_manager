@@ -1,6 +1,7 @@
 # pylint: disable=no-member
 import click
 from finance_manager.database.views import get_views
+from finance_manager.database.functions import function_list
 from finance_manager.config import Config as conf
 from finance_manager.database import DB
 from datetime import datetime
@@ -27,8 +28,9 @@ stamp = f"""
 @click.option("-t", "--test", is_flag=True, help="Attempt to run views after creation.")
 @click.option("-r", "--restrict", type=str, help="Restrict to a named view.")
 @click.option("-o", "--output", is_flag=True, help="Outputs SQL instead of writing to DB.")
+@click.option("-f", "--functions", is_flag=True, help="Also update functions.")
 @click.pass_obj
-def syncviews(config, test, restrict, output):
+def syncviews(config, test, restrict, output, functions):
     """
     Update database views.
 
@@ -82,3 +84,9 @@ def syncviews(config, test, restrict, output):
                         if test:
                             _ = db.con.execute(
                                 f"SELECT * FROM {v.name}").fetchall()
+        if functions:
+            for f in function_list:
+                sql = f"\nDROP FUNCTION IF EXISTS {f.name}"
+                db.con.execute(sql)
+                sql = f"CREATE FUNCTION {f.name} \n {stamp}\n{f.sqltext}"
+                db.con.execute(sql)
