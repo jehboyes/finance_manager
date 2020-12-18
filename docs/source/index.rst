@@ -28,13 +28,21 @@ The system encompasses two distinct applications:
    :caption: Reference:
 
    database
+   cm
    supporting_objects
 
 
-Changes
-=======
+Recent changes 
+--------------
 
 .. git_changelog::
+
+
+Git commit details:
+   
+.. git_commit_detail::
+    :branch:
+    :commit:
 
 
 Indices and tables

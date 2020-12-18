@@ -55,6 +55,13 @@ Glossary
         an FTE of 1.0 is equivalent to working 1,613.2 hours across the year, whilst for a small number of staff 
         (on an older contract) an FTE of 1.0 is equivalent to working 1,576.2 hours across the year. 
 
+
+    Academic Management
+
+        In the context of the conservatoire, this refers to a collection of posts, specifically **Programme Leader**, 
+        **Curriculum Manager**, **Head of School** or **Head of Postgraduate Study**.  
+
+
     Fractional Academic
 
         This is a type of post that has a new 'Fractional Contract' each year, which details what the post will teach or assess in that year. 
