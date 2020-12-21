@@ -22,6 +22,8 @@ is used to select which set will be viewed/edited in the rest of the App.
 
 The first dropdown determines the cost centre used. The second determines the academic year and category. Once you've selected both, press **Load Selected** to bring the specified set to the App.
 
+Once a set has been loaded, any key dates relevant to the set appear on the right. Dates are faded once they've passed. 
+
 .. figure:: images/selection.png
     :width: 600px
     :align: center
@@ -33,10 +35,13 @@ The first dropdown determines the cost centre used. The second determines the ac
 Viewing Finances
 ----------------
 
-The **Finances** tab summarises the finances for all existing sets in the selected cost centre. 
+The **Finances** tab summarises the finances for all existing sets in the selected cost centre. Clicking on a line shows an account-level
+breakdown of what is behind the figures for that line in the current set (e.g., in the below screenshot, because 2021 BP1 is selected, the 
+account level figures shown on the right are for 2021 BP1). 
 
 .. warning::
-    Currently, the finances shown here are not 'live': they are updated manually by an administrator, as PowerApps is unable to run a full update due to authentication restrictions. 
+    Currently, the finances shown here are not 'live': they are updated manually by an administrator, as PowerApps is unable to run 
+    a full update due to authentication restrictions. 
 
     This will be fixed in the future. 
 
@@ -142,22 +147,27 @@ This section is used to view and edit staffing.
 Staffing list
 ^^^^^^^^^^^^^
 
-On the left of the screen is a list of all posts in the given selected set, showing post title, the name of the postholder, and the total cost of the post (including on-costs). 
+On the left of the screen is a list of all posts in the given selected set, showing post title, the name of the postholder, 
+and the total cost of the post (including on-costs). 
 
-If the set has fractional staffing (and curriculum delivery), the **Update Fractions** button will recalculate the fractional cost from any changes made to the curriculum model.
+The **Refresh list** button will refresh the list to reflect any changes made in the edit section. If the set has fractional staffing 
+(and curriculum delivery), this button will also recalculate the fractional cost from any changes made to the curriculum model.
 
-The **Refresh list** button will refresh the list to reflect any changes made in the edit section. 
 
 Post Edit
 ^^^^^^^^^
 
-On the right of the screen is the form used to edit posts. 
+On the right of the screen is the form used to edit posts. There are three fields relevant only to :term:`Academic Management`; these fields 
+are used to reduce the amount of curriculum delivery work that is allocated to fractional academics. 
 
 * **Title**: title of the post.
 * **Name**: name of the postholder, if known.
-* **Staff ID**: postholder's unique staff ID. Though not mandatory, it is important for accurately calculating on-costs for staff that work across multiple posts or departments. 
 * **Status**: status of the post, in terms of whether it is new, existing, vacant, or terminated. If the status is anything other than 'Existing', then a information flag will be added to the side of the post in the `Staffing list`_. 
 * **Type**: traditional categorisation of the post as 'Business Support, 'Fractional Academic', 'Management' etc. This field determines which accounts this post will be costed to.  
+* **Teaching Hours**: *Academic Management posts only* hours spent teaching by Academic Management
+* **Assessing Hours**: *Academic Management posts only* hours spent assessing by Academic Management
+* **Curriculum Hours**: *Academic Management posts only* hours spent on mondule coordiantion by Academic Management 
+* **Staff ID**: postholder's unique staff ID. Though not mandatory, it is important for accurately calculating on-costs for staff that work across multiple posts or departments. 
 * **FTE**: indicative full time equivalent of the post. FOr all post types but Fractional, this is absolute; for Fractional posts, this is used to distribute work as specified in the curriculum model between all the fractional staff.  
 * **Start Date**: date the post is occupied (if known).  
 * **End Date**: date the post is vacated (if applicable).
@@ -272,9 +282,3 @@ inverse of the amount detailed in order for the internal transaction to be inclu
     :figclass: align-center
 
     Internal transactions screen
-
-
-
-
-
-

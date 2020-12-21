@@ -14,7 +14,7 @@ which both ensures its accuracy, and reduces the amount of work required from :t
 Process
 -------
 
-Currently, the Curriculum Model's database and the Finance Managers database are distinct, but have the ability to communicate 
+Currently, the Curriculum Model's database and the Finance Manager's database are distinct, but have the ability to communicate 
 with each other. This is achieved by having both databases reside on the same server. 
 
 The Curriculum Model contains several curricula, and each curricula is configured to use a particular type of student numbers. 
@@ -29,14 +29,14 @@ FTE as a means of distributing the hours.
 
 .. note::
 
-   In addition to the work calculated here, fractional contracts also hae a static increase; see :term:`Fractional Academic Salary` 
+   In addition to the work calculated here, fractional contracts also have a static increase; see :term:`Fractional Academic Salary` 
    for more information. 
 
 
 Implementation
 --------------
 
-Because of the hours being inaccessible to the finance manager users (in that a finance manager database user can't access the 
+Because of the hours being inaccessible to the finance manager users (in that a finance manager *database* user can't access the 
 curriculum model database), a static copy of the total number of hours on a curriculum is kept in the ``f_set`` table. This can  
 be updated either by running the command ``fm cm curriculum`` command, or by pressing refresh on the staffing list in the powerapp.  
 
