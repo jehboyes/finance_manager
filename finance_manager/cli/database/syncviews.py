@@ -70,7 +70,12 @@ def syncviews(config, test, restrict, output, functions):
             pb_label = "Updating and testing in DB"
         else:
             pb_label = "Updating views"
-
+        if functions:
+            for f in function_list:
+                sql = f"\nDROP FUNCTION IF EXISTS {f.name}"
+                db.con.execute(sql)
+                sql = f"CREATE FUNCTION {f.name} \n {stamp}\n{f.sqltext}"
+                db.con.execute(sql)
         with click.progressbar(views, label=pb_label) as bar:
             for v in bar:
                 if restrict is None or v.name == restrict:
@@ -84,9 +89,3 @@ def syncviews(config, test, restrict, output, functions):
                         if test:
                             _ = db.con.execute(
                                 f"SELECT * FROM {v.name}").fetchall()
-        if functions:
-            for f in function_list:
-                sql = f"\nDROP FUNCTION IF EXISTS {f.name}"
-                db.con.execute(sql)
-                sql = f"CREATE FUNCTION {f.name} \n {stamp}\n{f.sqltext}"
-                db.con.execute(sql)
