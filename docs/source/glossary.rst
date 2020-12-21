@@ -79,7 +79,7 @@ Glossary
         Teaching contracts therefore had both an FTE *and* a Fraction. The 'fraction' figure disappeared from the teaching contracts in 2017. 
         Historically, the 'fraction' concept has also been used with term-time pastoral posts, but is no longer in common use.  
 
-        Fractional Academic salaries are calculated differently to most: see the following section ofr more details. 
+        Fractional Academic salaries are calculated differently to most: see the following section for more details. 
 
     Fractional Academic Salary
 
@@ -146,3 +146,18 @@ Glossary
         This result is intuitively correct: it shows that a fractional FTE is the number of hours worked as a proportion of the maximum number of hours workable (the :math:`\frac{a}{b}` term), 
         plus a small extra from the error term, which is equivalent to about :math:`5\frac{1}{2}` hours additional work. In financial terms, this translates to 
         an absolute increase in salary of between £100 and £200 per member of fractional staff. 
+
+
+    Spine Point
+
+        A spine point is a number which corresponds to an annual salary; in other words, a post's pro rata salary is defined by the value of its 
+        Spine Point. Each successive spine point has a value 2.7% higher than the last (on average). The value of a spine point can 
+        increase from year to year, to reflect the institution awarding an annual increment (a.k.a. a cost-of-living increase). 
+
+        The majority of posts are defined as being on a particular **grade**, which is a collection of successive spine points. Usually, 
+        staff will begin a post on the lowest spine point in a grade, and automatically move to the next spine point in a grade each August, 
+        until they reach the highest spine point in the grade. Staff in the probationary period are not eligible to have their spine point 
+        increased in August: if a staff member was in their probationary period in August, then their increment will be automatically 
+        awarded at the end of their probationary period; alternatively, if August does not intersect their probationary period, they will 
+        not receieve an automatic spine point increase. 
+ 
