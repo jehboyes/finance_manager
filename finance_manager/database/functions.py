@@ -56,6 +56,8 @@ END
 RETURNS float 
 AS 
 BEGIN 
+	if @hours < 0
+		SET @hours = 0
     DECLARE @result float 
     DECLARE @epsilon float -- Error term derived from historic contract calculation 
     SET @epsilon = 0.002873557
@@ -138,6 +140,63 @@ BEGIN
 	
 	-- Return the result of the function
 	RETURN @result
+
+END
+"""
+      ),
+    o("udfGetMonthSpinePoint",
+      """ 
+(
+	@acad_year int,
+	@period int, 
+	@start DATE = '1950/01/01', 
+	@spine int = 0, 
+	@grade int = 0
+)
+RETURNS float
+AS
+BEGIN
+	-- Returns the spine point after applicable increment. 
+
+	-- Declare the return variable here
+	DECLARE @result float
+
+	-- Alter start to be month start
+	SET @start = ISNULL(@start, DATEFROMPARTS(1950,01,01))
+	SET @start = DATEFROMPARTS(YEAR(@start),MONTH(@start),1)
+
+	-- Declare month start and end 
+	DECLARE @pstart DATE
+	DECLARE @pdays int
+	DECLARE @pend DATE
+	SET @pstart = DATEADD(MONTH,@period, DATEFROMPARTS(@acad_year, 7,1))
+	SET @pdays = DAY(EOMONTH(@pstart))
+	SET @pend = DATEADD(DAY,@pdays-1, @pstart)
+
+	--Probation 
+	DECLARE @probation int
+	SET @probation = 8
+
+	-- Months since started
+	DECLARE @monthdiff int
+	SET @monthdiff = DATEDIFF(m, @start, @pstart) 
+
+	--GET max spine
+	DECLARE @max_spine int
+	SET @max_spine = (SELECT sp FROM (SELECT MAX(spine) as sp, grade FROM staff_spine_grade GROUP BY grade) x WHERE grade = @grade)
+	
+	SET @spine = CASE
+		WHEN @spine < 1 THEN 1
+		WHEN @grade = 0 THEN @spine --no grade supplied
+		WHEN @spine >= @max_spine THEN @spine  --If at top of grade, then current
+		WHEN @monthdiff < @probation THEN @spine --If still in probation, then current
+		WHEN @monthdiff >= @probation AND @start >= DATEFROMPARTS(@acad_year,8,1) THEN @spine --If passed probation but started in year
+		ELSE @spine+1 --Increment reached by staff with space in grade who ended 
+					  --probation at least eight months ago and started in previous year
+		END 
+
+		-- Return the result of the function
+	RETURN @spine
 
 END
 """

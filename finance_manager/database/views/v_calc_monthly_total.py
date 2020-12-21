@@ -1,3 +1,7 @@
+"""
+Calculates an employee's total pay in a month, to enable accurate on-cost-ing, 
+or more specifically, accurate calculation of National Insurance. 
+"""
 from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.functions import periods
 
