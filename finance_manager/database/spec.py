@@ -118,6 +118,25 @@ class cost_centre(Base):
     directorate = relationship("directorate", back_populates="cost_centres")
 
 
+class report_cat(Base):
+    """
+    A reporting category.  
+
+    Student-friendly categories. 
+
+    Attributes
+    ----------
+    rep_cat_id : int
+        A numeric ID for the category. 
+    description : str
+        The name of the category. 
+    """
+    __tablename__ = "fs_reporting_cat"
+
+    rep_cat_id = Column(INTEGER(), primary_key=True)
+    description = Column(VARCHAR(50), nullable=False)
+
+
 class f_set_cat(Base):
     """
     Set categories. 
@@ -301,6 +320,27 @@ class account(Base):
                              comment="Control ability to use in the app's 'Other' screens")
     default_balance = Column(CHAR(2), ForeignKey(
         "fs_entry_type.balance_type"), nullable=False)
+
+
+class report_cat_config(Base):
+    """
+    Configures the reporting category. 
+
+    Attributes
+    ----------
+    costc : str
+        6 Character cost centre code. 
+    account : str
+        4 Character account code. 
+    rep_cat_id : int
+        Numeric ID of the reporting category. 
+    """
+    __tablename__ = "fs_reporting_cat_config"
+    costc = Column(CHAR(6), ForeignKey(
+        "fs_cost_centre.costc"), primary_key=True)
+    account = Column(CHAR(4), ForeignKey(
+        "fs_account.account"), primary_key=True)
+    rep_cat_id = Column(INTEGER(), ForeignKey("fs_reporting_cat.rep_cat_id"))
 
 
 class entry_type(Base):
