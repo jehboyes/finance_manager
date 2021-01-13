@@ -489,6 +489,8 @@ class inc_other(Base):
         Nominal account. 
     description : str
         Description of the income line. 
+    project_id : int
+        Optional project identifier, to link with related income & expenditure.     
     set_id : int
         ID of the set. 
     """
@@ -498,6 +500,9 @@ class inc_other(Base):
     account = Column(CHAR(4), nullable=True)
     description = Column(VARCHAR(1000), nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
+    project_id = Column(INTEGER(), ForeignKey(
+        "input_project.project_id"), nullable=True)
+
     # Add period cols
     __table_args__ = (*_period_cols(_FDec),)
 
@@ -674,6 +679,8 @@ class pay_claim(Base):
         ID for the claim type. Will affect the rate. 
     P1_to_P12 : float
         Field for each of the twelve periods. 
+    project_id : int
+        Optional project identifier, to link with related income & expenditure.     
     """
     __tablename__ = "input_pay_claim"
 
@@ -683,6 +690,8 @@ class pay_claim(Base):
     account = Column(CHAR(4), ForeignKey("fs_account.account"))
     description = Column(VARCHAR(1000))
     rate = Column(_FDec)
+    project_id = Column(INTEGER(), ForeignKey(
+        "input_project.project_id"), nullable=True)
     claim_type_id = Column(CHAR(3), ForeignKey(
         "input_pay_claim_type.claim_type_id"))
     # Add period cols
@@ -988,6 +997,8 @@ class nonp_other(Base):
         Description of the expenditure. 
     P1_to_P12 : float
         Field for each of the twelve periods. 
+    project_id : int
+        Optional project identifier, to link with related income & expenditure.     
     """
     __tablename__ = 'input_nonp_other'
     nonp_id = Column(INTEGER(), primary_key=True, autoincrement=True,
@@ -995,6 +1006,9 @@ class nonp_other(Base):
     account = Column(CHAR(4), ForeignKey("fs_account.account"), nullable=True)
     description = Column(VARCHAR(1000), nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
+    project_id = Column(INTEGER(), ForeignKey(
+        "input_project.project_id"), nullable=True)
+
     # Add period cols
     __table_args__ = (*_period_cols(_FDec),)
 
@@ -1029,6 +1043,121 @@ class nonp_internal(Base):
     costc = Column(CHAR(6), ForeignKey("fs_cost_centre.costc"), nullable=True)
     account = Column(CHAR(4), ForeignKey("fs_account.account"), nullable=True)
     amount = Column(_FDec, nullable=True)
+    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
+
+
+class project(Base):
+    """
+    Project identifiers. 
+
+    Means of linking co-dependant income & expenditure (including capital expenditure), 
+    in order to easily view the net impact of a project.  
+
+    Attributes
+    ----------
+    project_id : str
+        An integer ID for the project. 
+    title : str
+        Short title of the project. 
+    description : str
+        Verbose description of the project.  
+    """
+    __tablename__ = "input_project"
+
+    project_id = Column(INTEGER(), primary_key=True, autoincrement=True,
+                        mssql_identity_start=1000, mssql_identity_increment=1)
+    title = Column(VARCHAR(50), nullable=False)
+    description = Column(VARCHAR(255), nullable=True)
+
+
+class capex_priority(Base):
+    """
+    Capital Expenditure Priority. 
+
+    Simple lookup for prioritising capital expenditure projects. 
+
+    Attributes
+    ----------
+    priority_id : str
+        Description of the priority level. 
+    ordering : int
+        Integer by which to order priority. 
+    """
+    __tablename__ = "input_capex_priority"
+
+    priority_id = Column(VARCHAR(50), primary_key=True)
+    ordering = Column(INTEGER(), nullable=False)
+
+
+class capex_reason(Base):
+    """
+    Capital Request Reasons. 
+
+    Category of capital expenditure requirement.  
+
+    Attributes
+    ----------
+    reason_id : str
+        Unique title of the reason for expenditure.  
+    """
+    __tablename__ = "input_capex_reason"
+
+    reason_id = Column(VARCHAR(50), primary_key=True)
+
+
+class capex(Base):
+    """
+    Capital Expenditure.
+
+    Detail of capital expenditure project. 
+
+    Attributes
+    ----------
+    capex_id : int
+        Database-generated ID for the capex row. 
+    title : str
+        Summary description of the proposal. 
+    source : str
+        Description of the source of the cost. 
+    priority : str
+        Priority level.
+    reason : str
+        Reason for request. 
+    description : str
+        Full descripton of the proposal. 
+    amount_furniture : float
+        Amount to be spent on furniture.
+    amount_equipment : float
+        Amount to be spent on equipment.
+    amount_it : float
+        Amount to be spent on IT.
+    amount_building : float
+        Amount to be spent on the bulding. 
+    purchase_date : datetime
+        Approximate prospective purchase date. 
+    project_id : int
+        Optional project identifier, to link with related income & expenditure. 
+    set_id : int
+        ID of the set to which this line belongs. 
+    """
+    __tablename__ = "input_capex"
+
+    capex_id = Column(INTEGER(), primary_key=True, autoincrement=True,
+                      mssql_identity_start=1000, mssql_identity_increment=1)
+    title = Column(VARCHAR(50), nullable=True)
+    source = Column(VARCHAR(50), nullable=True)
+    priority_id = Column(VARCHAR(50), ForeignKey(
+        "input_capex_priority.priority_id"), nullable=True)
+    reason_id = Column(VARCHAR(50), ForeignKey(
+        "input_capex_reason.reason_id"), nullable=True)
+    description = Column(VARCHAR(300), nullable=True)
+    amount_furniture = Column(_FDec, nullable=True, server_default="0")
+    amount_equipment = Column(_FDec, nullable=True, server_default="0")
+    amount_it = Column(_FDec, nullable=True, server_default="0")
+    amount_building = Column(_FDec, nullable=True, server_default="0")
+    purchase_date = Column(DATETIME(), nullable=True)
+    project_id = Column(INTEGER(), ForeignKey(
+        "input_project.project_id"), nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
 
 
