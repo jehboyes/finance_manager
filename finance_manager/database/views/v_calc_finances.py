@@ -131,7 +131,7 @@ CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3), (4)) as x(n)) x
 
 def _view():
     view = o("v_calc_finances", f"""
-	SELECT set_id, account, period, ROUND(SUM(value),2) as value FROM ({union_parts}) as x
+	SELECT set_id, account, period, ROUND(SUM(value),2) as amount FROM ({union_parts}) as x
 	WHERE value <> 0 AND account is not NULL
 	GROUP BY set_id, account, period
 	""")

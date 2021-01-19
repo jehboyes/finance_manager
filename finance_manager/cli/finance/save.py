@@ -35,6 +35,6 @@ def save(config, acad_year, setcat, restrict=None):
                 session.add(i)
                 session.flush()
                 sql = f"""INSERT INTO {finance.__tablename__} (instance_id, account, period, amount) 
-                        SELECT {i.instance_id}, account, period, value FROM {_view().name} WHERE set_id = {s.set_id}"""
+                        SELECT {i.instance_id}, account, period, amount FROM {_view().name} WHERE set_id = {s.set_id}"""
                 session.execute(sql)
                 session.commit()
