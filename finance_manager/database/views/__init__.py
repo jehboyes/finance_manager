@@ -1,9 +1,9 @@
 # pylint: disable=no-member
 """
-Contains defintions for the more complex views, i.e. those which explicitly reference multiple period columns
+Contains functions for the more complex views, such as those which explicitly reference multiple period columns. 
 
 Handy strings are at the top, then actual views are imported from the namesake files in this directory. 
-Slowly moving all views to their own files, which each contain one view: files are read by importing them using importlib. 
+View files are read by importing them using importlib. 
 
 Views under construction/not ready for deployment have their files prefixed with an underscore.  
 """
@@ -37,6 +37,11 @@ def _sql_bound(max_or_min, *fields):
         One of MAX or MIN, depending on behaviour desired. 
     fields : str
         Field names of the inputs to the max/min function. 
+
+    Returns
+    -------
+    str
+        String like 'SELECT [MAX or MIN](n) FROM (VALUES) as VALUE(n)'
     """
     cmd = max_or_min.upper()
     if cmd != "MAX" and cmd != "MIN":
@@ -49,7 +54,7 @@ def _sql_bound(max_or_min, *fields):
 def _generate_p_string(str_format, join_with=None, restrict=None):
     """Generates a list of periods in the given format.
 
-    Use {n} where the period numebr is required in the format string. 
+    Use {n} where the period number is required in the format string. 
 
     Parameters
     ----------
@@ -59,6 +64,11 @@ def _generate_p_string(str_format, join_with=None, restrict=None):
         If passed, joins the list with the given path
     restrict : int 
         If n passed, restricts the output to the first n periods 
+
+    Returns
+    -------
+    list
+        List of numbers from 1 to 12 (or less if restrict was passed)
     """
     if restrict is None:
         restrict = 12
@@ -70,7 +80,23 @@ def _generate_p_string(str_format, join_with=None, restrict=None):
 
 def _get_set_cols(config, auto_format=True):
     """
-    Return finance_summary strings 
+    Return finance_summary strings. 
+
+    Only requires database connection. Returns each 
+    combination of year and set_code_id alraedy in use. For example, 
+    if 2020 BP1 exists, then [2020 BP1] will be one of the values returned. 
+
+    Parameters
+    ----------
+    config : Object
+        FInance Manager config object. 
+    auto_format : boolean 
+        True returns a string with commas and square braces (for SQL). False returns list.  
+
+    Returns
+    -------
+    str
+        SQL compatible list, or list if auto_format set to false. 
     """
     with DB(config=config) as db:
         session = db.session()
