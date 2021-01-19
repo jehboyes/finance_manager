@@ -387,8 +387,34 @@ class summary_code(Base):
     __tablename__ = "fs_summary_code"
     summary_code = Column(CHAR(3), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
+    sub_section_id = Column(CHAR(5), ForeignKey(
+        "fs_sub_section.sub_section_id"))
     section_id = Column(CHAR(3), ForeignKey("fs_section.section_id"))
     position = Column(INTEGER())
+
+
+class finance_sub_section(Base):
+    """
+    Sub-section in a SOCI. 
+
+    A subtotal-ed sub-section in a statement of consolidated income. 
+
+    Attributes
+    ----------
+    sub_section_id : str
+        Five character ID for the sub-section. 
+    description : str
+        Name for the sub-section. 
+    show_in_ui : bit
+        Whether or not to display this section in the PowerApp. 
+    position : int
+        How to order the sections when displaying. 
+    """
+    __tablename__ = "fs_sub_section"
+
+    sub_section_id = Column(CHAR(5), primary_key=True)
+    description = Column(VARCHAR(50))
+    section_id = Column(CHAR(3), ForeignKey("fs_section.section_id"))
 
 
 class finance_section(Base):
@@ -411,6 +437,33 @@ class finance_section(Base):
     __tablename__ = "fs_section"
 
     section_id = Column(CHAR(3), primary_key=True)
+    super_section_id = Column(CHAR(1), ForeignKey(
+        "fs_super_section.super_section_id"))
+    description = Column(VARCHAR(50))
+    show_in_ui = Column(BIT())
+    position = Column(INTEGER())
+
+
+class finance_super_section(Base):
+    """
+    Super section in a SOCI. 
+
+    A total section in a statement of consolidated income. 
+
+    Attributes
+    ----------
+    section_id : str
+        1 character ID for the section. 
+    description : str
+        Name for the section. 
+    show_in_ui : bit
+        Whether or not to display this section in the PowerApp. 
+    position : int
+        How to order the sections when displaying. 
+    """
+    __tablename__ = "fs_super_section"
+
+    super_section_id = Column(CHAR(1), primary_key=True)
     description = Column(VARCHAR(50))
     show_in_ui = Column(BIT())
     position = Column(INTEGER())
