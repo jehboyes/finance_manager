@@ -54,7 +54,7 @@ def _sql_bound(max_or_min, *fields):
 def _generate_p_string(str_format, join_with=None, restrict=None):
     """Generates a list of periods in the given format.
 
-    Use {n} where the period number is required in the format string. 
+    Use {p} where the period number is required in the format string. 
 
     Parameters
     ----------
