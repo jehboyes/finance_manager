@@ -71,12 +71,15 @@ class directorate(Base):
         The name of the department. 
     director : str
         The **login name** for the Director. 
+    director_name : str
+        The name to appear on documentation. 
     """
     __tablename__ = "fs_directorate"
 
     directorate_id = Column(CHAR(1), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
     director = Column(VARCHAR(50))
+    director_name = Column(VARCHAR(100))
 
     cost_centres = relationship("cost_centre", back_populates="directorate")
 
@@ -391,6 +394,7 @@ class summary_code(Base):
         "fs_sub_section.sub_section_id"))
     section_id = Column(CHAR(3), ForeignKey("fs_section.section_id"))
     position = Column(INTEGER())
+    explanation = Column(VARCHAR(255))
 
 
 class finance_sub_section(Base):
@@ -415,6 +419,8 @@ class finance_sub_section(Base):
     sub_section_id = Column(CHAR(5), primary_key=True)
     description = Column(VARCHAR(50))
     section_id = Column(CHAR(3), ForeignKey("fs_section.section_id"))
+    line_order = Column(INTEGER())
+    explanation = Column(VARCHAR(255))
 
 
 class finance_section(Base):
@@ -442,6 +448,7 @@ class finance_section(Base):
     description = Column(VARCHAR(50))
     show_in_ui = Column(BIT())
     position = Column(INTEGER())
+    explanation = Column(VARCHAR(255))
 
 
 class finance_super_section(Base):
@@ -467,6 +474,7 @@ class finance_super_section(Base):
     description = Column(VARCHAR(50))
     show_in_ui = Column(BIT())
     position = Column(INTEGER())
+    explanation = Column(VARCHAR(255))
 
 
 class finance(Base):
