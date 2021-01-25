@@ -15,7 +15,8 @@ SELECT f.set_id, sc.summary_code, sc.description as summary, NULL as subsection,
 	MIN(sub.line_order) as sub_order, 
 	MIN(s.position) as sec_order, 
 	MIN(super.position) as super_order, 
-	SUM(f.amount) as amount, 'summary' as level, sc.summary_code as id
+	SUM(f.amount) as amount, 'summary' as level, sc.summary_code as id,
+	SUM(f.amount*f.coefficient*-1) as intuitive_amount 
 {source}
 GROUP BY f.set_id, sc.summary_code, sc.description, sub.sub_section_id, s.section_id, super.super_section_id
 
@@ -27,6 +28,7 @@ SELECT f.set_id, NULL, NULL, sub.description + ' Total' , NULL, NULL,
 	MIN(s.position) as sec_order, 
 	MIN(super.position) as super_order, 
 	SUM(f.amount) as amount, 'sub', sub.sub_section_id
+	, SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
 GROUP BY f.set_id, sub.description, sub.sub_section_id, s.section_id, super.super_section_id
 
@@ -38,6 +40,7 @@ SELECT f.set_id, NULL, NULL, NULL, s.description, NULL,
 	MIN(s.position) as sec_order, 
 	MIN(super.position) as super_order, 
 	NULL as amount, 'secheader', NULL
+	, SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
 GROUP BY f.set_id, s.description, s.section_id, super.super_section_id
 
@@ -49,6 +52,7 @@ SELECT f.set_id, NULL, NULL, NULL, s.description + ' Total', NULL,
 	MIN(s.position) as sec_order, 
 	MIN(super.position) as super_order, 
 	SUM(f.amount) as amount, 'section', s.section_id 
+	, SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
 GROUP BY f.set_id, s.description, s.section_id, super.super_section_id
 
@@ -59,14 +63,14 @@ SELECT f.set_id, NULL, NULL, NULL, NULL, super.description + ' Total',
 	MAX(sub.line_order) +1 as sub_order, 
 	MAX(s.position) +1 as sec_order, 
 	MIN(super.position) as super_order, 
-	SUM(f.amount) as amount, 'super', super.super_section_id
+	SUM(f.amount) as amount, 'super', super.super_section_id, SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
 GROUP BY f.set_id, super.description, super.super_section_id
 
 UNION ALL 
 --EBITDA Line
 SELECT f.set_id, NULL, NULL, NULL, NULL, 'Luminate EBITDA', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position) +2, 4, 
-	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'ebitda'
+	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'ebitda', SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
 WHERE super.super_section_id <> 'S'
 GROUP BY f.set_id
@@ -74,14 +78,14 @@ GROUP BY f.set_id
 UNION ALL 
 --Total Line
 SELECT f.set_id, NULL, NULL, NULL, NULL, 'Net Surplus/(Deficit)', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position), max(super.position)+1, 
-	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'total'
+	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'total', SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
 GROUP BY f.set_id
 
 UNION ALL 
 --Total Expenditure
 SELECT f.set_id, NULL, NULL, NULL, NULL, 'Total Expenditure', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position) +1, 3, 
-	SUM(f.amount) as amount, 'special', 'expenditure'
+	SUM(f.amount) as amount, 'special', 'expenditure', SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
 WHERE super.super_section_id = 'P' OR  super.super_section_id = 'N'  
 GROUP BY f.set_id
@@ -89,8 +93,8 @@ GROUP BY f.set_id
 
 UNION ALL 
 --EBELL
-SELECT f.set_id, NULL, NULL, NULL, NULL, 'Earnings before Luminate & Leases', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position) +1, 3, 
-	SUM(f.amount* f.coefficient * -1) as amount, 'special', 'ebell'
+SELECT f.set_id, NULL, NULL, NULL, NULL, 'Earnings before Luminate & Leases', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position) +2, 3, 
+	SUM(f.amount* f.coefficient * -1) as amount, 'special', 'ebell', SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
 WHERE super.super_section_id = 'P' OR  super.super_section_id = 'N' OR super.super_section_id = 'I'  
 GROUP BY f.set_id

@@ -17,8 +17,8 @@ def _view():
     c.set_section("planning")
     pvt_list = _get_set_cols(c)
     sql = f"""
-    SELECT costc, summary, section, supersection, summary_order, sec_order, super_order, level, {pvt_list}
-    FROM (SELECT costc, summary, section, supersection, summary_order, sec_order, super_order, level,  
+    SELECT costc, summary_code, summary, section, supersection, summary_order, sec_order, super_order, level, {pvt_list}
+    FROM (SELECT costc, summary_code, summary, section, supersection, summary_order, sec_order, super_order, level,  
             CAST(f_Set.acad_year as CHAR(4)) + ' ' + f_set.set_cat_id as finance_summary, amount as amount
         FROM [v_mri_finance_grouped_subtotal] f INNER JOIN f_set ON f_set.set_id = f.set_id) p
     PIVOT
