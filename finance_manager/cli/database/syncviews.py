@@ -76,7 +76,7 @@ def syncviews(config, test, restrict, output, functions):
                 db.con.execute(sql)
                 sql = f"CREATE FUNCTION {f.name} \n {stamp}\n{f.sqltext}"
                 db.con.execute(sql)
-        with click.progressbar(views, label=pb_label) as bar:
+        with click.progressbar(views, label=pb_label, fill_char="#", item_show_func=_return_name) as bar:
             for v in bar:
                 if restrict is None or v.name == restrict:
                     if output:
@@ -89,3 +89,8 @@ def syncviews(config, test, restrict, output, functions):
                         if test:
                             _ = db.con.execute(
                                 f"SELECT * FROM {v.name}").fetchall()
+
+
+def _return_name(v):
+    if v is not None:
+        return v.name
