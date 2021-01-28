@@ -8,8 +8,9 @@ from finance_manager.database import DB
 @click.command()
 @click.argument("template", type=click.Path(exists=True))
 @click.argument("folder", type=click.Path(exists=True))
+@click.option("--version", "-v", type=str, help="Append a given version identifier.")
 @click.pass_obj
-def docs(config, template, folder):
+def docs(config, template, folder, version):
     """
     Generate documentation for each directorate.
 
@@ -32,8 +33,17 @@ def docs(config, template, folder):
                 ws.Range("A2").Value = d.directorate_id
                 ws.Range("D2").Value = d.description
                 ws.Range("E2").Value = d.director_name
-                filename = folder + '\\' + d.description + '.xlsm'
+                acad_year = ws.Range("C2").Value
+                set_cat_id = ws.Range("B2").Value
+                namelist = [d.description, str(acad_year)[:4], set_cat_id]
+                if version is not None:
+                    if version[0].lower() == 'v':
+                        version = version[1:]
+                    version = 'v'+version
+                    namelist.append(version)
+                filename = folder + '\\' + \
+                    ' '.join(namelist) + '.xlsm'
                 macro_name = "'" + wb.name + "'!Automation.UpdateRefreshConnections"
                 xlapp.Run(macro_name)
-                wb.SaveAs(filename)
-        xlapp.quit
+                wb.SaveAs(filename, None, 'pie')
+        xlapp.Quit()
