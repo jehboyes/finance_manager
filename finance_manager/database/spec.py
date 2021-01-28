@@ -890,13 +890,16 @@ class post_status(Base):
     description : str
         Description of the status. 
     exclude_from_finance : bit
-        Whether or not the costs of the post are included in the finances. 
+        Whether or not the costs of the post are included in the finances.
+    colour_hex : str
+        Colour hex string, in the format ``#rrggbbaa``, where ``aa`` is the alpha component. 
     """
     __tablename__ = 'staff_post_status'
 
     post_status_id = Column(CHAR(4), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
     exclude_from_finance = Column(BIT(), server_default='0')
+    colour_hex = Column(CHAR(9), server_default='#')
 
 
 class spine(Base):
