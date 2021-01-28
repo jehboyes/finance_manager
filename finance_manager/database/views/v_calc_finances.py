@@ -93,7 +93,7 @@ UNPIVOT (value FOR period IN ({square_list})) unp
 --Moving frac contracts to frac claims
 SELECT
 fs.set_id,
-CASE WHEN p.period = 0 THEN 2102 WHEN x.n = 1 THEN pt.salary_account WHEN x.n = 2 then pt.ni_account ELSE pt.pension_account END as account,
+CASE WHEN p.period = 0 THEN 2100 WHEN x.n = 1 THEN pt.salary_account WHEN x.n = 2 then pt.ni_account ELSE pt.pension_account END as account,
 CASE WHEN p.period = 0 THEN f.period ELSE p.period END as period,
 CASE WHEN p.period = 0 THEN 1 ELSE -1/12.0 END * CASE fs.curriculum_hours WHEN 0 then 0 ELSE f.hours/fs.curriculum_hours END*CASE WHEN x.n = 1 THEN v.salary WHEN x.n = 2 then v.ni ELSE v.pension END as value
 FROM input_pay_fracclaim f
