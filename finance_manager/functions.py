@@ -127,7 +127,8 @@ def sa_con_string(dialect, server, db,  py_driver=None, user=None, password='', 
     if driver is not None and len(driver) > 0:
         driver = '&driver='+driver.replace(" ", "+")
 
-    con = f"{dialect}://{login}@{server}/{db}{trust}{driver}"
+    con = f"{dialect}://{login}@{server}/{db}{trust}{driver}" + \
+        ";MARS_Connection=Yes"
 
     return con
 
