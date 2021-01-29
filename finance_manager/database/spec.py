@@ -152,12 +152,58 @@ class f_set_cat(Base):
         3 character ID for the set category. 
     description : str
         Name of the set category. 
+    is_forecast : bit
+        Boolean to indicate if the set is being constructed in detail, or using the top-level forecasting mechanism.  
     """
     __tablename__ = "f_set_cat"
     set_cat_id = Column(CHAR(3), primary_key=True)
     description = Column(VARCHAR(50))
+    is_forecast = Column(BIT())
 
     f_sets = relationship("f_set", back_populates="category")
+
+
+class forecast_config(Base):
+    """
+    Configures displaying forecast sets. 
+
+    Defines which set_cat and year should appear alongside the given set_cat and acad_year 
+    combination. Several of these fields may seem trivial, such as having a year and 
+    previous year, but may allow for more complex scenarios in future. 
+
+    Attributes
+    ----------
+    set_cat_id : str
+        3 Character ID of the set being configured. 
+    acad_year : int
+        Year being configured. 
+    split_at_period : int
+        The period before figures are being entered for. For example, 6 would indicate P1:6|P7:12. 
+    prev_actual_set_cat : str 
+        The set category to be used for the previous actuals. 
+    prev_actual_acad_year : int
+        The academic year used for the previous actuals. 
+    cur_mr_set_cat : str 
+        The set category to be used for the most recent comparator: could be a budget, or a forecast. 
+    cur_mr_acad_year : int
+        The academic year used for the most recent comparator (see previous).
+    cur_actual_set_cat : str 
+        The set category to be used for the actuals being constructed against. 
+    prev_actual_acad_year : int
+        The year to be used for the actuals being constructed against. 
+    """
+    __tablename__ = "conf_forecast"
+
+    set_cat_id = Column(CHAR(3), ForeignKey(
+        "f_set_cat.set_cat_id"), primary_key=True)
+    acad_year = Column(INTEGER(), primary_key=True)
+    split_at_period = Column(INTEGER())
+    prev_actual_set_cat = Column(CHAR(3), ForeignKey("f_set_cat.set_cat_id"))
+    prev_actual_acad_year = Column(INTEGER())
+    cur_mr_set_cat = Column(CHAR(3), ForeignKey("f_set_cat.set_cat_id"))
+    cur_mr_acad_year = Column(INTEGER())
+    cur_actual_set_cat = Column(CHAR(3), ForeignKey("f_set_cat.set_cat_id"))
+    cur_actual_acad_year = Column(INTEGER())
 
 
 class f_set(Base):
@@ -501,6 +547,14 @@ class finance(Base):
     account = Column(CHAR(4), ForeignKey(
         "fs_account.account"), primary_key=True)
     period = Column(INTEGER(), primary_key=True)
+    amount = Column(_FDec)
+
+
+class forecast(Base):
+    __tablename__ = "input_forecast"
+
+    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), primary_key=True)
+    account = Column(CHAR(4), ForeignKey("account.account"), primary_key=True)
     amount = Column(_FDec)
 
 
