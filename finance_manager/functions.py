@@ -133,21 +133,29 @@ def sa_con_string(dialect, server, db,  py_driver=None, user=None, password='', 
     return con
 
 
-def slow_line(func, before_text, after_text, show=True):
+def normalise_period(val):
+    """Return an integer from 1 to 12. 
+
+    Parameters
+    ----------
+    val : str or int
+        Variant for period. Should at least contain numeric characters.
+
+    Returns
+    -------
+    int
+        Number corresponding to financial period. 
+
+    Examples
+    --------
+    >>> normalise_period('P6')
+    6
+
+    >>> normalise_period(202106)
+    6
     """
-    Prints text before and after a line has executed
-    """
-    @functools.wraps(func)
-    def wrapper_decorator(*args, **kwargs):
-        if show and before_text is not None:
-            click.echo(before_text, nl=False)
-        value = func(*args, **kwargs)
-        if show and after_text is not None:
-            click.echo(after_text)
-        elif show:  # Carriage return
-            click.echo()
-        return value
-    return wrapper_decorator
+    val = ''.join(c for c in str(val) if c.isdigit())
+    return int(val[-2:])
 
 
 def level_to_session(level):
