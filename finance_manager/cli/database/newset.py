@@ -38,24 +38,25 @@ def newset(config, acad_year, setcode, curriculum, sn_usage, change_sn, new=None
                             description=new))
             s.flush()  # so that the set can be added
         try:
-            for costc in cost_centres:
-                # If doesn't already exist, create a new set with given detail
-                try:
-                    current_set = s.query(f_set).filter(and_(f_set.acad_year == acad_year,
-                                                             f_set.set_cat_id == setcode,
-                                                             f_set.costc == costc.costc)).one()
-                    current_set.curriculum_id = curriculum
-                    current_set.student_number_usage_id = sn_usage
-                    current_set.allow_student_number_change = change_sn
-                except NoResultFound:
-                    s.add(f_set(acad_year=acad_year,
-                                set_cat_id=setcode,
-                                curriculum_id=curriculum,
-                                student_number_usage_id=sn_usage,
-                                allow_student_number_change=change_sn,
-                                costc=costc.costc))
-                s.flush()
-                s.commit()
+            with click.progressbar(cost_centres, label="Iterating through cost centres.") as bar:
+                for costc in bar:
+                    # If doesn't already exist, create a new set with given detail
+                    try:
+                        current_set = s.query(f_set).filter(and_(f_set.acad_year == acad_year,
+                                                                 f_set.set_cat_id == setcode,
+                                                                 f_set.costc == costc.costc)).one()
+                        current_set.curriculum_id = curriculum
+                        current_set.student_number_usage_id = sn_usage
+                        current_set.allow_student_number_change = change_sn
+                    except NoResultFound:
+                        s.add(f_set(acad_year=acad_year,
+                                    set_cat_id=setcode,
+                                    curriculum_id=curriculum,
+                                    student_number_usage_id=sn_usage,
+                                    allow_student_number_change=change_sn,
+                                    costc=costc.costc))
+                    s.flush()
+                    s.commit()
         except:
             raise ValueError(
                 "Foreign key violated - check the set_cat_id is valid, or use the --new option to create a new one")
