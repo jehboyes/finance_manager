@@ -20,6 +20,7 @@ class Config(object):
         self._cp = ConfigParser()
         self.default_string = "DEFAULT"
         self.env_string = 'env'
+        self.verbose = False
         if os.path.isfile(self.file_name):
             self._cp.read(self.file_name)
             self.set_section(
