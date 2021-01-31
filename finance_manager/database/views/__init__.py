@@ -125,3 +125,29 @@ def get_views():
         ".."+f[:-3], "finance_manager.database.views.") for f in files if f[:2] == "v_"]
     view_list = [module._view() for module in modules]
     return view_list
+
+
+def get_headers(sql, prefix=None):
+    """Returns a list of headers in an sql select string"""
+    cols = []
+    open_parenth = False
+    clean_sql = ""
+    # Remove anything in parentheses, liable to contain commas
+    for i, char in enumerate(sql):
+        if char == "(":
+            open_parenth = True
+        elif char == ")":
+            open_parenth = False
+        if not open_parenth:
+            clean_sql += sql[i].replace("\t", " ")
+    for col in clean_sql.split("FROM")[0].replace("SELECT", "").split(","):
+        if " as " in col.lower():
+            c = col.split(" as ")[-1]
+        elif "." in col.lower():
+            c = col.split(".")[-1]
+        else:
+            c = col
+        cols.append(c.strip())
+    if prefix != None:
+        cols = ", ".join([".".join([prefix, col]) for col in cols])
+    return cols
