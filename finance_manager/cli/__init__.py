@@ -10,8 +10,9 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
 
 
 @click.group()
+@click.option("--verbose", is_flag=True)
 @click.pass_context
-def fm(config):
+def fm(config, verbose):
     """
     Entry point for the Command Line Interface (CLI). 
 
@@ -24,6 +25,7 @@ def fm(config):
     """
     # Define config object to be passed to subcommands via click.pass_obj
     config.obj = Config()
+    config.verbose = verbose
     # Force the default configuration database to be planning
     config.obj.set_section("planning")
 
