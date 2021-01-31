@@ -50,8 +50,10 @@ def load(config, acad_year, set_cat_id, filepath):
             sess.flush()
             costc_map[s.costc] = inst.instance_id
         # Need account information for fixing balances
-        accounts = sess.query(account.account, entry_type.coefficient).all()
-        account_bal = {a.account: a.coefficient for a in accounts}
+        accounts = sess.query(account, entry_type).filter(
+            account.default_balance == entry_type.balance_type).all()
+        account_bal = {
+            a.account.account: a.entry_type.coefficient for a in accounts}
         # Create finacne row for each row in input, correcting ablances and period format
         inputs = []
         for row in body:
