@@ -24,8 +24,7 @@ class DB():
         Custom config class. If passed, uses the db variables to automatically generate string.  
     """
 
-    def __init__(self, verbose=False, config=None, debug=False):
-        self.verbose = verbose
+    def __init__(self, config=None, debug=False):
         self.debug = debug
         if config is not None:
             self.engine_string = sa_con_string(dialect=config.read('dialect'),
@@ -37,6 +36,7 @@ class DB():
                                                password=config.read(
                                                    'password'),
                                                driver=config.read('driver'))
+            self.verbose = config.verbose  # Overwrites previous if config passed
         if self.debug:
             print(self.engine_string)
 
