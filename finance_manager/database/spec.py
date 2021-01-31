@@ -175,22 +175,18 @@ class forecast_config(Base):
     ----------
     set_cat_id : str
         3 Character ID of the set being configured. 
-    acad_year : int
+    acad_year_main : int
         Year being configured. 
     split_at_period : int
         The period before figures are being entered for. For example, 6 would indicate P1:6|P7:12. 
-    prev_actual_set_cat : str 
-        The set category to be used for the previous actuals. 
-    prev_actual_acad_year : int
-        The academic year used for the previous actuals. 
-    cur_mr_set_cat : str 
-        The set category to be used for the most recent comparator: could be a budget, or a forecast. 
-    cur_mr_acad_year : int
-        The academic year used for the most recent comparator (see previous).
-    cur_actual_set_cat : str 
+    comp_set_cat_a : str 
+        The set category to be used for the first comparator (probably actuals). 
+    comp_acad_year_a : int
+        The academic year of cat a. 
+    comp_set_cat_b : str 
+        The set category to be used for the second comparator: could be a budget, or a forecast. Uses acad_year_main.  
+    comp_set_cat_main : str 
         The set category to be used for the actuals being constructed against. 
-    prev_actual_acad_year : int
-        The year to be used for the actuals being constructed against. 
     """
     __tablename__ = "conf_forecast"
 
@@ -198,12 +194,10 @@ class forecast_config(Base):
         "f_set_cat.set_cat_id"), primary_key=True)
     acad_year = Column(INTEGER(), primary_key=True)
     split_at_period = Column(INTEGER())
-    prev_actual_set_cat = Column(CHAR(3), ForeignKey("f_set_cat.set_cat_id"))
-    prev_actual_acad_year = Column(INTEGER())
-    cur_mr_set_cat = Column(CHAR(3), ForeignKey("f_set_cat.set_cat_id"))
-    cur_mr_acad_year = Column(INTEGER())
-    cur_actual_set_cat = Column(CHAR(3), ForeignKey("f_set_cat.set_cat_id"))
-    cur_actual_acad_year = Column(INTEGER())
+    comp_set_cat_a = Column(CHAR(3), ForeignKey("f_set_cat.set_cat_id"))
+    comp_acad_year_a = Column(INTEGER())
+    comp_set_cat_b = Column(CHAR(3), ForeignKey("f_set_cat.set_cat_id"))
+    comp_set_cat_main = Column(CHAR(3), ForeignKey("f_set_cat.set_cat_id"))
 
 
 class f_set(Base):
@@ -339,6 +333,29 @@ class finance_instance(Base):
     notes = Column(VARCHAR(500), nullable=True)
 
 
+class entry_type(Base):
+    """
+    Debit or Credit entry.
+
+    Details how to adjust amount depending on whether they are a debit or credit. 
+
+    Attributes
+    ----------
+    balance_type : str {DR, CR}
+        Debit (DR) or Credit (CR). 
+    coefficient : int
+        Integer to convert amount to finance system 
+        credit (negative) or debit (positive). 
+    description : str {Credit, Debit}
+        Debit or Credit. 
+    """
+    __tablename__ = "fs_entry_type"
+    balance_type = Column(CHAR(2), primary_key=True)
+    coefficient = Column(INTEGER(), nullable=False)
+    description = Column(VARCHAR(6))
+    accounts = relationship("account", back_populates='balance')
+
+
 class account(Base):
     """
     A nominal (or general ledger) account.  
@@ -369,6 +386,7 @@ class account(Base):
                              comment="Control ability to use in the app's 'Other' screens")
     default_balance = Column(CHAR(2), ForeignKey(
         "fs_entry_type.balance_type"), nullable=False)
+    balance = relationship("entry_type", back_populates='accounts')
 
 
 class report_cat_config(Base):
@@ -390,28 +408,6 @@ class report_cat_config(Base):
     account = Column(CHAR(4), ForeignKey(
         "fs_account.account"), primary_key=True)
     rep_cat_id = Column(INTEGER(), ForeignKey("fs_reporting_cat.rep_cat_id"))
-
-
-class entry_type(Base):
-    """
-    Debit or Credit entry.
-
-    Details how to adjust amount depending on whether they are a debit or credit. 
-
-    Attributes
-    ----------
-    balance_type : str {DR, CR}
-        Debit (DR) or Credit (CR). 
-    coefficient : int
-        Integer to convert amount to finance system 
-        credit (negative) or debit (positive). 
-    description : str {Credit, Debit}
-        Debit or Credit. 
-    """
-    __tablename__ = "fs_entry_type"
-    balance_type = Column(CHAR(2), primary_key=True)
-    coefficient = Column(INTEGER(), nullable=False)
-    description = Column(VARCHAR(6))
 
 
 class summary_code(Base):
@@ -551,11 +547,30 @@ class finance(Base):
 
 
 class forecast(Base):
+    """Forecast values. 
+
+    Attributes
+    ----------
+    forecast_id : int
+        Unique ID for the foecast line. 
+    set_id : int
+        Set to which this forecast line belongs (unique with summary code).
+    summary_code : int
+        Summary code the record relates to (unique with set ID). 
+    amount : float
+        Financial amount. 
+    """
     __tablename__ = "input_forecast"
 
+    forecast_id = Column(INTEGER(), primary_key=True, autoincrement=True,
+                         mssql_identity_start=1000, mssql_identity_increment=1)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), primary_key=True)
-    account = Column(CHAR(4), ForeignKey("account.account"), primary_key=True)
+    summary_code = Column(CHAR(3), ForeignKey(
+        "fs_summary_code.summary_code"), primary_key=True)
     amount = Column(_FDec)
+    # Add unique constraint on set and summary
+    __table_args__ = (Index('IX_input_forecast',
+                            'set_id', 'summary_code', unique=True),)
 
 
 class inc_courses(Base):
