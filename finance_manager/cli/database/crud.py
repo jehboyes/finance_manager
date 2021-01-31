@@ -25,7 +25,7 @@ def crud(config, cmd, table, where, value):
     r = 'read'
     u = 'update'
     d = 'delete'
-    with DB(config=config, verbose=True) as db:
+    with DB(config=config) as db:
         s = db.session()
         # Map the table to the relevant orm object
         table_object = table_map[table]
@@ -34,7 +34,7 @@ def crud(config, cmd, table, where, value):
         values = _gen_kargs_dict(value)
         if cmd == c:
             record = table_object(**values)
-            click.echo("Create: " + _record_to_dict(table_object, record))
+            click.echo(_record_to_dict(table_object, record))
             s.add(record)
         elif cmd == r:
             click.echo(r)
@@ -51,9 +51,11 @@ def crud(config, cmd, table, where, value):
             records = s.query(table_object).filter(*wheres).all()
             for r in records:
                 for attr, val in values.items():
-                    setattr(r, attr, val)
-                click.echo("Updated record: " +
-                           _record_to_dict(table_object, record))
+                    if val == 'NULL':
+                        setattr(r, attr, None)
+                    else:
+                        setattr(r, attr, val)
+                click.echo(_record_to_dict(table_object, r))
         elif cmd == d:
             click.confirm("Confirm delete submission", abort=True)
             q = s.query(table_object).filter(*wheres)
@@ -76,7 +78,13 @@ def _gen_kargs_dict(lst):
 
     If obj passed, uses the class name to prefix  
     """
-    return {a.split("=")[0]: a.split("=")[1] for a in list(lst)}
+    d = {}
+    for i in lst:
+        s = i.split("=")
+        if s[1] == "NULL":
+            s[1] = None
+        d.update({s[0]: s[1]})
+    return d
 
 
 def _gen_filters(lst, obj):
