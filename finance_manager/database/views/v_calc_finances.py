@@ -36,6 +36,8 @@ SELECT s.set_id, case WHEN [fee status] = 'H' THEN 1240 ELSE 1246 END as account
 curriculummodel.dbo.vfeeincomeinputcostc f
 INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
+INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id 
+WHERE fsc.is_forecast = 0
 """, f"""
 --OfS HIGH COST AND CAPITAL GRANT 
 SELECT s.set_id, 1100 as account, p.period, f.students/t.students*(g.capital_grant+g.high_cost_funding)/12 as value FROM
@@ -46,6 +48,8 @@ INNER JOIN (SELECT year, usage_id, SUM(Students) as students
 INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
 INNER JOIN input_inc_grant g ON s.acad_year = g.acad_year AND s.set_cat_id = g.set_cat_id
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
+INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id 
+WHERE fsc.is_forecast = 0
 """, f"""
 --HE FEE WITHDRAWAL
 SELECT s.set_id, CASE loss.status WHEN 'H' THEN 1900 ELSE 1901 END as account, p.period, -income/12.0*loss.rate as value FROM
@@ -53,6 +57,8 @@ curriculummodel.dbo.vfeeincomeinputcostc f
 INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
 INNER JOIN v_input_inc_feeloss loss ON s.set_id = loss.set_id AND f.[Fee Status] = loss.status
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
+INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id 
+WHERE fsc.is_forecast = 0
 """, f"""
 --HIGHER FEE BURSARY (moving a proportion of student income to Access & Participation)
 SELECT CASE a.account WHEN 4370 THEN s.set_id ELSE app.set_id END as set_id,
@@ -64,7 +70,8 @@ INNER JOIN conf_hfi_bursary b ON b.acad_year = s.acad_year AND b.set_cat_id = s.
 INNER JOIN f_set app ON app.acad_year = s.acad_year AND app.set_cat_id = s.set_cat_id AND app.costc = 'MA1420'
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 CROSS JOIN (SELECT * FROM (VALUES (4370), (4360), (4790)) as X(account)) a
-WHERE s.costc <> 'MC1610'
+INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id 
+WHERE fsc.is_forecast = 0 AND s.costc <> 'MC1610'
 """, f"""
 --OTHER INCOME
 SELECT set_id, account, period, value FROM
@@ -126,6 +133,33 @@ INNER JOIN input_pay_staff s ON s.staff_line_id = t.staff_line_id
 INNER JOIN staff_post_type p ON p.post_type_id = s.post_type_id
 CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3), (4)) as x(n)) x
 
+""", f"""
+--FORECAST
+SELECT v.set_id, v.account, v.period, v.amount 
+FROM (
+	--First the actuals
+	SELECT x.set_id, af.account, af.period, af.amount 
+	FROM conf_forecast c 
+	INNER JOIN f_set x ON x.set_cat_id = c.set_cat_id
+						AND x.acad_year = c.acad_year 
+	INNER JOIN f_set a ON a.acad_year = c.acad_year
+							AND a.set_cat_id = c.comp_set_cat_main
+							AND a.costc = x.costc
+	INNER JOIN v_mri_finance af ON af.set_id = a.set_id
+	WHERE af.period <= c.split_at_period
+	UNION ALL
+	--And the forecasted component 
+	SELECT f.set_id, sc.default_account as account, p.period, f.amount*12/(12-c.split_at_period) as amount 
+	FROM input_forecast f
+	INNER JOIN f_set s ON s.set_id = f.set_id 
+	INNER JOIN conf_forecast c ON c.set_cat_id = s.set_cat_id AND c.acad_year = s.acad_year  
+	CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as x(period)) as p
+	INNER JOIN fs_summary_code sc ON f.summary_code = sc.summary_code 
+	WHERE p.period > c.split_at_period
+) v
+INNER JOIN f_set s ON s.set_id = v.set_id 
+INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id
+WHERE fsc.is_forecast = 1
 """])
 
 

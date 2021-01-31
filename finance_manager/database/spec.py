@@ -434,8 +434,9 @@ class summary_code(Base):
     description = Column(VARCHAR(50), nullable=False)
     sub_section_id = Column(CHAR(5), ForeignKey(
         "fs_sub_section.sub_section_id"))
-    section_id = Column(CHAR(3), ForeignKey("fs_section.section_id"))
     position = Column(INTEGER())
+    default_account = Column(CHAR(4), ForeignKey(
+        "fs_account.account"), nullable=True)
     explanation = Column(VARCHAR(255))
 
 
@@ -564,9 +565,9 @@ class forecast(Base):
 
     forecast_id = Column(INTEGER(), primary_key=True, autoincrement=True,
                          mssql_identity_start=1000, mssql_identity_increment=1)
-    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), primary_key=True)
+    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"))
     summary_code = Column(CHAR(3), ForeignKey(
-        "fs_summary_code.summary_code"), primary_key=True)
+        "fs_summary_code.summary_code"))
     amount = Column(_FDec)
     # Add unique constraint on set and summary
     __table_args__ = (Index('IX_input_forecast',
