@@ -43,8 +43,9 @@ def syncviews(config, test, restrict, output, functions):
         swap_occurred = True
         i = 0
         lim = 100000
-        click.echo(
-            "Determining view dependencies (for ordering CREATE execution)")
+        if not output:
+            click.echo(
+                "Determining view dependencies (for ordering CREATE execution)")
         while swap_occurred and i < lim:
             swap_occurred = False
             views = [views[i] for i in ordering]
