@@ -91,7 +91,9 @@ UNPIVOT (value for period in ({square_list})) unp
 --CLAIMS
 SELECT set_id, account, period, value FROM
 (SELECT c.set_id, 
-		CASE x.n WHEN 1 THEN c.account WHEN 2 THEN 2418 ELSE 2518 END as account, 
+		CASE x.n WHEN 1 THEN c.account 
+				 WHEN 2 THEN CASE c.account WHEN 2100 THEN 2100 ELSE 2418 END
+				 ELSE CASE c.account WHEN 2100 THEN 2100 ELSE 2518 END END as account, 
 		{claim_case}  
 	FROM v_calc_claim c
 	CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3)) as x(n)) x) as p --Used to split pension
@@ -149,7 +151,7 @@ FROM (
 	WHERE af.period <= c.split_at_period
 	UNION ALL
 	--And the forecasted component 
-	SELECT f.set_id, sc.default_account as account, p.period, f.amount*12/(12-c.split_at_period) as amount 
+	SELECT f.set_id, sc.default_account as account, p.period, f.amount/(12-c.split_at_period) as amount 
 	FROM input_forecast f
 	INNER JOIN f_set s ON s.set_id = f.set_id 
 	INNER JOIN conf_forecast c ON c.set_cat_id = s.set_cat_id AND c.acad_year = s.acad_year  
