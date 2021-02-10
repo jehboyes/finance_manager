@@ -13,8 +13,8 @@ def _view():
     for head in calc_headers:
         if "set_id" in head:
             agg_headers.append(head)
-        elif "summary_code" in head:
-            agg_headers.append("0")
+        elif "summary_code" in head or "notes":
+            agg_headers.append("NULL")
         else:
             agg_headers.append(f"SUM({head})")
     source = """FROM v_calc_forecast f
