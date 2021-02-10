@@ -1,6 +1,7 @@
 # pylint: disable=no-member
 import click
 import sys
+from datetime import datetime
 from tabulate import tabulate
 from sqlalchemy import and_
 from finance_manager.database import DB
@@ -76,13 +77,17 @@ def crud(config, cmd, table, where, value):
 def _gen_kargs_dict(lst):
     """Creates a dictionary, to be unpacked as kargs for ORM work.
 
-    If obj passed, uses the class name to prefix  
+    If obj passed, uses the class name to prefix
     """
     d = {}
     for i in lst:
         s = i.split("=")
         if s[1] == "NULL":
             s[1] = None
+        elif s[1][0] == "#" and s[1][-1] == "#":
+            s[1] = s[1].replace("#", "")
+            v = [int(x) for x in s[1].split("-")]
+            s[1] = datetime(*v)
         d.update({s[0]: s[1]})
     return d
 
