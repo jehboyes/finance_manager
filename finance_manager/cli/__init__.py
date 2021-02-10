@@ -24,10 +24,11 @@ def fm(config, verbose):
     in the config section.  
     """
     # Define config object to be passed to subcommands via click.pass_obj
-    config.obj = Config()
-    config.verbose = verbose
+    config.obj = Config(verbose=verbose)
     # Force the default configuration database to be planning
     config.obj.set_section("planning")
+    if config.obj.verbose:
+        click.echo("In verbose mode.")
 
 
 _add_subcommands(fm, __file__, __package__)

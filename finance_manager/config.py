@@ -14,13 +14,13 @@ class Config(object):
     is initialised.   
     """
 
-    def __init__(self):
+    def __init__(self, verbose=False):
         self.file_name = os.path.join(os.path.dirname(
             os.path.dirname(__file__)), 'config.ini')
         self._cp = ConfigParser()
         self.default_string = "DEFAULT"
         self.env_string = 'env'
-        self.verbose = False
+        self.verbose = verbose
         if os.path.isfile(self.file_name):
             self._cp.read(self.file_name)
             self.set_section(
