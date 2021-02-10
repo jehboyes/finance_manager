@@ -4,7 +4,7 @@ from finance_manager.database.replaceable import ReplaceableObject as o
 def _view():
     sql = f"""
     SELECT i.internal_id, i.description, i.account, i.costc, i.set_id, i.amount, 
-        i.amount * -1 * e.coefficient as output_amount, ISNULL(b.net,0) as net, a.description as account_description
+        i.amount * -1 * e.coefficient as output_amount, ISNULL(b.net,0) as net, a.account + ' ' + a.description as account_description
     FROM input_nonp_internal i
     INNER JOIN f_set fs ON fs.set_id = i.set_id
     LEFT OUTER JOIN fs_account a ON i.account = a.account
