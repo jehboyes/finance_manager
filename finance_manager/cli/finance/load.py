@@ -24,7 +24,7 @@ def load(config, acad_year, set_cat_id, filepath):
     headers = {}
     body = []
     valid_cols = ['costc', 'account', 'period', 'amount']
-    with open(filepath, newline="") as file:
+    with open(filepath) as file:
         rows = csv.reader(file)
         for i, row in enumerate(rows):
             if i == 0:
@@ -64,7 +64,7 @@ def load(config, acad_year, set_cat_id, filepath):
             # amounts stored as absolute rather than signed CR DB
             record = finance(instance_id=costc_map[row['costc']],
                              account=row['account'],
-                             amount=float(row['amount']) *
+                             amount=float(row['amount'].replace(",", "")) *
                              float(account_bal[row['account']]),
                              period=normalise_period(row['period']))
             inputs.append(record)
