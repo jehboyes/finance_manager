@@ -251,6 +251,110 @@ class f_set(Base):
     category = relationship("f_set_cat", back_populates="f_sets")
 
 
+class conf_set_hide(Base):
+    """Configures visibility of set in UI. 
+
+    Combinations of set_cat_id and acad_year in this table 
+    will be removed from the UI permissions views (and therefore
+    are not selectable).  
+
+    Attributes
+    ----------
+    acad_year : int
+        See :term:`Academic Year`.
+    set_cat_id : str
+        Set category ID. 
+    """
+    __tablename__ = "conf_set_hide"
+
+    acad_year = Column(INTEGER(), nullable=False, primary_key=True)
+    set_cat_id = Column(CHAR(3), ForeignKey(
+        "f_set_cat.set_cat_id", ondelete="CASCADE"), primary_key=True)
+
+
+class transaction_type(Base):
+    """Type of the transaction. 
+
+    Indicates the type of document the transaction relates to. 
+
+    Attributes
+    ----------
+    status_id : str
+        1 character ID for the status. 
+    description : str
+        Description of the status.
+    """
+    __tablename__ = "f_transaction_type"
+    type_id = Column(CHAR(2), primary_key=True)
+    description = Column(VARCHAR(50))
+
+
+class transaction_status(Base):
+    """Approval status of the transaction. 
+
+    Transactions go through different stages of approval, denoted by this table. 
+
+    Attributes
+    ----------
+    status_id : str
+        1 character ID for the status. 
+    description : str
+        Description of the status.
+    """
+    __tablename__ = "f_transaction_status"
+    status_id = Column(CHAR(1), primary_key=True)
+    description = Column(VARCHAR(255))
+
+
+class transaction(Base):
+    """Actual financial transactions. 
+
+    Underpins an eaiser way of viewing transactions from the finance system. 
+    Though transactions are obviously 'actuals', they should only relate to forecast 
+    sets, because forecast sets are informed by actual transactions. 
+
+    Attributes
+    ----------
+    f_t_id : int
+        Arbitrary primary key (exists for SQL Alchemy's sake).
+    set_id : int
+        ID of the set to which this transaction belongs. 
+    transaction_id : str
+        8 character numeric string for transaction ID from finance system. 
+    account : str
+        4 character account ID. 
+    period : int
+        Financial period (in year). 
+    status_id : str
+        Approval status of transaction.
+    type_id : str
+        Type of transaction.
+    dt : datetime
+        Date of transaction
+    supplier_name : str
+        Name of the supplier - can be None. 
+    description : str
+        Description of the transaction. 
+    amount : float
+        Value of transaction.
+    """
+    __tablename__ = "f_transaction"
+    f_t_id = Column(INTEGER(), primary_key=True, autoincrement=True,
+                    mssql_identity_start=1000, mssql_identity_increment=1)
+    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
+    transaction_id = Column(CHAR(8), nullable=False)
+    account = Column(CHAR(4), ForeignKey("fs_account.account"), nullable=False)
+    period = Column(INTEGER(), nullable=False)
+    status_id = Column(CHAR(1), ForeignKey(
+        "f_transaction_status.status_id"), nullable=False)
+    type_id = Column(CHAR(2), ForeignKey(
+        "f_transaction_type.type_id"), nullable=False)
+    dt = Column(DATETIME(), nullable=False)
+    supplier_name = Column(VARCHAR(100), nullable=True)
+    description = Column(VARCHAR(255), nullable=False)
+    amount = Column(_FDec)
+
+
 class hfi_bursary(Base):
     """
     Higher Fee Bursary
@@ -569,6 +673,7 @@ class forecast(Base):
     summary_code = Column(CHAR(3), ForeignKey(
         "fs_summary_code.summary_code"))
     amount = Column(_FDec)
+    notes = Column(VARCHAR(255))
     # Add unique constraint on set and summary
     __table_args__ = (Index('IX_input_forecast',
                             'set_id', 'summary_code', unique=True),)
