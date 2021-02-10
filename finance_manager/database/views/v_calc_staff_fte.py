@@ -4,10 +4,12 @@ from finance_manager.database.replaceable import ReplaceableObject as o
 def _view():
     view = o("v_calc_staff_fte", f"""
 SELECT staff_line_id,
-   CASE s.post_type_id
-      WHEN 'FRAC' THEN
+   CASE 
+      WHEN s.post_type_id = 'FRAC' THEN
             dbo.udfFracFTE((fs.curriculum_hours-ISNULL(taught.hours,0)) *
                            s.indicative_fte / NULLIF(frac_fte.denom,0), con.work_hours, con.hol_hours)
+      WHEN s.post_status_id = 'OLD' THEN 
+            0 -- to reflect pre-change posts shouldn't have any impact 
       ELSE s.indicative_FTE END as FTE
 FROM input_pay_staff s
 INNER JOIN f_set fs ON fs.set_id = s.set_id
