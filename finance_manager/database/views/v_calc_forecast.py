@@ -54,9 +54,13 @@ def _view():
     sql_2 = f"""
 	SELECT ISNULL(f.forecast_id,-1) as forecast_id, {sql_1_cols}, ISNULL(f.amount, 0) as forecast_amount, 
 				ISNULL(f.amount, 0) + x.cur_actual_to_p as forecast_total, 
-				ISNULL(f.amount, 0) + x.cur_actual_to_p - x.mri_total as var_to_mri 
+				(ISNULL(f.amount, 0) + x.cur_actual_to_p - x.mri_total) * e.coefficient * -1 as var_to_mri, 
+				f.notes 
 	FROM ({sql_1}) as x 
-	LEFT OUTER JOIN input_forecast f ON f.set_id = x.set_id AND f.summary_code = x.summary_code
+	LEFT OUTER JOIN input_forecast f ON f.set_id = x.set_id AND f.summary_code = x.summary_code 
+	INNER JOIN fs_summary_code sc ON x.summarY_code = sc.summary_code
+	INNER JOIN fs_account acc ON sc.default_account = acc.account
+	INNER JOIN fs_entry_type e ON acc.default_balance = e.balance_type
 	"""
     view = o("v_calc_forecast", sql_2)
     return view
