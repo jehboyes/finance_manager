@@ -1389,7 +1389,7 @@ class capex(Base):
         "input_capex_priority.priority_id"), nullable=True)
     reason_id = Column(VARCHAR(50), ForeignKey(
         "input_capex_reason.reason_id"), nullable=True)
-    description = Column(VARCHAR(300), nullable=True)
+    description = Column(VARCHAR(8000), nullable=True)
     amount_furniture = Column(_FDec, nullable=True, server_default="0")
     amount_equipment = Column(_FDec, nullable=True, server_default="0")
     amount_it = Column(_FDec, nullable=True, server_default="0")
