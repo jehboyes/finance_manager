@@ -18,8 +18,10 @@ pension_periods = _generate_p_string(
     "i.p{p}*" + rate_calculation + "*t.apply_pension*pen.p{p} as pension_p{p}", ",\n")
 
 sql = f"""
-SELECT i.set_id, i.claim_id, i.account, i.description,
-{account_description}, i.rate, {rate_calculation} as adjusted_rate,
+SELECT i.set_id, i.claim_id, CASE i.claim_type_id WHEN 'CAS' THEN 2102 ELSE i.account END as account, 
+i.description,
+CASE i.claim_type_id WHEN 'CAS' THEN '2102 Casual Claims' ELSE a.account + ' ' + a.description END as account_description, 
+i.rate, {rate_calculation} as adjusted_rate,
 t.description as claim_type, t.claim_type_id,
 a.description as account_name,
 {i_periods},

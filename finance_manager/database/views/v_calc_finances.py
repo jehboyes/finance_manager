@@ -91,9 +91,16 @@ UNPIVOT (value for period in ({square_list})) unp
 --CLAIMS
 SELECT set_id, account, period, value FROM
 (SELECT c.set_id, 
-		CASE x.n WHEN 1 THEN c.account 
-				 WHEN 2 THEN CASE c.account WHEN 2100 THEN 2100 ELSE 2418 END
-				 ELSE CASE c.account WHEN 2100 THEN 2100 ELSE 2518 END END as account, 
+		CASE x.n 
+			WHEN 1 THEN c.account 
+			WHEN 2 THEN CASE c.account 
+							WHEN 2102 THEN 2418 
+				 			ELSE c.account END
+			ELSE CASE c.account 
+					WHEN 2102 THEN 2518 
+					ELSE c.account 
+					END 
+			END as account, 
 		{claim_case}  
 	FROM v_calc_claim c
 	CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3)) as x(n)) x) as p --Used to split pension
