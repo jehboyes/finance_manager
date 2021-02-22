@@ -17,6 +17,8 @@ def docs(config, template, folder, version):
     Currently relies on the template having a sheet called 'data_Params', with the columns laid out
     as configured in this source code. Only works on Windows. 
     """
+    if folder[-1] == '\\':
+        folder = folder[:-2]
     with DB(config=config) as db:
         session = db.session()
         directorates = session.query(directorate).filter(
