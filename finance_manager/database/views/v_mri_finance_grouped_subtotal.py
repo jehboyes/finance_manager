@@ -72,7 +72,7 @@ UNION ALL
 SELECT f.set_id, NULL, NULL, NULL, NULL, 'Luminate EBITDA', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position) +2, 4, 
 	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'ebitda', SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
-WHERE super.super_section_id <> 'S'
+WHERE super.super_section_id <> 'C'
 GROUP BY f.set_id
 
 UNION ALL 
