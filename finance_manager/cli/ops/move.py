@@ -16,9 +16,9 @@ from sqlalchemy import and_
 @click.pass_obj
 def move(config, from_costc, to_costc, acad_year, set_cat_id, obj, cmd):
     """
-    Move an input_pay_staff line. 
+    Move input lines between cost centres. 
 
-    Move claims to FROM_COSTC TO_COSTC in the SET_CAT_ID in ACAD_YEAR. 
+    Move OBJ instances FROM_COSTC TO_COSTC in the SET_CAT_ID in ACAD_YEAR. 
     Operation is determined by CMD, one of: 
 
     - ``copy`` for creating a copy, leaving the original unchanged. 

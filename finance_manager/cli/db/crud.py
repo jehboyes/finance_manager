@@ -20,7 +20,9 @@ def crud(config, cmd, table, where, value):
     Perform Create, Read, Delete & Update options (passed as CMD) on TABLE.
     Create and Update require at least 1 VALUE option to be passed;
     Update and Delete require at least 1 WHERE option to be passed.
-    WHERE and VALUE options can be passed multiple times.
+    WHERE and VALUE options can be passed multiple times. 
+    Use double quotes around strings that contain spaces,
+    and enter datetimes as #YY-MM-DD# or #YY-MM-DD-HH-MM#.   
     """
     c = 'create'
     r = 'read'
