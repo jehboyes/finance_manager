@@ -24,7 +24,7 @@ SELECT
 FROM input_forecast f
 INNER JOIN f_set s on f.set_id = s.set_id
 INNER JOIN fs_cost_centre c ON c.costc = s.costc 
-WHERE len(f.notes) > 0
+WHERE len(f.notes) > 0 AND s.surpress = 0
 GROUP BY 
 c.directorate_id, f.summary_code, s.acad_year, s.set_cat_id
 """

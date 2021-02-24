@@ -19,6 +19,7 @@ FROM
 	) x 
 INNER JOIN f_set s ON x.set_id = s.set_id 
 INNER JOIN fs_cost_centre c ON c.costc = s.costc 
+WHERE s.surpress = 0
 """
 
 

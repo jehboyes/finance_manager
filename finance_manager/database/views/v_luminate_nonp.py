@@ -12,7 +12,7 @@ def _view():
         FROM v_mri_finance f
         INNER JOIN f_set s ON s.set_id = f.set_id 
         INNER JOIN fs_account a ON a.account = f.account
-        WHERE amount <> 0 AND a.summary_code = 301
+        WHERE amount <> 0 AND a.summary_code = 301 AND s.surpress = 0
         GROUP BY f.directorate_id, f.finance_summary, f.account, a.description
     """
     set_cols = _get_set_cols(
@@ -35,6 +35,7 @@ def _view():
     PIVOT
     (SUM(t) for finance_summary in ({set_cols})) as p
     ) as b ON a.directorate_id = b.directorate_id AND a.account = b.Account
+    
     """
     view = o("v_luminate_nonp", outer_sql)
     return view

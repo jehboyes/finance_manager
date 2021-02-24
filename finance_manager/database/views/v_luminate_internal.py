@@ -12,6 +12,7 @@ INNER JOIN fs_account a ON a.account = i.account
 INNER JOIN fs_cost_centre c ON i.costc = c.costc 
 INNER JOIN f_set f ON f.set_Id = i.set_id 
 WHERE a.summary_code in (302, 503) AND i.net = 0
+AND f.surpress = 0
 """
 
 

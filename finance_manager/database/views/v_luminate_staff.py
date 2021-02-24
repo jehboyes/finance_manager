@@ -7,7 +7,7 @@ periods = _generate_p_string(
 
 
 sql = f"""
-SELECT s.description as status, v.name, v.title, t.lcc_description as type, indicative_fte as fte,  
+SELECT s.luminate_description as status, v.name, v.title, t.lcc_description as type, indicative_fte as fte,  
 	v.grade, v.current_spine as spine, p.description as pension, 
 	ISNULL(pay_total,0) + ISNULL(ni_total,0)+ ISNULL(pension_total,0) + ISNULL(travel_scheme,0) as amount, 
 	{periods}, 
@@ -20,7 +20,7 @@ FROM v_input_pay_staff v
 	INNER JOIN f_set f ON f.set_id = v.set_id 
 	INNER JOIN fs_cost_centre cc ON cc.costc = f.costc 
 WHERE s.exclude_from_finance <> 1
-
+AND f.surpress = 0
 """
 
 

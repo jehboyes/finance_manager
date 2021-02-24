@@ -15,6 +15,7 @@ INNER JOIN v_calc_claim c ON c.claim_id = v.claim_id
 INNER JOIN f_set f ON f.set_id = v.set_id
 INNER JOIN fs_cost_centre cc ON cc.costc = f.costc
 WHERE v.amount <> 0
+AND f.surpress = 0
 """
 
 
