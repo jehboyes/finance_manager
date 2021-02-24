@@ -1075,6 +1075,7 @@ class post_status(Base):
     description = Column(VARCHAR(50), nullable=False)
     exclude_from_finance = Column(BIT(), server_default='0')
     colour_hex = Column(CHAR(9), server_default='#')
+    luminate_description = Column(VARCHAR(50), nullable=True)
 
 
 class spine(Base):
