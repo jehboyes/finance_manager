@@ -4,7 +4,7 @@ from sqlalchemy import and_
 from sqlalchemy.orm import aliased
 from finance_manager.database import DB
 from finance_manager.database.spec import Base, f_set
-from finance_manager.cli.database.newset import newset
+from finance_manager.cli.ops.newset import newset
 
 
 @click.command()
