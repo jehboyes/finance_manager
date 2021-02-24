@@ -5,20 +5,24 @@ from finance_manager.database import DB
 from finance_manager.database.spec import nonp_other, pay_staff, pay_claim, f_set
 from sqlalchemy import and_
 
+lookup = {"staff": [pay_staff, "staff_line_id"],
+          "claim": [pay_claim, "claim_id"],
+          "nonp": [nonp_other, "nonp_id"]}
+
 
 @click.command()
 @click.argument("from_costc", type=str)
 @click.argument("to_costc", type=str)
 @click.argument("acad_year", type=int)
 @click.argument("set_cat_id", type=str)
-@click.argument("obj", type=click.Choice(["staff", "claim", "nonp"]))
+@click.argument("obj", type=click.Choice([k for k in lookup.keys()]))
 @click.argument("cmd", type=click.Choice(["copy", "move"]))
 @click.pass_obj
 def move(config, from_costc, to_costc, acad_year, set_cat_id, obj, cmd):
     """
-    Move an input_pay_staff line. 
+    Move or copy instances between input tables. 
 
-    Move claims to FROM_COSTC TO_COSTC in the SET_CAT_ID in ACAD_YEAR. 
+    Move OBJ to FROM_COSTC TO_COSTC in the SET_CAT_ID in ACAD_YEAR. 
     Operation is determined by CMD, one of: 
 
     - ``copy`` for creating a copy, leaving the original unchanged. 
@@ -26,8 +30,9 @@ def move(config, from_costc, to_costc, acad_year, set_cat_id, obj, cmd):
     """
     with DB(config=config) as db:
         s = db.session()
-        lookup = {"staff": [pay_staff, "staff_line_id"], "claim": [
-            pay_claim, "claim_id"], "nonp": [nonp_other, "nonp_id"]}
+        lookup = {"staff": [pay_staff, "staff_line_id"],
+                  "claim": [pay_claim, "claim_id"],
+                  "nonp": [nonp_other, "nonp_id"]}
         db_obj = lookup[obj][0]
         original_set = s.query(f_set).filter(and_(f_set.costc == from_costc,
                                                   f_set.acad_year == acad_year,
