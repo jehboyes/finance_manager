@@ -61,6 +61,7 @@ INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id
 WHERE fsc.is_forecast = 0
 """, f"""
 --HIGHER FEE BURSARY (moving a proportion of student income to Access & Participation)
+--Cross join the income rom student numbers 
 SELECT CASE a.account WHEN 4370 THEN s.set_id ELSE app.set_id END as set_id,
 a.account as account, p.period, ROUND(income/12.0*(1-loss.rate)*b.hfi_prop*b.bursary_prop,2) as value
 FROM curriculummodel.dbo.vfeeincomeinputcostc f
@@ -69,7 +70,7 @@ INNER JOIN v_input_inc_feeloss loss ON s.set_id = loss.set_id AND f.[Fee Status]
 INNER JOIN conf_hfi_bursary b ON b.acad_year = s.acad_year AND b.set_cat_id = s.set_cat_id
 INNER JOIN f_set app ON app.acad_year = s.acad_year AND app.set_cat_id = s.set_cat_id AND app.costc = 'MA1420'
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
-CROSS JOIN (SELECT * FROM (VALUES (4370), (4360), (4790)) as X(account)) a
+CROSS JOIN (SELECT * FROM (VALUES (4370), (4360)) as X(account)) a
 INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id 
 WHERE fsc.is_forecast = 0 AND s.costc <> 'MC1610'
 """, f"""
