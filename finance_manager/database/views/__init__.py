@@ -1,13 +1,14 @@
 # pylint: disable=no-member
 """
-Contains functions for the more complex views, such as those which explicitly reference multiple period columns. 
+Contains functions for the more complex views, such as those which explicitly reference multiple period columns.
 
-Handy strings are at the top, then actual views are imported from the namesake files in this directory. 
-View files are read by importing them using importlib. 
+Handy strings are at the top, then actual views are imported from the namesake files in this directory.
+View files are read by importing them using importlib.
 
-Views under construction/not ready for deployment have their files prefixed with an underscore.  
+Views under construction/not ready for deployment have their files prefixed with an underscore.
 """
 import importlib
+import inspect
 from os import listdir, path
 
 from finance_manager.database.replaceable import ReplaceableObject as o
@@ -29,14 +30,14 @@ finance_summary = "cast(s.acad_year as varchar) + ' ' + s.set_cat_id as finance_
 
 def _sql_bound(max_or_min, *fields):
     """
-    Produces sql to return the maximum of two fields. 
+    Produces sql to return the maximum of two fields.
 
     Parameters
     ----------
     max_or_min : str
-        One of MAX or MIN, depending on behaviour desired. 
+        One of MAX or MIN, depending on behaviour desired.
     fields : str
-        Field names of the inputs to the max/min function. 
+        Field names of the inputs to the max/min function.
 
     Returns
     -------
@@ -54,7 +55,7 @@ def _sql_bound(max_or_min, *fields):
 def _generate_p_string(str_format, join_with=None, restrict=None):
     """Generates a list of periods in the given format.
 
-    Use {p} where the period number is required in the format string. 
+    Use {p} where the period number is required in the format string.
 
     Parameters
     ----------
@@ -62,8 +63,8 @@ def _generate_p_string(str_format, join_with=None, restrict=None):
         String to format with the period number.
     join_with : str
         If passed, joins the list with the given path
-    restrict : int 
-        If n passed, restricts the output to the first n periods 
+    restrict : int
+        If n passed, restricts the output to the first n periods
 
     Returns
     -------
@@ -78,32 +79,30 @@ def _generate_p_string(str_format, join_with=None, restrict=None):
     return lst
 
 
-def _get_set_cols(config, auto_format=True):
+def _get_set_cols(session, auto_format=True):
     """
-    Return finance_summary strings. 
+    Return finance_summary strings.
 
-    Only requires database connection. Returns each 
-    combination of year and set_code_id alraedy in use. For example, 
-    if 2020 BP1 exists, then [2020 BP1] will be one of the values returned. 
+    Only requires database connection. Returns each
+    combination of year and set_code_id alraedy in use. For example,
+    if 2020 BP1 exists, then [2020 BP1] will be one of the values returned.
 
     Parameters
     ----------
-    config : Object
-        FInance Manager config object. 
-    auto_format : boolean 
-        True returns a string with commas and square braces (for SQL). False returns list.  
+    session : Object
+        SQL Alchemy session object.
+    auto_format : boolean
+        True returns a string with commas and square braces (for SQL). False returns list.
 
     Returns
     -------
     str
-        SQL compatible list, or list if auto_format set to false. 
+        SQL compatible list, or list if auto_format set to false.
     """
-    with DB(config=config) as db:
-        session = db.session()
-        col_list = []
-        for year, cat in session.query(f_set.acad_year, f_set.set_cat_id).join(finance_instance).distinct():
-            name = ' '.join([str(year), cat])
-            col_list.append(name)
+    col_list = []
+    for year, cat in session.query(f_set.acad_year, f_set.set_cat_id).join(finance_instance).distinct():
+        name = ' '.join([str(year), cat])
+        col_list.append(name)
     pvt_list = ", ".join(f"[{n}]" for n in col_list)
     if auto_format:
         return pvt_list
@@ -111,19 +110,30 @@ def _get_set_cols(config, auto_format=True):
         return col_list
 
 
-def get_views():
+def get_views(session):
     """
-    Return a list of views as replaceable objects. 
+    Return a list of views as replaceable objects.
 
-    Defined as a function rather than a list to avoid code running on compilation. Each file in this folder should define a funciton `_view` which returns a replaceable object, which is 
-    a simple class defined in replaceable. 
+    Defined as a function rather than a list to avoid code running on compilation. Each file in this folder should define a funciton `_view` which returns a replaceable object, which is
+    a simple class defined in replaceable.
+
+    Parameters
+    ----------
+    session : Object
+        SQL Alchemy session object, because some views header definitions depend on data.
     """
     # Detect files defined in directory
     p = path.dirname(__file__)
     files = listdir(p)
     modules = [importlib.import_module(
         ".."+f[:-3], "finance_manager.database.views.") for f in files if f[:2] == "v_"]
-    view_list = [module._view() for module in modules]
+    view_list = []
+    for module in modules:
+        # Test for whether the view requires a session object for header construction
+        if "session" in inspect.getfullargspec(module._view)[0]:
+            view_list.append(module._view(session))
+        else:
+            view_list.append(module._view())
     return view_list
 
 

@@ -37,7 +37,8 @@ def syncviews(config, test, restrict, output, functions):
     Pushes view definitions from this application's database views.  
     """
     with DB(config=config) as db:
-        views = get_views()
+        session = db.session()
+        views = get_views(session)
         ordering = [n for n in range(len(views))]
         # Establish dependency
         swap_occurred = True
