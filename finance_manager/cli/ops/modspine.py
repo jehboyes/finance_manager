@@ -18,8 +18,8 @@ def modspine(config, targetset, targetyear, change, source):
     """
     Alter existing spine point values. 
 
-    Alters the value of the spine points in TARGETSET TARGETYEAR by CHANGE%. 
-    If SOURCESET and SOURCEYEAR are passed, the percentage change will be applied to those instead. 
+    Alters the value of the spine points in TARGETSET TARGETYEAR by 1 + CHANGE (e.g. to effect a 3% decrease, pass -0.03). 
+    If SOURCESET and SOURCEYEAR are passed (via source option), the percentage change will be applied to those instead. 
     """
     if source != (None, None):
         sourceset, sourceyear = source
