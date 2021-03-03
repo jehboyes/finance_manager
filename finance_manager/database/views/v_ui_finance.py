@@ -7,15 +7,13 @@ from finance_manager.database.spec import finance_instance, f_set
 from finance_manager.database.views import _get_set_cols
 
 
-def _view():
+def _view(session):
     """
     Return UI view.
 
     Complex view, which requires a dynamic pivot.
     """
-    c = Config()
-    c.set_section("planning")
-    pvt_list = _get_set_cols(c)
+    pvt_list = _get_set_cols(session)
     sql = f"""
     SELECT costc, summary_code, summary, section, supersection, summary_order, sec_order, super_order, level, {pvt_list}
     FROM (SELECT costc, summary_code, summary, section, supersection, summary_order, sec_order, super_order, level,  

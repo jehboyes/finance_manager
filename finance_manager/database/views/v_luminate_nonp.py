@@ -1,12 +1,9 @@
 from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.database.views import p_sum_string, _generate_p_string
 from finance_manager.database.views.v_ui_finance import _get_set_cols
-from finance_manager.config import Config
 
 
-def _view():
-    c = Config()
-    c.set_section("planning")
+def _view(session):
     inner_sql = f"""
         SELECT f.directorate_id, f.finance_summary, f.account, a.description, SUM(amount) as t
         FROM v_mri_finance f
@@ -16,7 +13,7 @@ def _view():
         GROUP BY f.directorate_id, f.finance_summary, f.account, a.description
     """
     set_cols = _get_set_cols(
-        c, auto_format=False)  # want a list returned, not string
+        session, auto_format=False)  # want a list returned, not string
     sum_cols = ", ".join([f"ISNULL([{col}], 0) as [{col}]" for col in set_cols])
     set_cols = ", ".join([f"[{col}]" for col in set_cols])
     p_list = _generate_p_string("a.p{p}", ", ")
