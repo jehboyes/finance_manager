@@ -4,7 +4,6 @@ from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.config import Config
 from finance_manager.database import DB
 from finance_manager.database.spec import finance_instance, f_set
-from finance_manager.database.views import _get_set_cols
 
 
 def _view():
