@@ -90,6 +90,10 @@ def _gen_kargs_dict(lst):
             s[1] = s[1].replace("#", "")
             v = [int(x) for x in s[1].split("-")]
             s[1] = datetime(*v)
+        elif s[1].lower() == 'false':
+            s[1] = False
+        elif s[1].lower() == 'true':
+            s[1] = True
         d.update({s[0]: s[1]})
     return d
 
