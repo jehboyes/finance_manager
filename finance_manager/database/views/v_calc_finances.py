@@ -37,7 +37,7 @@ curriculummodel.dbo.vfeeincomeinputcostc f
 INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id = s.student_number_usage_id
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id 
-WHERE fsc.is_forecast = 0
+WHERE fsc.is_forecast = 0 AND s.surpress = 0
 """, f"""
 --OfS HIGH COST AND CAPITAL GRANT 
 SELECT s.set_id, 1100 as account, p.period, f.students/t.students*(g.capital_grant+g.high_cost_funding)/12 as value FROM
@@ -49,7 +49,7 @@ INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id 
 INNER JOIN input_inc_grant g ON s.acad_year = g.acad_year AND s.set_cat_id = g.set_cat_id
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id 
-WHERE fsc.is_forecast = 0
+WHERE fsc.is_forecast = 0 AND s.surpress = 0
 """, f"""
 --HE FEE WITHDRAWAL
 SELECT s.set_id, CASE loss.status WHEN 'H' THEN 1900 ELSE 1901 END as account, p.period, -income/12.0*loss.rate as value FROM
@@ -58,7 +58,7 @@ INNER JOIN f_set s ON s.acad_year = f.year AND s.costc = f.costc AND f.usage_id 
 INNER JOIN v_input_inc_feeloss loss ON s.set_id = loss.set_id AND f.[Fee Status] = loss.status
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id 
-WHERE fsc.is_forecast = 0
+WHERE fsc.is_forecast = 0 AND s.surpress = 0
 """, f"""
 --HIGHER FEE BURSARY (moving a proportion of student income to Access & Participation)
 --Cross join the income rom student numbers 
@@ -72,7 +72,7 @@ INNER JOIN f_set app ON app.acad_year = s.acad_year AND app.set_cat_id = s.set_c
 CROSS JOIN (SELECT * FROM (VALUES {cj_periods}) as X(period)) p
 CROSS JOIN (SELECT * FROM (VALUES (4370), (4360)) as X(account)) a
 INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id 
-WHERE fsc.is_forecast = 0 AND s.costc <> 'MC1610'
+WHERE fsc.is_forecast = 0 AND s.costc <> 'MC1610' AND s.surpress = 0
 """, f"""
 --OTHER INCOME
 SELECT set_id, account, period, value FROM
@@ -170,13 +170,22 @@ FROM (
 INNER JOIN f_set s ON s.set_id = v.set_id 
 INNER JOIN f_set_cat fsc ON fsc.set_cat_id = s.set_cat_id
 WHERE fsc.is_forecast = 1
+
+""", f"""
+--CAPEX
+--Overrides the set to general overheads (in the same cat/year). 
+SELECT p.set_id, 4900 as account, 1 as period, v.total_amount/4 
+FROM v_input_capex v 
+INNER JOIN f_set f ON v.set_Id = f.set_id
+INNER JOIN f_set p ON p.set_cat_id = f.set_cat_id AND p.acad_year = f.acad_year AND p.costc = 'MA1300'
 """])
 
 
 def _view():
     view = o("v_calc_finances", f"""
-	SELECT set_id, account, period, ROUND(SUM(value),2) as amount FROM ({union_parts}) as x
-	WHERE value <> 0 AND account is not NULL
-	GROUP BY set_id, account, period
+	SELECT x.set_id, x.account, x.period, ROUND(SUM(x.value),2) as amount FROM ({union_parts}) as x
+	INNER JOIN f_set s ON s.set_id = x.set_id 
+	WHERE value <> 0 AND account is not NULL AND s.surpress = 0
+	GROUP BY x.set_id, x.account, x.period
 	""")
     return view
