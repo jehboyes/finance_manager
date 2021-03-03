@@ -72,7 +72,7 @@ UNION ALL
 SELECT f.set_id, NULL, NULL, NULL, NULL, 'Luminate EBITDA', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position) +2, 4, 
 	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'ebitda', SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
-WHERE super.super_section_id <> 'C'
+WHERE (super.super_section_id <> 'C')
 GROUP BY f.set_id
 
 UNION ALL 
@@ -87,7 +87,7 @@ UNION ALL
 SELECT f.set_id, NULL, NULL, NULL, NULL, 'Total Expenditure', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position) +1, 3, 
 	SUM(f.amount) as amount, 'special', 'expenditure', SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
-WHERE super.super_section_id = 'P' OR  super.super_section_id = 'N'  
+WHERE (super.super_section_id = 'P' OR  super.super_section_id = 'N')  
 GROUP BY f.set_id
 
 
@@ -96,7 +96,7 @@ UNION ALL
 SELECT f.set_id, NULL, NULL, NULL, NULL, 'Earnings before Luminate & Leases', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position) +2, 3, 
 	SUM(f.amount* f.coefficient * -1) as amount, 'special', 'ebell', SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
-WHERE super.super_section_id = 'P' OR  super.super_section_id = 'N' OR super.super_section_id = 'I'  
+WHERE (super.super_section_id = 'P' OR  super.super_section_id = 'N' OR super.super_section_id = 'I')  
 GROUP BY f.set_id
 
 """
