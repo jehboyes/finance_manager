@@ -44,13 +44,15 @@ def _view():
     """
 
     sql = f"""
-    SELECT fi.datestamp, fi.instance_id, COALESCE(cc.override_with_account, i.account) as account, i.period, i.amount * e.coefficient * -1.0 as amount, 
-        fs.costc, fs.set_cat_id, fs.acad_year, cc.directorate_id, cc.costc + ' ' + cc.description as costc_desc, 
+    SELECT fi.datestamp, fi.instance_id, i.account as account, i.period, i.amount * e.coefficient * -1.0 as amount, 
+        fs.costc, fs.set_cat_id, fs.acad_year, cc.directorate_id, d.description as directorate_description, cc.costc + ' ' + cc.description as costc_desc, 
+        fs.surpress, 
         {sec_fields}
     FROM ({inner_sql}) as i 
     INNER JOIN f_finance_instance fi ON fi.instance_id = i.instance_id
     INNER JOIN f_set fs ON fs.set_id = fi.set_id
     INNER JOIN fs_cost_centre cc ON cc.costc = fs.costc
+    INNER JOIN fs_directorate d ON d.directorate_id = cc.directorate_id
     INNER JOIN fs_account a ON i.account = a.account
     INNER JOIN fs_entry_type e ON e.balance_type = a.default_balance
     {sec_source}
