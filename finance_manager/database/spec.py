@@ -20,9 +20,9 @@ Note however that these are **not** used in the class names, for brevity.
 """
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import Column, CHAR, VARCHAR, DECIMAL, DATE, INTEGER, create_engine, ForeignKey, UniqueConstraint, Index
-from sqlalchemy.dialects.mssql import BIT, DATETIME
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, CHAR, BOOLEAN, VARCHAR, DECIMAL, DATE, INTEGER, create_engine, ForeignKey, UniqueConstraint, Index
+from sqlalchemy.dialects.mssql import DATETIME
 from finance_manager.functions import periods
 
 # Standard financial decimal
@@ -30,11 +30,6 @@ _FDec = DECIMAL(precision=18, scale=2)
 
 # Define the database base class, to hold the database info
 Base = declarative_base()
-
-# Dummy in memory database for testing
-engine = create_engine("sqlite:///:memory:", echo=False)
-Session = sessionmaker(bind=engine)
-session = Session()
 
 
 def _period_cols(datatype):
@@ -152,13 +147,13 @@ class f_set_cat(Base):
         3 character ID for the set category. 
     description : str
         Name of the set category. 
-    is_forecast : bit
+    is_forecast : BOOLEAN
         Boolean to indicate if the set is being constructed in detail, or using the top-level forecasting mechanism.  
     """
     __tablename__ = "f_set_cat"
     set_cat_id = Column(CHAR(3), primary_key=True)
     description = Column(VARCHAR(50))
-    is_forecast = Column(BIT())
+    is_forecast = Column(BOOLEAN())
 
     f_sets = relationship("f_set", back_populates="category")
 
@@ -225,10 +220,10 @@ class f_set(Base):
     student_number_usage_id : str
         ID for the student number usage. See the ``student_number_usage`` table of the 
         curriculum model database.  
-    allow_student_number_change : bit
+    allow_student_number_change : BOOLEAN
         Boolean that designates whether or not users can alter changes within the Powerapp. 
         Typically, this will be '0' for actuals, and '1' for Business Planning. 
-    closed : bit
+    closed : BOOLEAN
         Boolean that indicates whether or not this set is closed for further edits. CHanges can be made, but 
         they will not be reflected in the finances.   
     """
@@ -243,8 +238,9 @@ class f_set(Base):
         INTEGER())
     curriculum_hours = Column(DECIMAL(20, 5))
     student_number_usage_id = Column(VARCHAR(100))
-    allow_student_number_change = Column(BIT(), server_default="0")
-    closed = Column(BIT(), server_default="0")
+    allow_student_number_change = Column(BOOLEAN(), server_default="0")
+    closed = Column(BOOLEAN(), server_default="0")
+    surpress = Column(BOOLEAN(), server_default="0")
     # Add unique constraint on year, cost centre and set code
     __table_args__ = (Index('IX_f_set',
                             'costc', 'acad_year', 'set_cat_id', unique=True),)
@@ -270,6 +266,24 @@ class conf_set_hide(Base):
     acad_year = Column(INTEGER(), nullable=False, primary_key=True)
     set_cat_id = Column(CHAR(3), ForeignKey(
         "f_set_cat.set_cat_id", ondelete="CASCADE"), primary_key=True)
+
+
+class conf_shared_service(Base):
+    """Configures shared service rows. 
+
+    Row for each shared service that may be used. 
+
+    Attributes
+    ----------
+    costc : str
+        Cost centre of the service. Note that this should not appear in ``fs_cost_centre``.
+    description : str
+        Description of this external cost centre. 
+    """
+    __tablename__ = "conf_shared_service"
+
+    costc = Column(CHAR(6), primary_key=True)
+    description = Column(VARCHAR(50))
 
 
 class transaction_type(Base):
@@ -316,7 +330,7 @@ class transaction(Base):
     Attributes
     ----------
     f_t_id : int
-        Arbitrary primary key (exists for SQL Alchemy's sake).
+        ArBOOLEANrary primary key (exists for SQL Alchemy's sake).
     set_id : int
         ID of the set to which this transaction belongs. 
     transaction_id : str
@@ -475,7 +489,7 @@ class account(Base):
         Name of the account.
     summary_code : int
         3 digit summary code ID to which this belongs.
-    hide_from_users : bit
+    hide_from_users : BOOLEAN
         Whether or not the account is available for selection in the PowerApp. 
     default_balance : str {DR, CR}
         Denoting whether the account *should* have a Debit or Credit balance. 
@@ -486,7 +500,7 @@ class account(Base):
     description = Column(VARCHAR(50))
     summary_code = Column(CHAR(3), ForeignKey(
         "fs_summary_code.summary_code"), nullable=False)
-    hide_from_users = Column(BIT(), server_default='0',
+    hide_from_users = Column(BOOLEAN(), server_default='0',
                              comment="Control ability to use in the app's 'Other' screens")
     default_balance = Column(CHAR(2), ForeignKey(
         "fs_entry_type.balance_type"), nullable=False)
@@ -539,8 +553,7 @@ class summary_code(Base):
     sub_section_id = Column(CHAR(5), ForeignKey(
         "fs_sub_section.sub_section_id"))
     position = Column(INTEGER())
-    default_account = Column(CHAR(4), ForeignKey(
-        "fs_account.account"), nullable=True)
+    default_account = Column(CHAR(4), nullable=True)
     explanation = Column(VARCHAR(255))
 
 
@@ -556,7 +569,7 @@ class finance_sub_section(Base):
         Five character ID for the sub-section. 
     description : str
         Name for the sub-section. 
-    show_in_ui : bit
+    show_in_ui : BOOLEAN
         Whether or not to display this section in the PowerApp. 
     position : int
         How to order the sections when displaying. 
@@ -582,7 +595,7 @@ class finance_section(Base):
         Three character ID for the section. 
     description : str
         Name for the section. 
-    show_in_ui : bit
+    show_in_ui : BOOLEAN
         Whether or not to display this section in the PowerApp. 
     position : int
         How to order the sections when displaying. 
@@ -593,7 +606,7 @@ class finance_section(Base):
     super_section_id = Column(CHAR(1), ForeignKey(
         "fs_super_section.super_section_id"))
     description = Column(VARCHAR(50))
-    show_in_ui = Column(BIT())
+    show_in_ui = Column(BOOLEAN())
     position = Column(INTEGER())
     explanation = Column(VARCHAR(255))
 
@@ -610,7 +623,7 @@ class finance_super_section(Base):
         1 character ID for the section. 
     description : str
         Name for the section. 
-    show_in_ui : bit
+    show_in_ui : BOOLEAN
         Whether or not to display this section in the PowerApp. 
     position : int
         How to order the sections when displaying. 
@@ -619,7 +632,7 @@ class finance_super_section(Base):
 
     super_section_id = Column(CHAR(1), primary_key=True)
     description = Column(VARCHAR(50))
-    show_in_ui = Column(BIT())
+    show_in_ui = Column(BOOLEAN())
     position = Column(INTEGER())
     explanation = Column(VARCHAR(255))
 
@@ -867,7 +880,7 @@ class claim_type(Base):
         3 character ID for the claim type. 
     description : str
         Description of the claim type. 
-    variable_rate : bit
+    variable_rate : BOOLEAN
         Whether or not the rate for this claim type is variable (i.e. can be 
         entered by the end user). 
     base_multiplier : float
@@ -876,21 +889,21 @@ class claim_type(Base):
         Proportional amount of holiday pay to apply.
     rate_uplift : float
         amount ot add to the rate. Useful in conjunction with the ``variable_rate``.
-    apply_ni : bit
+    apply_ni : BOOLEAN
         Whether or not to add national insurance to the claim costs.
-    apply_pension : bit
+    apply_pension : BOOLEAN
         Whether or not to add pension costs to the claim line.  
     """
     __tablename__ = "input_pay_claim_type"
 
     claim_type_id = Column(CHAR(3), primary_key=True)
     description = Column(VARCHAR(50))
-    variable_rate = Column(BIT())
+    variable_rate = Column(BOOLEAN())
     base_multiplier = Column(DECIMAL(10, 5))
     holiday_multiplier = Column(DECIMAL(10, 5))
     rate_uplift = Column(_FDec)
-    apply_ni = Column(BIT())
-    apply_pension = Column(BIT())
+    apply_ni = Column(BOOLEAN())
+    apply_pension = Column(BOOLEAN())
 
 
 class pay_claim(Base):
@@ -1064,7 +1077,7 @@ class post_status(Base):
         4 character ID for the status. 
     description : str
         Description of the status. 
-    exclude_from_finance : bit
+    exclude_from_finance : BOOLEAN
         Whether or not the costs of the post are included in the finances.
     colour_hex : str
         Colour hex string, in the format ``#rrggbbaa``, where ``aa`` is the alpha component. 
@@ -1073,7 +1086,7 @@ class post_status(Base):
 
     post_status_id = Column(CHAR(4), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
-    exclude_from_finance = Column(BIT(), server_default='0')
+    exclude_from_finance = Column(BOOLEAN(), server_default='0')
     colour_hex = Column(CHAR(9), server_default='#')
     luminate_description = Column(VARCHAR(50), nullable=True)
 
@@ -1267,7 +1280,7 @@ class nonp_internal(Base):
     description : str
         Description of the transaction. 
     costc : str, optional
-        If the transaction is internal, then the cost centre. 
+        Cost centre of corresponding department. No foreign key as could be an external cost centre. 
     account : str
         Determines type of transaction. On the interface, this is restricted to the four combinations of I & E and Group & Internal. 
     amount : float
@@ -1280,7 +1293,7 @@ class nonp_internal(Base):
     internal_id = Column(INTEGER(), primary_key=True, autoincrement=True,
                          mssql_identity_start=1000, mssql_identity_increment=1)
     description = Column(VARCHAR(50), nullable=True)
-    costc = Column(CHAR(6), ForeignKey("fs_cost_centre.costc"), nullable=True)
+    costc = Column(CHAR(6),  nullable=True)
     account = Column(CHAR(4), ForeignKey("fs_account.account"), nullable=True)
     amount = Column(_FDec, nullable=True)
     set_id = Column(INTEGER(), ForeignKey("f_set.set_id"), nullable=False)
@@ -1435,14 +1448,14 @@ class dt_cat(Base):
         4 character ID for the date category.
     description : str
         Description of the category.
-    important : bit
+    important : BOOLEAN
         Flag as important. 
     """
     __tablename__ = "a_dt_cat"
 
     dt_cat_id = Column(CHAR(4), primary_key=True)
     description = Column(VARCHAR(50))
-    important = Column(BIT(), server_default="0")
+    important = Column(BOOLEAN(), server_default="0")
 
 
 class dt(Base):
