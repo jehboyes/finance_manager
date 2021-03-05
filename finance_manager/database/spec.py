@@ -116,22 +116,45 @@ class cost_centre(Base):
     directorate = relationship("directorate", back_populates="cost_centres")
 
 
-class report_cat(Base):
+class report_cat_a(Base):
     """
     A reporting category.  
 
-    Student-friendly categories. 
+    Student-friendly categories. Lower level than cat b. 
 
     Attributes
     ----------
-    rep_cat_id : int
-        A numeric ID for the category. 
+    rep_cat_a_id : str
+        3 character ID for the category.
+    rep_cat_b_id : str
+        2 character ID for the category. 
     description : str
         The name of the category. 
     """
-    __tablename__ = "fs_reporting_cat"
+    __tablename__ = "fs_reporting_cat_a"
 
-    rep_cat_id = Column(INTEGER(), primary_key=True)
+    rep_cat_a_id = Column(CHAR(3), primary_key=True)
+    rep_cat_b_id = Column(CHAR(2), ForeignKey(
+        "fs_reporting_cat_b.rep_cat_b_id"))
+    description = Column(VARCHAR(50), nullable=False)
+
+
+class report_cat_b(Base):
+    """
+    A reporting category.  
+
+    Student-friendly categories. Parent to rep_cat_a. 
+
+    Attributes
+    ----------
+    rep_cat_b_id : str
+        Three character ID for the category. 
+    description : str
+        The name of the category. 
+    """
+    __tablename__ = "fs_reporting_cat_b"
+
+    rep_cat_b_id = Column(CHAR(2), primary_key=True)
     description = Column(VARCHAR(50), nullable=False)
 
 
@@ -517,15 +540,16 @@ class report_cat_config(Base):
         6 Character cost centre code. 
     account : str
         4 Character account code. 
-    rep_cat_id : int
-        Numeric ID of the reporting category. 
+    rep_cat_a_id : str
+        3 character ID of the reporting category A. 
     """
     __tablename__ = "fs_reporting_cat_config"
     costc = Column(CHAR(6), ForeignKey(
         "fs_cost_centre.costc"), primary_key=True)
     account = Column(CHAR(4), ForeignKey(
         "fs_account.account"), primary_key=True)
-    rep_cat_id = Column(INTEGER(), ForeignKey("fs_reporting_cat.rep_cat_id"))
+    rep_cat_a_id = Column(CHAR(3), ForeignKey(
+        "fs_reporting_cat_a.rep_cat_a_id"))
 
 
 class summary_code(Base):

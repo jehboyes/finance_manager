@@ -16,6 +16,7 @@ INNER JOIN fs_cost_centre cc ON cc.costc = s.costc
 INNER JOIN 
 	(SELECT max(instance_id) as instance_id, set_id FROM f_finance_instance GROUP BY set_id)
 	as most_recent on most_recent.instance_id = fi.instance_id
+WHERE s.surpress = 0
 GROUP BY a.account, e.coefficient, f.period, s.costc, s.acad_year, cc.directorate_id, a.summary_code, 
 		sc.description, fi.instance_id, s.set_id, a.hide_from_users, a.description, 
 		s.acad_year, sc.set_cat_id
