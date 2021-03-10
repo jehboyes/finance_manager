@@ -225,7 +225,20 @@ def name_to_aos(name):
                 ["Actor Musician", "AMU"],
                 ["Musical Theatre", "MTH"]]
     aos_code = ""
-    if name[:2] == "BA":
+    quals = ["BA ", "FD", "MMus", "MA "]
+    fd_triggers = ["electronic", "foundation degree", "FD"]
+    pg_triggers = ["creative", "mmus"]
+    # Check the name contains qualification
+    has_qual = any([qual.lower() in name.lower() for qual in quals])
+    if any([t.lower() in name.lower() for t in pg_triggers]):
+        aos_code = "HMMCRM"
+    elif any([t.lower() in name.lower() for t in fd_triggers]):
+        aos_code = "HFD"
+        if "Electronic" in name or "EMP" in name:
+            aos_code += "EMP"
+        else:
+            aos_code += "MPM"
+    elif name[:2] == "BA" or not has_qual:  # IE assume BA if not specified
         aos_code = "HBA"
         if "with" in name:
             # i.e. is combined
@@ -238,20 +251,12 @@ def name_to_aos(name):
                 if p[0] in name[withpos:]:
                     aos_code += p[2]
         else:  # Music and Acting/MT
-            if " Music (" in name:
-                aos_code += "M"
             for p in aos_abbr:
                 if p[0] in name:
+                    if len(p[1]) == 2:
+                        aos_code += "M"
                     aos_code += p[1]
                     break
-    elif "Foundation Degree" in name or "FD" in name:
-        aos_code = "HFD"
-        if "Electronic" in name or "EMP" in name:
-            aos_code += "EMP"
-        else:
-            aos_code += "MPM"
-    elif "Creative" in name or "MMus" in name:
-        aos_code = "HMMCRM"
     if len(aos_code) != 6:
         raise ValueError(
             f"Unable to recognise {name}. Got as far as '{aos_code}''.")
