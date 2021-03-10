@@ -7,14 +7,15 @@ from sqlalchemy.orm.exc import NoResultFound
 
 
 @click.command()
-@click.option("--change_sn", help="Allow users to change student numbers", is_flag=True)
-@click.option("--new", help="Create a new set category with the name given to this option", type=str)
+@click.option("--change_sn", "-c", help="Allow users to change student numbers", is_flag=True)
+@click.option("--new", "-n", help="Create a new set category with the name given", type=str)
+@click.option("--restrict", "-r", "filter_costc", type=str, help="Restrict to a given cost centre")
 @click.argument("setcode")
 @click.argument("acad_year", type=int)
 @click.argument("curriculum")
 @click.argument("sn_usage")
 @click.pass_obj
-def newset(config, acad_year, setcode, curriculum, sn_usage, change_sn, new=None):
+def newset(config, acad_year, setcode, curriculum, sn_usage, change_sn, filter_costc, new=None):
     """
     Create new finance sets.
 
@@ -26,8 +27,10 @@ def newset(config, acad_year, setcode, curriculum, sn_usage, change_sn, new=None
     with DB(config=config) as db:
         s = db.session()
         # Get all valid cost centres
-        cost_centres = s.query(cost_centre).filter(
-            cost_centre.supercede_by == None).all()
+        q = s.query(cost_centre).filter(cost_centre.supercede_by == None)
+        if filter_costc != None:
+            q = q.filter(cost_centre.costc == filter_costc)
+        cost_centres = q.all()
         # Change the change_sn to a bit
         if change_sn:
             change_sn = 1
