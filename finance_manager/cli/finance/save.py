@@ -7,22 +7,25 @@ from finance_manager.database import DB
 from finance_manager.database.spec import f_set, finance, finance_instance
 from finance_manager.database.views.v_calc_finances import _view
 from collections import defaultdict
+from finance_manager.cli.cm.curriculum import curriculum
 
 
 @click.command()
 @click.argument("acad_year", type=int)
 @click.argument("setcat", type=str)
 @click.option("--restrict", type=str, help="Only save 1 cost centre (passed to this option).")
+@click.pass_context
 @click.pass_obj
-def save(config, acad_year, setcat, restrict=None):
+def save(config, ctx, acad_year, setcat, restrict=None):
     """
     Save all matching sets.
 
     Create a finance instance for each set with the given ``ACAD_YEAR`` and ``SETCAT``.  
     """
+    # Update curriculum
+    ctx.invoke(curriculum, cat=setcat, year=acad_year)
     with DB(config=config) as db:
         session = db.session()
-
         # Get sets to be updated
         sets = session.query(f_set).filter(and_(f_set.acad_year == acad_year,
                                                 f_set.set_cat_id == setcat))
