@@ -8,14 +8,15 @@ from finance_manager.database import DB
 @click.command()
 @click.argument("filepath", type=str)
 @click.argument("usage", type=str)
+@click.option("--detect", is_flag=True, help="Detect aos code from verbose data in aos_code.")
 @click.pass_obj
-def input(config, filepath, usage):
+def input(config, filepath, usage, detect):
     """
     Input Student Numbers.
 
     Use a csv (saved at ``FILEPATH``) to update the student numbers with ``USAGE_ID``
     in the curriculum model database. Assumes there is 1 column for each of
-    acad_year, aos_code, fee_status_id, session, students.
+    acad_year, aos_code, fee_status_id, session, student_count.
 
     TODO Add validation checks for input, and try/excepts.
     """
@@ -35,7 +36,7 @@ def input(config, filepath, usage):
     # instance for each year
     config.set_section("cm")
     with DB(config=config) as db:
-        conn = db._engine.connect()
+        conn = db.con
         trans = conn.begin()
         with click.progressbar(years, label="Writing instances") as bar:
             for acad_year in bar:
@@ -44,6 +45,9 @@ def input(config, filepath, usage):
                 instance_id = conn.execute(text(sql)).fetchone()[0]
                 for row in body:
                     if row[headers['acad_year']] == acad_year:
+                        if detect:
+                            row[headers['aos_code']] = name_to_aos(
+                                row[headers['aos_code']])[0]
                         sql = f"""INSERT INTO student_number (instance_id, fee_status_id, origin, aos_code, session, student_count)
                                         VALUES ({instance_id},
                                         '{row[headers['fee_status_id']]}',
