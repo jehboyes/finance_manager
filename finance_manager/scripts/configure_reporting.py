@@ -20,7 +20,8 @@ def configure_reporting():
             pay_accounts = con.execute(
                 select([a.c.account]).where(or_(and_(a.c.account >= 2000,
                                                      a.c.account < 3000),
-                                                a.c.summary_code == 401)))
+                                                a.c.summary_code == 401,
+                                                a.c.summary_code == 405)))
             pay_accounts = [a.account for a in pay_accounts]
             # Non pay accounts for reference
             nonp_accounts = con.execute(
@@ -46,7 +47,9 @@ def configure_reporting():
             cc_facility = "MB1100,MC1400,MC1430,MB1410".split(",")
             statements.append(rc.update()
                                 .where(and_(rc.c.costc.in_(cc_facility),
-                                            rc.c.account.in_(pay_accounts)))
+                                            rc.c.account.in_(pay_accounts),
+                                            or_(rc.c.costc != 'MB1100',  # Internal rent appears on this combo
+                                                rc.c.account != 4371)))
                                 .values(rep_cat_a_id='OSF'))
             # Academic support staff costs
             cc_support = con.execute(
@@ -80,8 +83,10 @@ def configure_reporting():
                                 .where(or_(and_(rc.c.costc.in_(cc_facility),
                                                 rc.c.account.in_(nonp_accounts)),
                                            rc.c.account.in_(
-                                               [4220, 4221, 3310, 4951, 4955]),
-                                           rc.c.account.in_(depr_accounts)))
+                                               [4220, 4221, 3310, 4955]),
+                                           rc.c.account.in_(depr_accounts),
+                                           and_(rc.c.costc == 'MB1100',  # Internal rent appears on this combo
+                                                rc.c.account == 4371)))
                                 .values(rep_cat_a_id='OEF'))
             # income
             statements.append(rc.update()
@@ -108,7 +113,8 @@ def configure_reporting():
             if len(remaining_nulls) != 0:
                 raise RuntimeError('Null config rows remaining.')
             else:
-                print('No non-internal NULL configurations remaining.')
+                print(
+                    'No non-internal NULL configurations remaining (process successful).')
 
 
 if __name__ == "__main__":
