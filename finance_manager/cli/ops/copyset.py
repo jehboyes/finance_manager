@@ -5,19 +5,22 @@ from sqlalchemy.orm import aliased
 from finance_manager.database import DB
 from finance_manager.database.spec import Base, f_set
 from finance_manager.cli.ops.newset import newset
+from curriculum_model.db.schema import SNInstance, SNUsage, SN, views
+from collections import defaultdict
+from datetime import datetime
 
 
 @click.command()
-@click.argument("tosetcat")
+@click.argument("tosetcat", type=str)
 @click.argument("toacadyear", type=int)
-@click.argument("fromsetcat")
+@click.argument("fromsetcat", type=str)
 @click.argument("fromacadyear", type=int)
-@click.option("--create", type=int, help="Create the sets as well, with given curriculum ID. Shortcut for simple use of ``newset`` command.")
 @click.option("--omit", "-o", multiple=True, help="A table to omit (can be used multiple times).")
 @click.option("--close", "-c", is_flag=True, help="Close the sets being copied from.")
-@click.option("--gen", is_flag=True, help="Copy forward the generic tables only (the ones that are shared by all sets).")
+@click.option("--generic", "-g", is_flag=True, help="Copy forward the generic tables only (the ones that are shared by all sets).")
+@click.option("--students", "-s", is_flag=True, help="Input most recent student numbers into new sets' numbers as well.")
 @click.pass_obj
-def copyset(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close, gen, create):
+def copyset(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close, generic, students):
     """
     Copy forward input table contents. Moves from ``FROMSETCAT`` in ``FROMACADYEAR`` to ``TOSETCAT`` in ``TOACADYEAR``.
 
@@ -36,9 +39,6 @@ def copyset(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close,
         Source's academic year.
 
     """
-    # if, create option specified, create new sets
-    if create is not None:
-        newset(config, toacadyear, tosetcat, create, create, 1)
     tables = []  # Tables to be rolled forward for each set
     set_tables = []  # Tables to be rolled forward for the entire category
     year_tables = []  # Tables to be rolled forward for the entire year
@@ -75,7 +75,7 @@ def copyset(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close,
         for old, new in set_map_query.all():
             set_map[old] = new
         # For each input table, reinsert from old_id with new set_id
-        if not gen:
+        if not generic:
             with click.progressbar(tables, label="Iterating through input tables...") as bar:
                 for table in bar:
                     try:
@@ -108,6 +108,7 @@ def copyset(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close,
                                                          table.set_cat_id == fromsetcat))
                 destination_query = s.query(table).filter(and_(table.acad_year == toacadyear,
                                                                table.set_cat_id == tosetcat))
+                # if anything to rollforward and destination empty
                 if len(table_query.all()) > 0 and len(destination_query.all()) == 0:
                     for row in table_query.all():
                         record = row.__dict__
@@ -122,6 +123,7 @@ def copyset(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close,
                     table.acad_year == fromacadyear)
                 destination_query = s.query(table).filter(
                     table.acad_year == toacadyear)
+                # if anything to rollforward and destination empty
                 if len(table_query.all()) > 0 and len(destination_query.all()) == 0:
                     for row in table_query.all():
                         record = row.__dict__
@@ -133,6 +135,44 @@ def copyset(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close,
                                                   f_set.set_cat_id == fromsetcat)).all()
             for _set in old_sets:
                 _set.closed = 1
+        if students:
+            # connect to cm to roll forward
+            config.set_env("cm")
+            with DB(config) as cm_db:
+                cm_session = cm_db.session()
+                v = views.FeeIncomeInputCostc
+                prev_students = cm_session.query(v) \
+                                          .filter(and_(v.c.Year == fromacadyear,
+                                                       v.c.usage_id == fromsetcat)).all()
+                # Split rows by costcentre, as each requires a seperate instance
+                col_map = {col.key: i for i, col in enumerate(v.columns)}
+                costc_rows = defaultdict(list)
+                for row in prev_students:
+                    costc_rows[row[col_map["CostC"]]] += [row]
+                for costc, rows in costc_rows.items():
+                    instance = SNInstance(acad_year=toacadyear,
+                                          usage_id=tosetcat,
+                                          input_datetime=datetime.now(),
+                                          lcom_username="CLI",
+                                          surpress=False,
+                                          costc=costc)
+                    cm_session.add(instance)
+                    cm_session.flush()
+                    for row in rows:
+                        num = SN(instance_id=instance.instance_id,
+                                 fee_status_id=row[col_map["Fee Status"]],
+                                 origin=row[col_map["Origin"]],
+                                 aos_code=row[col_map["aos_code"]],
+                                 session=row[col_map["Session"]],
+                                 student_count=row[col_map["Students"]])
+                        cm_session.add(num)
+                cm_session.flush()
         if click.confirm("Confirm rollforward?"):
             s.commit()
+            if students:
+                cm_session.commit()
             click.echo("Complete!")
+        else:
+            s.rollback()
+            if students:
+                cm_session.rollback()
