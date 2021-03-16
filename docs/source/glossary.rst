@@ -43,6 +43,10 @@ Glossary
         Enforcing this not only assures consistency throughout the project, but also allows for simple arithmetic with years, 
         and avoids use of the often-contentious '/' character.
 
+    SOCI 
+
+        Acronym for 'Statement of Comprehensive Income', which describes the standard presentation of financial information
+        at the Conservatoire.  
 
     Full-Time-Equivalent
 

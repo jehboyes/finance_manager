@@ -29,6 +29,7 @@ The system encompasses two distinct applications:
 
    database
    cm
+   internal_recharging
    supporting_objects
 
 

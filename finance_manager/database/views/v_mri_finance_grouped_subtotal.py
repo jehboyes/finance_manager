@@ -1,7 +1,12 @@
 from finance_manager.database.replaceable import ReplaceableObject as o
 
 
-source = """FROM v_mri_finance f 
+source = """FROM 
+(	
+	SELECT *, NULL as contra_costc FROM v_mri_finance 
+	UNION ALL
+	SELECT * FROM v_calc_set_costing
+) f
 LEFT OUTER JOIN fs_summary_code sc ON sc.summary_code = f.summary_code
 LEFT OUTER JOIN fs_sub_section sub ON sub.sub_section_id = sc.sub_section_id
 LEFT OUTER JOIN fs_section s ON s.section_id = sub.section_id 
@@ -79,6 +84,14 @@ UNION ALL
 --Total Line
 SELECT f.set_id, NULL, NULL, NULL, NULL, 'Net Surplus/(Deficit)', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position), max(super.position)+1, 
 	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'total', SUM(f.amount*f.coefficient*-1) as intuitive_amount
+{source}
+WHERE (super.super_section_id <> 'E')
+GROUP BY f.set_id
+
+UNION ALL 
+--Grand otal Line
+SELECT f.set_id, NULL, NULL, NULL, NULL, 'Net Surplus/(Deficit)', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position), max(super.position)+1, 
+	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'grand_total', SUM(f.amount*f.coefficient*-1) as intuitive_amount
 {source}
 GROUP BY f.set_id
 

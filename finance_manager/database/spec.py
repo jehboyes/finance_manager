@@ -1511,6 +1511,34 @@ class dt(Base):
     dt_cat_id = Column(CHAR(4), ForeignKey("a_dt_cat.dt_cat_id"))
 
 
+class f_set_costing(Base):
+    """
+    Defines how loss-making areas are costed. 
+
+    Referenced by views to provide a manual override for 
+    default costings. Each set which makes a loss can appear in
+    this table to specify to which other cost centre that loss 
+    should be attributed. See the relevant view for more detail 
+    on the mechanics.  
+
+    Attributes
+    ----------
+    set_id : int
+        ID of the set being costed. 
+    costc : str
+        Cost centre be costed to. 
+    base_proportion : float
+        Proportion to cost to the given costc. Needn't sum to 100%. 
+    """
+    __tablename__ = "f_set_costing"
+
+    set_id = Column(INTEGER(), ForeignKey("f_set.set_id"),
+                    primary_key=True)
+    costc = Column(CHAR(6), ForeignKey("fs_cost_centre.costc"),
+                   primary_key=True)
+    base_proportion = Column(DECIMAL(10, 5), nullable=False)
+
+
 # Map taking string names to table objects
 table_map = {}
 for model in Base._decl_class_registry.values():

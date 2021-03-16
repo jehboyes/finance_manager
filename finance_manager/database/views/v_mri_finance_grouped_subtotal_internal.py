@@ -6,7 +6,7 @@ LEFT OUTER JOIN fs_summary_code sc ON sc.summary_code = f.summary_code
 LEFT OUTER JOIN fs_sub_section sub ON sub.sub_section_id = sc.sub_section_id
 LEFT OUTER JOIN fs_section s ON s.section_id = sub.section_id 
 LEFT OUTER JOIN fs_super_section super ON super.super_section_id = s.super_section_id
-WHERE sc.summary_code = 302 OR sc.summary_code = 503
+WHERE sc.summary_code in (302, 503, 901) --the internal transaction lines
 """
 
 mod_sql = sql.replace("WHERE", "AND")
