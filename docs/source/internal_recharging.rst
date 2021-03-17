@@ -24,18 +24,18 @@ Examples include:
 In the App these transactions are referred to internal non-pay (which also includes inter-company recharges, 
 which are not regarded as proper internal transactions). 
 
-These transactions appear on the Internal Expenditure line in the :term: SOCI. 
+These transactions appear on the Internal Expenditure line in the :term:`SOCI`. 
 
 Specific Automatic Recharges
 ----------------------------
 
 These are transactions which are calculated whenever a set's finances are saved. 
 
-In the current conifuration used at the Conservatoire, the only transactions generated in this way are 
+Currently, the only transactions generated in this way are 
 those that expend a small proportion of HE fee income (incurred in each HE pathway) to the Access and Participation
 cost centre. 
 
-These transactions appear on the Internal Expenditure line in the :term: SOCI. 
+These transactions appear on the Internal Expenditure line in the :term:`SOCI`. 
 
 General Automatic Recharges
 ---------------------------
