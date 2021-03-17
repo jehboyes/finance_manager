@@ -3,42 +3,43 @@
 import click
 from finance_manager.database import DB
 from finance_manager.database.spec import f_set
+from curriculum_model.db.schema.views import CurriculumHours
+from sqlalchemy.sql import select
+from sqlalchemy import and_
 
 
 @click.command()
-@click.option("--costc", type=str, help="Limit to a cost centre")
-@click.option("--set_id", type=int, help="Limit to an individual set")
-@click.option("--cat", type=str, help="Limit to a set category")
-@click.option("--year", type=int, help="Limit to an academic year")
+@click.argument("setcat", type=str)
+@click.argument("acad_year", type=int)
 @click.pass_obj
-def curriculum(config, costc, set_id, cat, year):
+def curriculum(config, setcat, acad_year):
     """
-    Update the curriculum hours for all sets.
-
-    Use the options to restrict which sets are updated.
+    Update the curriculum hours for the sets in the given SETCAT and ACAD_YEAR.
     """
-    config.set_section(
-        "cm")  # Get connection variables for curriculum database
     with DB(config=config) as db:  # Connect to curriculum db to get total hours
-        hours = db.con.execute(
-            "SELECT curriculum_id, costc, hours FROM vCurriculumEnrolsForAppTotal").fetchall()
-    hours = {(x[0], x[1]): x[2] for x in hours}
-    # Connection variables for planning database
-    config.set_section("planning")
-    with DB(config=config) as db:  # Connect to planning DB
         session = db.session()
-        set_list = session.query(f_set)
-        if set_id is not None:
-            print("check")
-            set_list = set_list.filter_by(set_id=set_id)
-        else:  # Else at this point used because set_id overwrites other filters
-            if costc is not None:
-                set_list = set_list.filter_by(costc=costc)
-            if cat is not None:
-                set_list = set_list.filter_by(set_cat_id=cat)
-            if year is not None:
-                set_list = set_list.filter_by(acad_year=year)
-        sets = set_list.all()
-        for s in sets:
-            s.curriculum_hours = hours.get((s.curriculum_id, s.costc), 0)
+        sets = session.query(f_set).filter(and_(f_set.set_cat_id == setcat,
+                                                f_set.acad_year == acad_year)).all()
+
+        # Get connection variables for curriculum database
+        config.set_section("cm")
+        with DB(config=config) as cm_db:
+            with click.progressbar(sets, show_eta=False,
+                                   show_percent=True, item_show_func=_progress_print,
+                                   label="Updating teaching hours") as bar:
+                for s in bar:
+                    # get curriculum hours
+                    curriculum_select = select([CurriculumHours.c.hours]) \
+                        .where(and_(CurriculumHours.c.usage_id == s.student_number_usage_id,
+                                    CurriculumHours.c.curriculum_id == s.curriculum_id,
+                                    CurriculumHours.c.costc == s.costc))
+                    cur_hours = cm_db.con.execute(curriculum_select).fetchall()
+                    if len(cur_hours) > 0:
+                        s.curriculum_hours = cur_hours[0].hours
+        session.flush()
         session.commit()
+
+
+def _progress_print(s):
+    if s is not None:
+        return f"Processed {s.costc}"
