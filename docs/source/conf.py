@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Finance Manager'
-copyright = '2020, James E H Boyes'
+copyright = '2020-2021, James E H Boyes'
 author = 'James E H Boyes'
 
 # The full version, including alpha/beta/rc tags
