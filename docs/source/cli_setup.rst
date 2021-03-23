@@ -22,19 +22,15 @@ Initial setup
    
    The shell commands are written for PCs, and some will differ for Macs. 
 
-
-1.  Create a folder that will house the application's code.
-2.  Clone the `github repository <https://github.com/jehboyes/finance_manager>`_ to that folder.
-3.  Open Powershell in that folder.  
-4.  Create a virtual environment by typing `py venv venv`.
-5.  Activate that virtual environment by typing `venv\scripts\activate`. `(venv)` should appear at the start of your shell. 
-6.  Type `pip install -r requirements.txt`, which will install the required libraries in the virtual environment. 
-7.  Type `pip install . --editable`, which will install the package. 
-
-You're ready to start using the CLI! See the :ref:`usage page <cli_usage>` for more instructions. 
+1. Open a command line terminal
+1. *Optional* Activate the virtual environment you are installing the package on. 
+2. Install the package from pypi using pip with the following shell command ``pip install finance_manager``
 
 Local configuration
 ^^^^^^^^^^^^^^^^^^^
 
-The CLI relies on a local config.ini file to provide credentials for accessing the various databases referenced within the CLI. 
-A blank config.ini will be generted the first time the application is run. 
+The CLI relies on a local file named 'config.ini' to provide credentials for accessing the various databases referenced 
+within the CLI. 
+A blank 'config.ini' will be generted the first time the application is run, with blank values for the connection parameters required. 
+
+You're ready to start using the CLI! See the :ref:`usage page <cli_usage>` for more instructions. 
