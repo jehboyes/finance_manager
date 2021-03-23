@@ -1,11 +1,13 @@
 from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.functions import periods
-
+from finance_manager.database.views import _generate_p_string
 # Total figures
 staff_total_pay = "+".join([f"a.p{n}" for n in periods()])
 staff_total_ni = "+".join([f"a.ni_p{n}" for n in periods()])
 staff_total_pension = "+".join([f"a.pension_p{n}" for n in periods()])
 
+periods = _generate_p_string(
+    "a.p{p} + a.ni_p{p} + a.pension_p{p} + a.travel_p{p} as p{p}", ", \n")
 
 sql = f"""
 SELECT s.*, 
@@ -17,7 +19,8 @@ SELECT s.*,
 {staff_total_pay} as pay_total,
 {staff_total_ni} as ni_total,
 {staff_total_pension} as pension_total, 
-    {staff_total_pay} + {staff_total_ni} + {staff_total_pension} + ISNULL(travel_scheme,0) as total 
+    {staff_total_pay} + {staff_total_ni} + {staff_total_pension} + ISNULL(travel_scheme,0) as total, 
+    {periods}
 FROM input_pay_staff AS s
 LEFT OUTER JOIN v_calc_staff_monthly_all a ON a.staff_line_id = s.staff_line_id
 LEFT OUTER JOIN staff_post_status sps ON sps.post_status_id = s.post_status_id

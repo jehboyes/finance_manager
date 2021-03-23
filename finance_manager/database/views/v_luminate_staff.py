@@ -3,7 +3,7 @@ from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.database.views import _generate_p_string
 
 periods = _generate_p_string(
-    "c.p{p} + c.ni_p{p} + c.pension_p{p} + c.travel_p{p} as p{p}", ", \n")
+    "p{p}", ", ")
 
 
 sql = f"""
@@ -13,7 +13,6 @@ SELECT s.luminate_description as status, v.name, v.title, t.lcc_description as t
 	{periods}, 
 	f.set_cat_id, f.acad_year, f.costc, cc.directorate_id 
 FROM v_input_pay_staff v
-	INNER JOIN v_calc_staff_monthly_all c on c.staff_line_id = v.staff_line_id
 	INNER JOIN staff_post_type t ON t.post_type_id = v.post_type_id 
 	INNER JOIN staff_post_status s ON s.post_status_id = v.post_status_id
 	INNER JOIN staff_pension p ON p.pension_id = v.pension_id
