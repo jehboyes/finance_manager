@@ -10,7 +10,7 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
 
 
 @click.group()
-@click.option("--verbose", is_flag=True)
+@click.option("--verbose", is_flag=True, help="Generate more output messages, primarily intended for debugging.")
 @click.pass_context
 def fm(config, verbose):
     """

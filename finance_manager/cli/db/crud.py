@@ -11,7 +11,7 @@ from finance_manager.database.spec import table_map
 @click.command()
 @click.argument("cmd", type=click.Choice(['create', 'read', 'update', 'delete']))
 @click.argument("table", type=str)
-@click.option("--where", "-w", multiple=True, help="Filter which records can be affected as `field=value'")
+@click.option("--where", "-w", multiple=True, help="Filter which records can be affected as 'field=value'")
 @click.option("--value", "-v", multiple=True, help="Specify values as 'field=value'")
 @click.pass_obj
 def crud(config, cmd, table, where, value):
