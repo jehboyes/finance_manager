@@ -91,6 +91,15 @@ SELECT f.set_id, NULL, NULL, NULL, NULL, 'Net Surplus/(Deficit)', MAX(sc.positio
 GROUP BY f.set_id
 
 UNION ALL 
+--Balanced recharge line
+SELECT f.set_id, NULL, NULL, NULL, NULL, 'Net Recharge', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position), max(super.position)+1, 
+	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'recharge', ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount
+{source}
+WHERE (super.super_section_id = 'E')
+GROUP BY f.set_id
+
+
+UNION ALL 
 --Total Expenditure
 SELECT f.set_id, NULL, NULL, NULL, NULL, 'Total Expenditure', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position) +1, 3, 
 	SUM(f.amount) as amount, 'special', 'expenditure', ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount

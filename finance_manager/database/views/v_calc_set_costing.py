@@ -1,6 +1,10 @@
 """
 Calculates the proportions by which loss-making areas
-are costed back to income-generators."""
+are costed back to income-generators.
+
+Uses the set_costing table for how to cost, 
+and defaults to HE courses proportionally according to income. 
+"""
 from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.functions import periods
 
@@ -17,7 +21,7 @@ def _view():
     FROM v_mri_finance v
     INNER JOIN f_set s ON s.set_id = v.set_id
     WHERE s.curriculum_hours > 0 AND s.surpress=0 --Filter for active curriculum areas only
-    AND NOT v.account IN (9801, 9802)  --Do not include existing recharges, so that this view is useful to view breakdown 
+    AND NOT v.account IN (9801, 9802, 4370, 4360)  --Do not include existing recharges, so that this view is useful to view breakdown 
     GROUP BY v.finance_summary{set_option}
     HAVING SUM(v.amount*v.coefficient) < 0 --Filter for net income generators only
     """
