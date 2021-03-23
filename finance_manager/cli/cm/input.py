@@ -14,11 +14,9 @@ def input(config, filepath, usage, detect):
     """
     Input Student Numbers.
 
-    Use a csv (saved at ``FILEPATH``) to update the student numbers with ``USAGE_ID``
+    Use a csv (saved at 'FILEPATH') to update the student numbers with 'USAGE_ID'
     in the curriculum model database. Assumes there is 1 column for each of
     acad_year, aos_code, fee_status_id, session, student_count.
-
-    TODO Add validation checks for input, and try/excepts.
     """
     # Dict of headers required and if string
     headers = {}

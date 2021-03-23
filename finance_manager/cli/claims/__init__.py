@@ -9,7 +9,7 @@ from .load import load
 @click.pass_obj
 def claims(config):
     """
-    **Group** of commands for managing exports.
+    'Group' of commands for managing exports.
     """
     pass
 

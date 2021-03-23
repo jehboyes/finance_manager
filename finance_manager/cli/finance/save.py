@@ -22,7 +22,7 @@ def save(config, ctx, acad_year, setcat, skip_curriculum=False):
     """
     Save all matching sets.
 
-    Create a finance instance for each set with the given ``ACAD_YEAR`` and ``SETCAT``.  
+    Create a finance instance for each set with the given 'ACAD_YEAR' and 'SETCAT'.  
     """
     # Update curriculum
     if not skip_curriculum:

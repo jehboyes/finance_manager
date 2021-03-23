@@ -19,8 +19,8 @@ from collections import defaultdict
 @click.pass_obj
 def actuals(config, acad_year, filepath):
     """
-    Use a csv export of HE In Year Cohort Data (saved at ``FILEPATH``) to update the 
-    actuals in the curriculummodel database, in ``ACAD_YEAR``. 
+    Use a csv export of HE In Year Cohort Data (saved at 'FILEPATH') to update the 
+    actuals in the curriculummodel database, in 'ACAD_YEAR'. 
     """
     entries = []
     with open(filepath, newline="") as file:

@@ -19,17 +19,16 @@ The system encompasses two distinct applications:
    :caption: Using the system:
 
    powerapp_guide
-   cli_setup
-   cli_auto
+   cli 
+   cm
+   internal_recharging
    glossary
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Reference:
+   :maxdepth: 2
+   :caption: API Reference:
 
    database
-   cm
-   internal_recharging
    supporting_objects
 
 

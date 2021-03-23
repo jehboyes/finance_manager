@@ -17,10 +17,8 @@ def load(config, target_cat, acad_year, period):
     Import claimed hours from payclaim.
 
     Creates pay claim 'actual' lines using the hours claimed in PayClaim.
-    Adds lines to ``TARGET_CAT`` sets in ``ACAD_YEAR`` up to and including the given ``PERIOD``.
-    Uses ``TARGET_CAT`` and ``ACAD_YEAR`` to find cost centre -> set_id mappings.
-
-    \f
+    Adds lines to 'TARGET_CAT' sets in 'ACAD_YEAR' up to and including the given 'PERIOD'.
+    Uses 'TARGET_CAT' and 'ACAD_YEAR' to find cost centre -> set_id mappings.
 
     Parameters
     ----------

@@ -33,4 +33,4 @@ The CLI relies on a local file named 'config.ini' to provide credentials for acc
 within the CLI. 
 A blank 'config.ini' will be generted the first time the application is run, with blank values for the connection parameters required. 
 
-You're ready to start using the CLI! See the :ref:`usage page <cli_usage>` for more instructions. 
+You're ready to start using the CLI! See :doc:`cli_usage` for more instructions. 

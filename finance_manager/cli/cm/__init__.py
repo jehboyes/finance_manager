@@ -7,7 +7,7 @@ import click
 @click.pass_obj
 def cm(config):
     """
-    **Group** of commands for interacting with the Curriculum Model. 
+    'Group' of commands for interacting with the Curriculum Model. 
     """
     pass
 

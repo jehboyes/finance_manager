@@ -15,7 +15,7 @@ def export(config, costc, seperate, path):
     """
     Returns all the claims in the year thus far from payclaim.
 
-    Will restrict to the ``COSTC`` passed (several can be passed). Lack of indexing within the payclaim database makes
+    Will restrict to the 'COSTC' passed (several can be passed). Lack of indexing within the payclaim database makes
     executing a single SQL statement impractical, and potentially disruptive to the running of the system, hence the code is more involved.
     """
     config.set_section("payclaim")

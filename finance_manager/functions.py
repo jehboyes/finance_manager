@@ -1,5 +1,5 @@
 """
-These are a collection of generic functions, classes and iterators intended for use in various parts of the App, 
+A collection of generic functions and iterators intended for use in various parts of the App, 
 and will probably be of use to future development. 
 """
 from importlib import import_module as imp

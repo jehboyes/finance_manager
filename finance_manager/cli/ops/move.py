@@ -25,8 +25,8 @@ def move(config, from_costc, to_costc, acad_year, set_cat_id, obj, cmd):
     Move OBJ to FROM_COSTC TO_COSTC in the SET_CAT_ID in ACAD_YEAR. 
     Operation is determined by CMD, one of: 
 
-    - ``copy`` for creating a copy, leaving the original unchanged. 
-    - ``move`` for changing the set, leaving no trace in the original. 
+    - 'copy' for creating a copy, leaving the original unchanged. 
+    - 'move' for changing the set, leaving no trace in the original. 
     """
     with DB(config=config) as db:
         s = db.session()

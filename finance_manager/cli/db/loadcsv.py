@@ -16,7 +16,7 @@ def loadcsv(config, overwrite, table_name, filepath):
     """
     Load records into a table. 
 
-    Appends all the records from ``FILEPATH`` to ``TABLE_NAME``. The column headings in the file 
+    Appends all the records from 'FILEPATH' to 'TABLE_NAME'. The column headings in the file 
     are required to match those in the table (though not all need to be present).  
     """
     if table_name not in table_map.keys():

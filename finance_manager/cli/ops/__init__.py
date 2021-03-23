@@ -7,7 +7,7 @@ import click
 @click.pass_obj
 def ops(config):
     """
-    **Group** of commands for admin-level maintenance operations. 
+    'Group' of commands for admin-level maintenance operations. 
     """
     pass
 

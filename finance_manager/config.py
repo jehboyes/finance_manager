@@ -1,6 +1,3 @@
-"""
-Module for handling configuration 
-"""
 from configparser import ConfigParser
 import os
 

@@ -7,7 +7,7 @@ import click
 @click.pass_obj
 def permissions(config):
     """
-    **Group** of commands for managing access to cost centres in the UI.
+    'Group' of commands for managing access to cost centres in the UI.
     """
     pass
 

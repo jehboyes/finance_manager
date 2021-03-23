@@ -37,11 +37,11 @@ Glossary
     Academic Year
 
         Throughout this project, 'academic year' refers to the calendar year in which an academic year begins. 
-        It crops in several tables and views and is **always** a four-digit integer. For example, 
+        It appears in several tables and views and is **always** a four-digit integer. For example, 
         the 'value' of the academic year for the 20/21 academic year would be 2020. 
 
         Enforcing this not only assures consistency throughout the project, but also allows for simple arithmetic with years, 
-        and avoids use of the often-contentious '/' character.
+        and avoids use of the '/' character.
 
     SOCI 
 

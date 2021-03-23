@@ -7,7 +7,7 @@ import click
 @click.pass_obj
 def settings(config):
     """ 
-    **Group** of commands for adjusting local settings.
+    'Group' of commands for adjusting local settings.
     """
     pass
 

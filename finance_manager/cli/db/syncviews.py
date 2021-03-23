@@ -64,7 +64,7 @@ def syncviews(config, test, restrict, output, functions):
                     break
         if i >= lim:
             warnings.warn(
-                f"Ordering **unfinished** after {lim} attempts. Indicative of circular reference in views.", RuntimeWarning)
+                f"Ordering 'unfinished' after {lim} attempts. Indicative of circular reference in views.", RuntimeWarning)
         views = [views[i] for i in ordering]
         if output:
             pb_label = "View SQL:"

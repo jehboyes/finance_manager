@@ -20,9 +20,9 @@ def movestaff(config, staff_line_id, costc, cmd, set_cat_id, acad_year):
     Move STAFF_LINE_ID to the set with COSTC. 
     Operation is determined by CMD, one of: 
 
-    - ``copy`` for creating a copy, leaving the original unchanged. 
-    - ``move`` for changing the set, leaving no trace in the original. 
-    - ``propose`` for creating a copy, and marking the original as pre-change. 
+    - 'copy' for creating a copy, leaving the original unchanged. 
+    - 'move' for changing the set, leaving no trace in the original. 
+    - 'propose' for creating a copy, and marking the original as pre-change. 
     """
     with DB(config=config) as db:
         s = db.session()

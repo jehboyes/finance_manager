@@ -22,9 +22,9 @@ from datetime import datetime
 @click.pass_obj
 def copyset(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close, generic, students):
     """
-    Copy forward input table contents. Moves from ``FROMSETCAT`` in ``FROMACADYEAR`` to ``TOSETCAT`` in ``TOACADYEAR``.
+    Copy forward input table contents. Moves from 'FROMSETCAT' in 'FROMACADYEAR' to 'TOSETCAT' in 'TOACADYEAR'.
 
-    \f
+
     Parameters
     ----------
     config : Config

@@ -7,7 +7,7 @@ import click
 @click.pass_obj
 def db(config):
     """
-    **Group** of commands for generic db interaction and maintenance.  
+    'Group' of commands for generic db interaction and maintenance.  
     """
     pass
 
