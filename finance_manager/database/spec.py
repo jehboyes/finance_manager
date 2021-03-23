@@ -271,7 +271,8 @@ class f_set(Base):
 
 
 class conf_set_hide(Base):
-    """Configures visibility of set in UI. 
+    """
+    Configures visibility of set in UI. 
 
     Combinations of set_cat_id and acad_year in this table 
     will be removed from the UI permissions views (and therefore
@@ -292,7 +293,8 @@ class conf_set_hide(Base):
 
 
 class conf_shared_service(Base):
-    """Configures shared service rows. 
+    """
+    Configures shared service rows. 
 
     Row for each shared service that may be used. 
 
@@ -310,7 +312,8 @@ class conf_shared_service(Base):
 
 
 class transaction_type(Base):
-    """Type of the transaction. 
+    """
+    Type of the transaction. 
 
     Indicates the type of document the transaction relates to. 
 
@@ -327,7 +330,8 @@ class transaction_type(Base):
 
 
 class transaction_status(Base):
-    """Approval status of the transaction. 
+    """
+    Approval status of the transaction. 
 
     Transactions go through different stages of approval, denoted by this table. 
 
@@ -344,7 +348,8 @@ class transaction_status(Base):
 
 
 class transaction(Base):
-    """Actual financial transactions. 
+    """
+    Actual financial transactions. 
 
     Underpins an eaiser way of viewing transactions from the finance system. 
     Though transactions are obviously 'actuals', they should only relate to forecast 
@@ -689,7 +694,10 @@ class finance(Base):
 
 
 class forecast(Base):
-    """Forecast values. 
+    """
+    Forecast values. 
+
+    The amount entered as the forecast for the remainder of a financial year, by set by summary_code. 
 
     Attributes
     ----------
