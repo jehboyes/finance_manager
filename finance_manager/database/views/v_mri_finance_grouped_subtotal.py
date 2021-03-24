@@ -85,7 +85,7 @@ GROUP BY f.set_id
 
 UNION ALL 
 --Grand total Line
-SELECT f.set_id, NULL, NULL, NULL, NULL, 'Net Surplus/(Deficit)', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position), max(super.position)+1, 
+SELECT f.set_id, NULL, NULL, NULL, NULL, 'Institutional Surplus/(Deficit)', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position), max(super.position)+1, 
 	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'grand_total', ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount
 {source}
 GROUP BY f.set_id
