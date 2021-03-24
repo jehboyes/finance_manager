@@ -26,6 +26,8 @@ Initial setup
 1. *Optional* Activate the virtual environment you are installing the package on. 
 2. Install the package from pypi using pip with the following shell command ``pip install finance_manager``
 
+.. _config-instruction:
+
 Local configuration
 ^^^^^^^^^^^^^^^^^^^
 
