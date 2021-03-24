@@ -57,8 +57,22 @@ Glossary
         The number of hours that constitutes an FTE of 1.0 varies according to an employee's contract. 
         For the majority of staff, 
         an FTE of 1.0 is equivalent to working 1,613.2 hours across the year, whilst for a small number of staff 
-        (on an older contract) an FTE of 1.0 is equivalent to working 1,576.2 hours across the year. 
+        (on an older contract) an FTE of 1.0 is equivalent to working 1,576.2 hours across the year. Though working patterns 
+        can vary, most full-time staff work 37 hours per week, with the number of weeks worked varying according to 
+        which contract they're on. 
 
+        FTE for most staff (and all new staff) is calculated as follows:
+        
+        .. math::
+            
+            \text{FTE} = \text{Hours per week} \times \text{Weeks per year} \div 1613.2
+
+        Whilst FTE for the small number of staff on the 'old' contract is slightly different:
+        
+        .. math::
+    
+            \text{Old FTE} = \text{Hours per week} \times \text{Weeks per year} \div 1576.2
+        
 
     Academic Management
 
