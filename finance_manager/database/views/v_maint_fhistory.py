@@ -46,7 +46,7 @@ def _view():
     sql = f"""
     SELECT fi.datestamp, fi.instance_id, i.account as account, i.period, i.amount * e.coefficient * -1.0 as amount, 
         fs.costc, fs.set_cat_id, fs.acad_year, cc.directorate_id, d.description as directorate_description, cc.costc + ' ' + cc.description as costc_desc, 
-        fs.surpress, 
+        CASE fs.costc WHEN 'MZ1000' THEN 2 else fs.surpress END as surpress,  s1.internal, 
         {sec_fields}
     FROM ({inner_sql}) as i 
     INNER JOIN f_finance_instance fi ON fi.instance_id = i.instance_id
