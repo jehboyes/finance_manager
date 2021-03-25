@@ -584,6 +584,7 @@ class summary_code(Base):
     position = Column(INTEGER())
     default_account = Column(CHAR(4), nullable=True)
     explanation = Column(VARCHAR(255))
+    internal = Column(BOOLEAN(), server_default='0')
 
 
 class finance_sub_section(Base):
