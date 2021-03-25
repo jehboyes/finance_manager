@@ -61,13 +61,17 @@ Glossary
         can vary, most full-time staff work 37 hours per week, with the number of weeks worked varying according to 
         which contract they're on. 
 
-        FTE for most staff (and all new staff) is calculated as follows:
+        Therefore, if a member of staff works the whole year round, their FTE is simply the number of hours they work in week 
+        (where they don't take any annual leave) divided by 37.  
+
+        If a member of staff *doesn't* work the whole year round, the calculation varies according to their contract. 
+        For most existing staff (and all new staff) that only work part of the year, FTE is calculated as follows:
         
         .. math::
             
             \text{FTE} = \text{Hours per week} \times \text{Weeks per year} \div 1613.2
 
-        Whilst FTE for the small number of staff on the 'old' contract is slightly different:
+        FTE for the very small number of part-year staff on the 'old' contract is slightly different:
         
         .. math::
     

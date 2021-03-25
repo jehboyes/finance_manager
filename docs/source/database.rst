@@ -1,5 +1,5 @@
-Database Maintenance
-====================
+Database
+========
 
 Views
 -----
