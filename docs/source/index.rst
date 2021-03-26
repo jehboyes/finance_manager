@@ -2,11 +2,11 @@ Finance Manager System
 ======================
 
 Welcome to the complete guide to the Finance Manager, a system for managing financial planning at Leeds Conservatoire. 
-Though there are various aspects that are idiomatic to the conservatoire, with little alteration 
-the system could be implemented to any Higher Education Institution. 
+Several aspects of both the codebase and the documentation are very specific to the conservatoire, but with 
+little alteration the system could be implemented in any Higher Education Institution. 
 
-The system is under active development. The ultimate aim of the project is to produce a system that is a one-stop for 
-monitoring finance data, reactively adjusting forecasts, and building budgets. 
+The system is under active development. The ultimate aim of the Finance Manager project is to produce 
+a system that is a one-stop for monitoring finance data, reactively adjusting forecasts, and building budgets. 
 
 The system encompasses two distinct applications: 
 
@@ -22,15 +22,16 @@ The system encompasses two distinct applications:
    cli 
    cm
    internal_recharging
-   glossary
+   calculations_pay
+
 
 .. toctree::
    :maxdepth: 2
-   :caption: API Reference:
+   :caption: Reference:
 
    database
    supporting_objects
-
+   glossary
 
 Recent changes 
 --------------
