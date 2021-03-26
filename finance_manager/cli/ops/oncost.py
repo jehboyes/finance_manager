@@ -57,7 +57,7 @@ def oncost(config, ni, year, pension, preapril, postapril, overwrite):
         if pension is not None:
             existing = existing.filter_by(pension_id=pension)
         if len(existing.all()) == 0 or overwrite:
-            if overwrite and len(existing.all()) == 0:
+            if overwrite and len(existing.all()) > 0:
                 s.delete(existing.all()[0])
                 s.flush()
             s.bulk_insert_mappings(table, [record])
