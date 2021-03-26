@@ -125,6 +125,11 @@ CROSS JOIN (SELECT * FROM (VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (
 CROSS JOIN (SELECT * FROM (VALUES (1), (2), (3)) as x(n)) x --This is correct: split each fracclaim period
 WHERE f.hours > 0
 """, f"""
+--Curriculum nonpay
+SELECT set_id, account, p.period, amount/8 as value 
+FROM curriculum_nonpay
+CROSS JOIN (SELECT * FROM (VALUES (3), (4), (5), (6), (7), (8), (9), (10)) as x(period)) p
+""", f"""
 --STAFFING
 SELECT s.set_id, 
 case 

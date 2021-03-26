@@ -2,9 +2,9 @@
 
 import click
 from finance_manager.database import DB
-from finance_manager.database.spec import f_set
-from curriculum_model.db.schema.views import CurriculumHours
-from sqlalchemy.sql import select
+from finance_manager.database.spec import f_set, curr_nonp
+from curriculum_model.db.schema.views import CurriculumHours, CurriculumNonPay
+from sqlalchemy.sql import select, delete
 from sqlalchemy import and_
 
 
@@ -20,7 +20,8 @@ def curriculum(config, setcat, acad_year):
         session = db.session()
         sets = session.query(f_set).filter(and_(f_set.set_cat_id == setcat,
                                                 f_set.acad_year == acad_year)).all()
-
+        session.query(curr_nonp).delete()
+        session.flush()
         # Get connection variables for curriculum database
         config.set_section("cm")
         with DB(config=config) as cm_db:
@@ -36,6 +37,21 @@ def curriculum(config, setcat, acad_year):
                     cur_hours = cm_db.con.execute(curriculum_select).fetchall()
                     if len(cur_hours) > 0:
                         s.curriculum_hours = cur_hours[0].hours
+                    # Get nonpay
+                    nonpay_select = select([CurriculumNonPay.c.costc,
+                                            CurriculumNonPay.c.account,
+                                            CurriculumNonPay.c.amount]) \
+                        .where(and_(CurriculumNonPay.c.usage_id == s.student_number_usage_id,
+                                    CurriculumNonPay.c.curriculum_id == s.curriculum_id,
+                                    CurriculumNonPay.c.costc == s.costc,
+                                    CurriculumNonPay.c.acad_year == acad_year))
+                    nonpay_results = cm_db.con.execute(nonpay_select) \
+                        .fetchall()
+                    for result in nonpay_results:
+                        nonp = curr_nonp(set_id=s.set_id,
+                                         account=result.account,
+                                         amount=result.amount)
+                        session.add(nonp)
         session.flush()
         session.commit()
 
