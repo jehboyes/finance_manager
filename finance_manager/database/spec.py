@@ -950,7 +950,7 @@ class pay_claim(Base):
     claim_id : int
         Database-generated ID for the pay claim line. 
     set_id : int
-        ID of the set to which the claim belongs. 
+        See :py:attr:`finance_manager.database.spec.f_set.set_id`
     account : str
         Account number. 
     description : str
@@ -1027,7 +1027,7 @@ class pay_staff(Base):
     coordination_hours : float 
         Number of 'fractional' hours coordinated by non-fractional academics. 
     set_id : int
-        ID of the set to which the post belongs. 
+        See :py:attr:`finance_manager.database.spec.f_set.set_id`
     staff_line_id : int
         ID for the staff line. 
     notes : str
@@ -1128,8 +1128,10 @@ class spine(Base):
     """
     Spine Points. 
 
-    Pay framework spine point values. Only stores the most recent version, as 
-    the actual financial impact was recorded in 
+    Pay framework spine point values, for each set category in each academic year. 
+
+.. note:: The impact of any proposed changes is contained within these values  
+    rather than in some 'uplift' variable. 
 
     Attributes
     ----------
@@ -1319,7 +1321,7 @@ class nonp_internal(Base):
     amount : float
         Value of the transaction. 
     set_id : int
-        ID of the set to which this line belongs. 
+        See :py:attr:`finance_manager.database.spec.f_set.set_id`
     """
     __tablename__ = "input_nonp_internal"
 
@@ -1424,7 +1426,7 @@ class capex(Base):
     project_id : int
         Optional project identifier, to link with related income & expenditure. 
     set_id : int
-        ID of the set to which this line belongs. 
+        See :py:attr:`finance_manager.database.spec.f_set.set_id`
     """
     __tablename__ = "input_capex"
 
