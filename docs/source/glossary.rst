@@ -59,7 +59,7 @@ Glossary
         an FTE of 1.0 is equivalent to working 1,613.2 hours across the year, whilst for a small number of staff 
         (on an older contract) an FTE of 1.0 is equivalent to working 1,576.2 hours across the year. Though working patterns 
         can vary, most full-time staff work 37 hours per week, with the number of weeks worked varying according to 
-        which contract they're on. 
+        which contract they're on. These parameters are stored in :py:class:`finance_manager.database.spec.con_type`.
 
         Therefore, if a member of staff works the whole year round, their FTE is simply the number of hours they work in week 
         (where they don't take any annual leave) divided by 37.  
@@ -182,4 +182,6 @@ Glossary
         increased in August: if a staff member was in their probationary period in August, then their increment will be automatically 
         awarded at the end of their probationary period; alternatively, if August does not intersect their probationary period, they will 
         not receieve an automatic spine point increase. 
+
+        Spine points are stored in the :py:class:`finance_manager.database.spec.spine` table. 
  
