@@ -1,10 +1,46 @@
+"""
+This view takes the inputs from the input_pay_claim table, and calculates the 
+resultant costs. 
+
+Base rate calculation
+~~~~~~~~~~~~~~~~~~~~~
+
+In SQL, the calculation is:
+``ROUND((ISNULL(i.rate, 0)*variable_rate+t.rate_uplift)*base_multiplier*holiday_multiplier, 2)``
+
+The first variable ``ISNULL(i.rate,0)`` takes the input rate, and replaces missing values with 0. 
+The rest of the variables all belong to the table :py:class:`finance_manager.database.spec.claim_type`. 
+
+The calculation translates to 'Overwrite the hourly rate if applicable (e.g. for minimum wage claims), increase for
+general uplift if applicable (e.g. teaching prep time), and increase to account for 
+an appropriate amount of holiday pay if applicable'.  
+
+National Insurance
+~~~~~~~~~~~~~~~~~~
+
+The amount of NI payable is estimated by comparing the above hourly rate to the NI 
+`weekly secondary threshold <https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2020-to-2021#class-1-national-insurance-thresholds>`_ 
+divided by 37. The portion of the hourly rate above this threshold (if the portion is greater than 0)
+is multiplied the NI contribution rate for band A. 
+
+There is an apply_ni flag in the :py:class:`finance_manager.database.spec.claim_type` table that can subvert this process, 
+which is True when the amount entered is intended as a lump sum, rather than something else. 
+
+Pension
+~~~~~~~
+
+The :py:class:`finance_manager.database.spec.claim_type` table has a flag that controls whether or not to add employers pension 
+contibutions to the claim. If true, the most expensive contribution rate is applied to the hourly rate.   
+
+"""
+
 from finance_manager.functions import periods
 from finance_manager.database.replaceable import ReplaceableObject as o
 from finance_manager.database.views import account_description, _generate_p_string, _sql_bound
 
 
 # Claim rate of pay
-rate_calculation = "ROUND((isnull(i.rate, 0)*variable_rate+rate_uplift)*base_multiplier*holiday_multiplier, 2)"
+rate_calculation = "ROUND((ISNULL(i.rate, 0)*variable_rate+t.rate_uplift)*base_multiplier*holiday_multiplier, 2)"
 
 # Need own period list (instead of from views) as need alias prefix
 i_periods = _generate_p_string("i.p{p} as p{p}", ",")
