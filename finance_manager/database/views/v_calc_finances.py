@@ -127,7 +127,7 @@ WHERE f.hours > 0
 """, f"""
 --Curriculum nonpay
 SELECT set_id, account, p.period, amount/8 as value 
-FROM curriculum_nonpay
+FROM curriculum_nonp
 CROSS JOIN (SELECT * FROM (VALUES (3), (4), (5), (6), (7), (8), (9), (10)) as x(period)) p
 """, f"""
 --STAFFING
