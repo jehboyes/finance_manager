@@ -98,6 +98,13 @@ SELECT f.set_id, NULL, NULL, NULL, NULL, 'Net Recharge', MAX(sc.position) +1, ma
 WHERE (super.super_section_id = 'E')
 GROUP BY f.set_id
 
+UNION ALL 
+--Balanced servicing line
+SELECT f.set_id, NULL, NULL, NULL, NULL, 'Net staff servicing', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position), max(super.position)+1, 
+	SUM(f.amount * f.coefficient) as amount, 'special', 'staffserv', ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount
+{source}
+WHERE (sub.sub_section_id = 'STSER')
+GROUP BY f.set_id
 
 UNION ALL 
 --Total Expenditure
