@@ -599,10 +599,14 @@ class finance_sub_section(Base):
         Five character ID for the sub-section. 
     description : str
         Name for the sub-section. 
-    show_in_ui : BOOLEAN
-        Whether or not to display this section in the PowerApp. 
-    position : int
+    section_id : str
+        Section to which this sub section belongs. 
+    line_order : int
         How to order the sections when displaying. 
+    explanation : str
+        Verbose description fo what this section encompasses.     
+    default_balance : str
+        Balance type for the section. 
     """
     __tablename__ = "fs_sub_section"
 
@@ -611,7 +615,7 @@ class finance_sub_section(Base):
     section_id = Column(CHAR(3), ForeignKey("fs_section.section_id"))
     line_order = Column(INTEGER())
     explanation = Column(VARCHAR(255))
-
+    default_balance = Column(CHAR(2), ForeignKey("fs_entry_type.balance_type"), nullable=False)
 
 class finance_section(Base):
     """

@@ -6,6 +6,7 @@ LEFT OUTER JOIN fs_summary_code sc ON sc.summary_code = f.summary_code
 LEFT OUTER JOIN fs_sub_section sub ON sub.sub_section_id = sc.sub_section_id
 LEFT OUTER JOIN fs_section s ON s.section_id = sub.section_id 
 LEFT OUTER JOIN fs_super_section super ON super.super_section_id = s.super_section_id
+LEFT OUTER JOIN fs_entry_type scae ON scae.balance_type = sub.default_balance
 """
 
 sql = """
@@ -27,7 +28,7 @@ SELECT f.set_id, NULL, NULL, sub.description + ' Total' , NULL, NULL,
 	MIN(sub.line_order) as sub_order, 
 	MIN(s.position) as sec_order, 
 	MIN(super.position) as super_order, 
-	SUM(f.amount) as amount, 'sub', sub.sub_section_id
+	ROUND(SUM(f.amount*f.coefficient*scae.coefficient),2) as amount, 'sub', sub.sub_section_id
 	, ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount
 {source}
 GROUP BY f.set_id, sub.description, sub.sub_section_id, s.section_id, super.super_section_id
@@ -51,7 +52,7 @@ SELECT f.set_id, NULL, NULL, NULL, s.description + ' Total', NULL,
 	MAX(sub.line_order) +1 as sub_order, 
 	MIN(s.position) as sec_order, 
 	MIN(super.position) as super_order, 
-	SUM(f.amount) as amount, 'section', s.section_id 
+	ROUND(SUM(f.amount*f.coefficient*scae.coefficient),2) as amount, 'section', s.section_id 
 	, ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount
 {source}
 GROUP BY f.set_id, s.description, s.section_id, super.super_section_id
@@ -63,7 +64,8 @@ SELECT f.set_id, NULL, NULL, NULL, NULL, super.description + ' Total',
 	MAX(sub.line_order) +1 as sub_order, 
 	MAX(s.position) +1 as sec_order, 
 	MIN(super.position) as super_order, 
-	SUM(f.amount) as amount, 'super', super.super_section_id, ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount
+	ROUND(SUM(f.amount*f.coefficient*scae.coefficient),2) as amount, 'super', super.super_section_id, 
+	ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount
 {source}
 GROUP BY f.set_id, super.description, super.super_section_id
 
@@ -88,22 +90,6 @@ UNION ALL
 SELECT f.set_id, NULL, NULL, NULL, NULL, 'Institutional Surplus/(Deficit)', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position), max(super.position)+1, 
 	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'grand_total', ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount
 {source}
-GROUP BY f.set_id
-
-UNION ALL 
---Balanced recharge line
-SELECT f.set_id, NULL, NULL, NULL, NULL, 'Net Recharge', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position), max(super.position)+1, 
-	SUM(f.amount * f.coefficient * -1) as amount, 'special', 'recharge', ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount
-{source}
-WHERE (super.super_section_id = 'E')
-GROUP BY f.set_id
-
-UNION ALL 
---Balanced servicing line
-SELECT f.set_id, NULL, NULL, NULL, NULL, 'Net staff servicing', MAX(sc.position) +1, max(sub.line_order)+1, max(s.position), max(super.position)+1, 
-	SUM(f.amount * f.coefficient) as amount, 'special', 'staffserv', ROUND(SUM(f.amount*f.coefficient*-1),2) as intuitive_amount
-{source}
-WHERE (sub.sub_section_id = 'STSER')
 GROUP BY f.set_id
 
 UNION ALL 
