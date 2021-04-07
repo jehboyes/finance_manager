@@ -2,8 +2,8 @@
 This view takes the inputs from the input_pay_claim table, and calculates the 
 resultant costs. 
 
-Base rate calculation
-~~~~~~~~~~~~~~~~~~~~~
+Calculation
+~~~~~~~~~~~
 
 In SQL, the calculation is:
 ``ROUND((ISNULL(i.rate, 0)*variable_rate+t.rate_uplift)*base_multiplier*holiday_multiplier, 2)``
@@ -15,8 +15,7 @@ The calculation translates to 'Overwrite the hourly rate if applicable (e.g. for
 general uplift if applicable (e.g. teaching prep time), and increase to account for 
 an appropriate amount of holiday pay if applicable'.  
 
-National Insurance
-~~~~~~~~~~~~~~~~~~
+**National Insurance**
 
 The amount of NI payable is estimated by comparing the above hourly rate to the NI 
 `weekly secondary threshold <https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2020-to-2021#class-1-national-insurance-thresholds>`_ 
@@ -26,11 +25,12 @@ is multiplied the NI contribution rate for band A.
 There is an apply_ni flag in the :py:class:`finance_manager.database.spec.claim_type` table that can subvert this process, 
 which is True when the amount entered is intended as a lump sum, rather than something else. 
 
-Pension
-~~~~~~~
+**Pension**
 
 The :py:class:`finance_manager.database.spec.claim_type` table has a flag that controls whether or not to add employers pension 
-contibutions to the claim. If true, the most expensive contribution rate is applied to the hourly rate.   
+contibutions to the claim. If true, the most expensive contribution rate is applied to the hourly rate. 
+
+The pension aspect of the calculation is also subverted where the apply_ni flag is false. 
 
 """
 

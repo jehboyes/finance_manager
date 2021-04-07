@@ -1133,9 +1133,7 @@ class spine(Base):
     Spine Points. 
 
     Pay framework spine point values, for each set category in each academic year. 
-
-.. note:: The impact of any proposed changes is contained within these values  
-    rather than in some 'uplift' variable. 
+    The impact of any proposed changes is contained within these values rather than in some 'uplift' variable. 
 
     Attributes
     ----------

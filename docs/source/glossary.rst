@@ -4,14 +4,33 @@ Glossary
 .. glossary::
     :sorted:
     
+    Age of Contract 
+    
+        All conservatoire staff are on one of two types of contract, usually referred to simply as the 'old contract' 
+        and the 'new contract'. The main difference between the two is the amount of holiday allowed in the year: 'new' 
+        contract staff are entitled to 318 hours holiday, whilst 'old' contract staff are entitled to 355. 
+
+    National Insurance Contribution
+
+        This is the amount of national insurance that employers pay, which is a proportion of each 
+        employee's salary above the secondary earnings threshold. Included in the amount of national insurance 
+        payable is the smaller 
+        `Apprenticeship Levy <https://www.gov.uk/government/publications/apprenticeship-levy/apprenticeship-levy>`_. 
+
+        Note that these contributions are seperate from/additional to *employee* national insurance contributions. 
+
+    Pension Contribution
+
+        For employees in a pension scheme, the conservatoire contributes a proportion of the employee's salary 
+        to the employee's pension scheme.  
+
+        Note that these contribtions are seperate from/additional to *employee* pension contributions. 
+
     On-costs
 
         These are the costs of employment beyond basic salary. Typically, in addition to paying an employee's 
         hourly rate for the number of hours worked, 
-        the institution will also pay **National Insurance** contributions, **Pension** contributions 
-        (which are distinct from the *employee*\ 's NI and Pension contributions, 
-        paid by the employee along with income tax) and 
-        the smaller `Apprenticeship Levy <https://www.gov.uk/government/publications/apprenticeship-levy/apprenticeship-levy>`_.
+        the institution will usually pay a :term:`National Insurance Contribution`, and a :term:`Pension Contribution`.
 
         In the cases of :term:`Fractional Academic` posts and Casual posts, there is also a 'holiday accrual' on-cost: 
         this is an increase to the hourly rate derived from the amount of holiday pay 
@@ -101,74 +120,7 @@ Glossary
         Teaching contracts therefore had both an FTE *and* a Fraction. The 'fraction' figure disappeared from the teaching contracts in 2017. 
         Historically, the 'fraction' concept has also been used with term-time pastoral posts, but is no longer in common use.  
 
-        Fractional Academic salaries are calculated differently to most: see the following section for more details. 
-
-    Fractional Academic Salary
-
-        Due to a rounding error in the historic calculation of a :term:`Fractional Academic`'s FTE, fractional salaries are very slightly higher than 
-        a non-fractional salary at the same point in the pay framework. 
-
-        We first define the following variables: 
-
-        .. math::
-
-            a &:= \text{Total hours to be worked, from the fractional contract} \\
-            b &:= \text{Full time hours according to employee's contract of employment} \\
-            c &:= \text{Holiday hours according to employee contract} \\
-            d &:= \text{Employee's pro rata salary, i.e. salary if FTE was 1.0}
-
-        The important derivates are: 
-
-        .. math::
-
-            \gamma &= \text{Historic full-term-time hours} \\
-                   &= 1110 + 1110\frac{c}{b} \\
-                   &= 1110 (1 + \frac{c}{b}) \\
-            \\
-            \beta  &= \text{Paid hours (worked hours plus holiday accrual)} \\ 
-                   &= a (1 + \frac{c}{b}) \\
-            \\
-            \delta &= \text{Modifier used for rounding in old calculation} \\
-                   &= 0.499999 \\
-            \\
-            \theta &= \text{Historic term-time FTE (explained above)} \\ 
-                   &= \frac{100\beta}{\gamma} + \delta \\
-            
-        
-        The historic salary calculation is defined as follows: 
-
-        .. math::
-
-            \text{Salary} = \frac{\text{fraction}}{100} \times \text{FTE} \times \frac{\text{Full-term-time-hours}}{\text{Contract work} + \text{Contract holiday}}
-
-        Using the above abbreviations, we can represent and subsequently decompose it accordingly: 
-
-        .. math::
-
-            \text{Salary} &= \frac{\theta}{100} \times d \times \frac{\gamma}{b + c} \\
-            &= \frac{(\frac{100(1+\frac{c}{b})a}{\gamma} + \delta)d\gamma}{100(b+c)}  \\
-            &= \left(\frac{a(b+c)}{b(b+c)}+\frac{\delta \gamma}{100(b+c)}\right) d \\
-            &= \left(\frac{a}{b}+\frac{1110\delta(1+\frac{c}{b})}{193140}\right) d
-
-        We can then define the fixed part of the error term explicitly to give a simpler representation of the salary calculation, and calculate the actual 
-        terms for each type of contract:
-
-        .. math::
-
-            \epsilon &= \frac{1110\delta}{193140} \\
-                     &= 0.002873557 \text{(exactly)}  \\
-            \\
-            \text{Salary} &= \left(\frac{a}{b} + \left(1+\frac{c}{b}\right)\epsilon\right)\delta \\
-            &= \frac{a+(b+c)\epsilon}{b}d \\
-            &= \begin{cases}
-            (\frac{a}{b}+0.0035)d,  &  \text{Old contract} \\
-            (\frac{a}{b}+0.0034)d,  &  \text{New contract} 
-            \end{cases}
-            
-        This result is intuitively correct: it shows that a fractional FTE is the number of hours worked as a proportion of the maximum number of hours workable (the :math:`\frac{a}{b}` term), 
-        plus a small extra from the error term, which is equivalent to about :math:`5\frac{1}{2}` hours additional work. In financial terms, this translates to 
-        an absolute increase in salary of between £100 and £200 per member of fractional staff. 
-
+        For detail on fractional academic salary calculation, see :ref:`fractional-pay`. 
 
     Spine Point
 
@@ -184,4 +136,4 @@ Glossary
         not receieve an automatic spine point increase. 
 
         Spine points are stored in the :py:class:`finance_manager.database.spec.spine` table. 
- 
+

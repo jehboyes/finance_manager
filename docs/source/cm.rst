@@ -21,16 +21,12 @@ The Curriculum Model contains several curricula, and each curricula is configure
 For example, the curriculum for the next academic year will use thea specific set of prospective student numbers for that year. 
 These student numbers are also stored in the curriculum model database. 
 The Curriculum Model uses the curriculum specifications and its student numbers 
-to calculate the total number of hours required to deliver the curriculum (including module calculation). 
+to calculate the total number of hours required to deliver the curriculum (including module calculation).
 
-The Finance Manager takes this total delivery time, subtracts the amount of time the academic management spend 
-delivering the curriculum, and distribute the remainder between :term:`Fractional Academic` staff, using their given 
-FTE as a means of distributing the hours.   
-
-.. note::
-
-   In addition to the work calculated here, fractional contracts also have a static increase; see :term:`Fractional Academic Salary` 
-   for more information. 
+Finance Manager takes this total delivery time, subtracts the amount of time that :term:`Academic Management` spend 
+delivering the curriculum, and distributes the remainder 
+between :term:`Fractional Academic` staff, using their given 
+FTE as a means of informing the distribution. For more detail on the actual cost calculation, see :ref:`fractional-pay`. 
 
 
 Implementation
