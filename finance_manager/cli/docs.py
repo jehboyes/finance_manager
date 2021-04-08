@@ -10,8 +10,9 @@ from finance_manager.database import DB
 @click.argument("folder", type=click.Path(exists=True))
 @click.option("--version", "-v", type=str, help="Append a given version identifier.")
 @click.option("--disconnect", "-d", is_flag=True, help="Run the Disconnect macro to sever connections.")
+@click.option("--restrict", "-r", type=str, help="Restrict to a given directorate.", default="")
 @click.pass_obj
-def docs(config, template, folder, version, disconnect):
+def docs(config, template, folder, version, disconnect, restrict):
     """
     Generate documentation for each directorate.
 
@@ -23,7 +24,11 @@ def docs(config, template, folder, version, disconnect):
     with DB(config=config) as db:
         session = db.session()
         directorates = session.query(directorate).filter(
-            directorate.director_name.isnot(None)).all()
+            directorate.director_name.isnot(None))
+        if len(restrict) == 1:
+            directorates = directorates.filter(
+                directorate.directorate_id == restrict)
+        directorates = directorates.all()
 
         # Create an excel app
         xlapp = win32com.client.DispatchEx("Excel.Application")
