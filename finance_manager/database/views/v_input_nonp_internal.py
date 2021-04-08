@@ -10,7 +10,7 @@ def _view():
     FROM input_nonp_internal i
     INNER JOIN f_set fs ON fs.set_id = i.set_id
     LEFT OUTER JOIN fs_account a ON i.account = a.account
-    INNER JOIN fs_summary_code sc ON a.summary_code = sc.summary_code 
+    LEFT OUTER JOIN fs_summary_code sc ON a.summary_code = sc.summary_code 
     LEFT OUTER JOIN fs_entry_type e ON e.balance_type = a.default_balance
     LEFT OUTER JOIN v_calc_internal_balance b 
         ON b.costc=fs.costc 
