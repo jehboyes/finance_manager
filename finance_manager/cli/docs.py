@@ -1,6 +1,5 @@
 # pylint: disable=no-member
 import click
-import win32com.client
 from finance_manager.database.spec import directorate
 from finance_manager.database import DB
 
@@ -19,6 +18,8 @@ def docs(config, template, folder, version, disconnect, restrict):
     Currently relies on the template having a sheet called 'data_Params', with the columns laid out
     as configured in this source code. Only works on Windows.
     """
+    # import statement within function to prevent import breaking the entire cli when not on windows
+    import win32com.client
     if folder[-1] == '\\':
         folder = folder[:-2]
     with DB(config=config) as db:
