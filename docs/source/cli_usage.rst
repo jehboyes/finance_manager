@@ -1,9 +1,14 @@
-Using the CLI
-=============
+Common Tasks
+============
 
-.. note::
-    For any of the CLI commands to function correctly, the local config file must be 
-    correctly configured (see the :ref:`config instructions <config-instruction>`). 
+Listed below are explanations of some of the more 
+common administrative tasks, and the commands 
+used to complete them. 
+
+A comprehensive list of all the commands and their 
+syntax is in the :doc:`Full CLI reference <cli_auto>`, along with the 
+extensive help documentation within the app (accessed by running any command with 
+the ``--help`` option. 
 
 Creating sets
 -------------
