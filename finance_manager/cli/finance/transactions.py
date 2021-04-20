@@ -44,8 +44,15 @@ def transactions(config, acad_year, set_cat_id, filepath):
         key = _row_key(row)
         row['period'] = normalise_period(row['period'])
         row['amount'] = row['amount'].replace(",", "")
-        date_components = [int(c) for c in row['trans.date'].split("/")[::-1]]
-        row['trans.date'] = datetime(*date_components)
+        if row['text'] == None:
+            row['text'] = "<No description>"
+        try:
+            date_components = [int(c)
+                               for c in row['trans.date'].split("/")[::-1]]
+            row['trans.date'] = datetime(*date_components)
+        except:
+            raise ValueError(
+                "Date conversion failed - check date field is in regular dd/mm/yyyy")
         idrow_dict.update({key: idrow_dict.get(key, 0) + float(row['amount'])})
         period_dict.update({row['transno']: row['period']})
     body = [row for row in body if idrow_dict[_row_key(row)] != 0]
@@ -114,4 +121,9 @@ def transactions(config, acad_year, set_cat_id, filepath):
 
 
 def _row_key(d):
+    l = [d['transno'], d['costc'], d['account']]
+    for i in l:
+        if i == None:
+            raise(
+                "Missing key element - check there is no grand total row present in import file")
     return "|".join([d['transno'], d['costc'], d['account']])
