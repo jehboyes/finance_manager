@@ -13,7 +13,7 @@ def _view():
     for head in calc_headers:
         if "set_id" in head:
             agg_headers.append(head)
-        elif "summary_code" in head or "notes":
+        elif "summary_code" in head or "notes" in head:
             agg_headers.append("NULL")
         else:
             agg_headers.append(f"SUM({head})")
