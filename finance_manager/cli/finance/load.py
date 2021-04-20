@@ -10,7 +10,7 @@ from sqlalchemy import and_, select, insert
 
 
 @click.command()
-@click.option("--acad_year", type=int)
+@click.option("--acad_year", "-a", type=int)
 @click.argument("set_cat_id", type=str)
 @click.argument("filepath", type=click.Path(exists=True))
 @click.option("--unsigned", "-u", is_flag=True, help="Indicates that import data is unsigned (no negatives).")
@@ -20,13 +20,13 @@ def load(config, acad_year, set_cat_id, unsigned, filepath):
     Import Finance data.
 
     Load a csv with columns for costc, account, period & amount and
-    load into ACAD_YEAR SET_CAT_ID. Target sets must exist.
+    load into ACAD_YEAR SET_CAT_ID. Target sets must exist. Can either have acad year in data, 
+    or by passing with the ``acad_year`` option. Data is assumed to have negative values for credit balances, 
+    and positive values for debit balances (unless the ``unsigned`` option is passed). 
     """
     headers = {}
     body = []
-    valid_cols = ['account', 'period', 'amount', 'costc']
-    if acad_year == None:
-        valid_cols.append('acad_year')
+    valid_cols = ['account', 'period', 'amount', 'costc', 'acad_year']
     with open(filepath) as file:
         rows = csv.reader(file)
         for i, row in enumerate(rows):
@@ -37,7 +37,7 @@ def load(config, acad_year, set_cat_id, unsigned, filepath):
                     headers.update({len(headers): 'acad_year'})
             else:
                 if acad_year != None:
-                    r = row + acad_year
+                    r = row + [acad_year]
                 else:
                     r = row
                 body.append({headers[k]: v for k, v in enumerate(r)
@@ -47,7 +47,8 @@ def load(config, acad_year, set_cat_id, unsigned, filepath):
         sys.exit()
     years = list(set([r['acad_year'] for r in body]))
     costcs = list(set([r['costc'] for r in body]))
-    print(years)
+    if acad_year == None:
+        print(f"Detected years: {', '.join([str(y) for y in years])}")
     with DB(config=config) as db:
         con = db.con
         with con.begin() as transaction:
@@ -70,7 +71,6 @@ def load(config, acad_year, set_cat_id, unsigned, filepath):
                     .returning(finance_instance.__table__.c.instance_id)
                 instance_id = con.execute(stmt).fetchall()[0].instance_id
                 mapping[tuple([s.costc, s.acad_year])] = instance_id
-            print(mapping)
             # Need account information for fixing balances
             acc = account.__table__
             et = entry_type.__table__
