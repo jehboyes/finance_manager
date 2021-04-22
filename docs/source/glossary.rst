@@ -4,10 +4,6 @@ Glossary
 .. glossary::
     :sorted:
     
-    Staff costs
-
-        sdfzgsh sfhsjfhs jdbfhks, hdkfgrdjksgkdfgdjkg
-
     Age of Contract 
     
         All conservatoire staff are on one of two types of contract, usually referred to simply as the 'old contract' 

@@ -23,6 +23,7 @@ The system encompasses two distinct applications:
    cm
    internal_recharging
    calculations_pay
+   staff_costs
 
 
 .. toctree::
