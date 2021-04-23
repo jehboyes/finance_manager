@@ -41,13 +41,13 @@ class DB():
             print(self.engine_string)
 
     def __enter__(self):
-        # try:
         self._engine = create_engine(self.engine_string, echo=self.verbose)
         self._sfactory = sessionmaker(bind=self._engine)
-        self.con = self._engine.connect()
-        # except:
-        # raise ConnectionError(
-        #     "Unable to connect to database. This may be caused by the connection timing out.")
+        try:
+            self.con = self._engine.connect()
+        except:
+            raise ConnectionError(
+                "Unable to connect to database. This may be caused by the connection timing out.")
         return self
 
     def __exit__(self, type, value, traceback):
