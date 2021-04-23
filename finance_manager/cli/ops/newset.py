@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 @click.command()
 @click.option("--change_sn", "-c", help="Allow users to change student numbers", is_flag=True)
 @click.option("--new", "-n", help="Create a new set category with the name given", type=str)
-@click.option("--restrict", "-r", "filter_costc", type=str, help="Restrict to a given cost centre")
+@click.option("--restrict", "-r", "filter_costc", multiple=True, type=str, help="Restrict to a given cost centre")
 @click.argument("setcode")
 @click.argument("acad_year", type=int)
 @click.argument("curriculum")
@@ -28,8 +28,8 @@ def newset(config, acad_year, setcode, curriculum, sn_usage, change_sn, filter_c
         s = db.session()
         # Get all valid cost centres
         q = s.query(cost_centre).filter(cost_centre.supercede_by == None)
-        if filter_costc != None:
-            q = q.filter(cost_centre.costc == filter_costc)
+        if len(filter_costc) > 0:
+            q = q.filter(cost_centre.costc.in_(filter_costc))
         cost_centres = q.all()
         # Change the change_sn to a bit
         if change_sn:
