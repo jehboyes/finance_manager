@@ -78,29 +78,30 @@ def copyset(config, tosetcat, toacadyear, fromsetcat, fromacadyear, omit, close,
         if not generic:
             with click.progressbar(tables, label="Iterating through input tables...") as bar:
                 for table in bar:
-                    try:
-                        records = []
-                        table_query = s.query(table).join(f_set).filter(and_(f_set.acad_year == fromacadyear,
-                                                                             f_set.set_cat_id == fromsetcat))
-                        destination_query = s.query(table).join(f_set).filter(and_(f_set.acad_year == toacadyear,
-                                                                                   f_set.set_cat_id == tosetcat))
-                        # if anything to rollforward and destination empty
-                        if len(table_query.all()) > 0 and len(destination_query.all()) == 0:
-                            # Get primary keys, as these will need to be removed
-                            pk = []
-                            for col in table.__table__.columns:
-                                if col.primary_key and col.key != 'set_id' and col.key != 'period':
-                                    pk.append(col.key)
-                            # For each row old id, change set id and add to bulk insert
-                            for row in table_query.all():
-                                record = row.__dict__
-                                for col in pk:
-                                    record.pop(col)
+                    # try:
+                    records = []
+                    table_query = s.query(table).join(f_set).filter(and_(f_set.acad_year == fromacadyear,
+                                                                         f_set.set_cat_id == fromsetcat))
+                    destination_query = s.query(table).join(f_set).filter(and_(f_set.acad_year == toacadyear,
+                                                                               f_set.set_cat_id == tosetcat))
+                    # if anything to rollforward and destination empty
+                    if len(table_query.all()) > 0 and len(destination_query.all()) == 0:
+                        # Get primary keys, as these will need to be removed
+                        pk = []
+                        for col in table.__table__.columns:
+                            if col.primary_key and col.key != 'set_id' and col.key != 'period':
+                                pk.append(col.key)
+                        # For each row old id, change set id and add to bulk insert
+                        for row in table_query.all():
+                            record = row.__dict__
+                            for col in pk:
+                                record.pop(col)
+                            if row.set_id in set_map.keys():
                                 record["set_id"] = set_map[row.set_id]
                                 records.append(record)
-                            s.bulk_insert_mappings(table, records)
-                    except:
-                        raise RuntimeError(f"Failed on {table.__tablename__}")
+                        s.bulk_insert_mappings(table, records)
+                    # except:
+                    #     raise RuntimeError(f"Failed on {table.__tablename__}")
         with click.progressbar(set_tables, label="Iterating through category tables...") as bar:
             for table in bar:
                 records = []
