@@ -30,6 +30,7 @@ _FDec = DECIMAL(precision=18, scale=2)
 
 # Define the database base class, to hold the database info
 Base = declarative_base()
+meta = Base.metadata
 
 
 def _period_cols(datatype):
@@ -615,7 +616,9 @@ class finance_sub_section(Base):
     section_id = Column(CHAR(3), ForeignKey("fs_section.section_id"))
     line_order = Column(INTEGER())
     explanation = Column(VARCHAR(255))
-    default_balance = Column(CHAR(2), ForeignKey("fs_entry_type.balance_type"), nullable=False)
+    default_balance = Column(CHAR(2), ForeignKey(
+        "fs_entry_type.balance_type"), nullable=False)
+
 
 class finance_section(Base):
     """
